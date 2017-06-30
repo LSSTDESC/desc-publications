@@ -1,0 +1,12 @@
+<decorators defaultdir="/decorators">
+
+    <decorator name="noDecorator" page="noDecorator.jsp">
+        <pattern>/plotMain.jsp</pattern>
+        <pattern>/plotTree.jsp</pattern>
+    </decorator>
+
+  <decorator name="basicDecorator" page="basicDecorator.jsp">
+       <pattern>/*</pattern>
+  </decorator>
+
+</decorators>

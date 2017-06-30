@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>srs</groupId>
+        <artifactId>org-srs-maven-project-war</artifactId>
+        <version>4.4</version>
+        <relativePath />
+    </parent>
+
+    <artifactId>org-lsstdesc-publications</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>LSSTDESC publications</name>
+    <url>http://portal.lsst-desc.org/Publications/</url>
+    <packaging>war</packaging>
+
+    <repositories>
+        <repository>
+            <id>srs-maven2-public</id>
+            <name>SRS Maven 2 central repository</name>
+            <url>http://srs.slac.stanford.edu/nexus/content/groups/srs-maven2-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>srs</groupId>
+            <artifactId>org-srs-web-base</artifactId>
+            <version>2.18</version>
+        </dependency>
+        <dependency>
+            <groupId>oracle</groupId>
+            <artifactId>ojdbc</artifactId>
+            <version>1.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>srs</groupId>
+            <artifactId>org-srs-groupmanager-web</artifactId>
+            <version>1.23</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>Publications</finalName>
+        <testSourceDirectory>${basedir}/src/main/test</testSourceDirectory>
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <!-- This allows filtering of web.xml, which allows resources (such as ${pom.version} to be inserted) -->
+                    <warSourceDirectory>${basedir}/src/webapp</warSourceDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>UseLocalDB</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemProperties>
+                                <property>
+                                    <name>db.config.prod.url</name>
+                                    <value>${configProd}</value>
+                                </property>
+                                <property>
+                                    <name>db.datacat.prod.url</name>
+                                    <value>${datacatProd}</value>
+                                </property>
+                                <property>
+                                    <name>db.pipeline.prod.url</name>
+                                    <value>${datacatProd}</value>
+                                </property>
+                            </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    <properties>
+        <experiment.name>LSST-DESC</experiment.name>
+    </properties>
+
+     
+    
+</project>

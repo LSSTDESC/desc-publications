@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+<!--
+    <parent>
+        <groupId>srs</groupId>
+        <artifactId>org-srs-maven-project</artifactId>
+        <version>2.2-SNAPSHOT</version>
+    </parent>
+-->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>srs</groupId>
+    <artifactId>org-srs-sitemesh-web</artifactId>
+    <packaging>war</packaging>
+    <version>1.6</version>
+    <name>SRS Sitemesh Web Decorator</name>
+
+    <build>
+        <finalName />
+    </build>
+
+    <scm>
+        <connection>scm:svn:file:///nfs/slac/g/srs/subversion/org-srs-sitemesh-web/tags/org-srs-sitemesh-web-1.6</connection>
+        <url>http://java.freehep.org/svn/repos/srs/list/org-srs-sitemesh-web/tags/org-srs-sitemesh-web-1.6</url>
+    </scm>
+
+    <properties>
+        <maven.scm.svn.server>svn+ssh://svn.slac.stanford.edu</maven.scm.svn.server>
+        <maven.deployment.server>scpexe://svn.slac.stanford.edu:</maven.deployment.server>
+        <hudson.deploy.snapshot.artifact>true</hudson.deploy.snapshot.artifact>
+    </properties>
+
+
+    <distributionManagement>
+        <!-- use the following if you're not using a snapshot version. -->
+        <repository>
+            <id>srs-maven2</id>
+            <name>SRS Maven 2 central repository</name>
+            <url>${maven.deployment.server}/nfs/slac/g/srs/maven2</url>
+        </repository>
+        <!-- use the following if you ARE using a snapshot version. -->
+        <snapshotRepository>
+            <id>srs-maven2-snapshots</id>
+            <name>SRS Maven2 centreal SNAPSHOTS repository</name>
+            <url>${maven.deployment.server}/nfs/slac/g/srs/maven2/SNAPSHOTS</url>
+            <!-- this is set to false, to prevent multiple versions of SNAPSHOT files -->
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+        <site>
+            <id>srs-maven2-site</id>
+            <name>SRS Maven2 centreal site repository</name>
+            <url>${maven.deployment.server}/nfs/slac/g/srs/docs/</url>
+        </site>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>srs-maven2</id>
+            <name>SRS Maven 2 central repository</name>
+            <url>http://srs.slac.stanford.edu/maven2</url>
+        </repository>
+        <!-- use the following if you ARE using a snapshot version. -->
+        <repository>
+            <id>srs-maven2-snapshots</id>
+            <name>SRS Maven2 central SNAPSHOTS repository</name>
+            <url>http://srs.slac.stanford.edu/maven2/SNAPSHOTS</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>sitemesh</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>Hudson</id>
+            <properties>
+                <maven.scm.svn.server>file://</maven.scm.svn.server>
+                <maven.deployment.server>file://</maven.deployment.server>
+            </properties>
+        </profile>
+    </profiles>
+
+</project>

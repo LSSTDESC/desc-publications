@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/Pubs">
+  <ResourceLink global="jdbc/config-prod" name="jdbc/config-prod" type="javax.sql.DataSource"/>
+  <ResourceLink global="jdbc/config-prod" name="jdbc/config-dev" type="javax.sql.DataSource"/>
+  <ResourceLink global="jdbc/config-srs" name="jdbc/config-srs" type="javax.sql.DataSource"/>
+  <Logger className="org.apache.catalina.logger.FileLogger" prefix="Pubs." suffix=".log" timestamp="true"/>
+</Context>

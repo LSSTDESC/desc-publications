@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+    <session-config>
+        <session-timeout>
+         30
+        </session-timeout>
+    </session-config>
+    <context-param>
+        <param-name>
+         javax.servlet.jsp.jstl.sql.dataSource
+        </param-name>
+        <param-value>
+         jdbc/config-prod
+        </param-value>
+    </context-param>
+    <context-param>
+        <param-name>
+            version
+        </param-name>
+        <param-value>
+            1.0-SNAPSHOT
+        </param-value>
+    </context-param>
+    <filter>
+        <filter-name>ModeSwitcherFilter</filter-name>
+        <filter-class>org.srs.web.base.filters.modeswitcher.ModeSwitcherFilter</filter-class>
+        <init-param>
+            <param-name>experiment</param-name>
+            <param-value>LSST-DESC</param-value>
+        </init-param>
+        <init-param>
+            <param-name>configDb</param-name>
+            <param-value>jdbc/config-srs</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>ModeSwitcherFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>LoginFilter</filter-name>
+        <filter-class>org.srs.web.base.filters.login.LoginFilter</filter-class>
+        <init-param>
+            <param-name>requireLogin</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>configDb</param-name>
+            <param-value>jdbc/config-srs</param-value>
+        </init-param>
+    </filter>
+    
+    
+    <filter>
+        <filter-name>sitemesh</filter-name>
+        <filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LoginFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>GroupCheckerFilter</filter-name>
+        <filter-class>org.srs.groupmanager.filter.GroupCheckerFilter</filter-class>
+        <init-param>
+            <param-name>groups</param-name>
+            <param-value>LSSTDESCUsers</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>GroupCheckerFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>CheckCookiesFilter</filter-name>
+        <filter-class>org.srs.web.base.filters.cookies.CheckCookiesFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CheckCookiesFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>sitemesh</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+    <welcome-file-list>
+        <welcome-file>
+         index.jsp
+        </welcome-file>
+    </welcome-file-list>
+</web-app>

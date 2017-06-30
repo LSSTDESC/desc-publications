@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <tstamp>
+    <format property="last.updated" pattern="yyyy-MM-dd hh:mm:ss"/>
+  </tstamp>
+  <echo message="Creating projectBuild.properties"/>
+  <echo file="/u1/chee/Code/org-srs-voting/trunk/target/classes/projectBuild.properties" message="build.time=${last.updated}&#10;"/>
+</target>
+</project>

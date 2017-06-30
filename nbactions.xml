@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>CUSTOM-deploy-dev</actionName>
+        <displayName>deploy-dev</displayName>
+        <goals>
+            <goal>package</goal>
+            <goal>tomcat7:deploy</goal>
+        </goals>
+        <activatedProfiles>
+            <activatedProfile>SRS</activatedProfile>
+            <activatedProfile>deploy-dev</activatedProfile>
+        </activatedProfiles>
+    </action>
+    <action>
+        <actionName>CUSTOM-deploy-prod</actionName>
+        <displayName>deploy-prod</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>package</goal>
+            <goal>tomcat7:deploy</goal>
+        </goals>
+        <activatedProfiles>
+            <activatedProfile>SRS</activatedProfile>
+            <activatedProfile>deploy-prod</activatedProfile>
+        </activatedProfiles>
+    </action>
+    <action>
+            <actionName>CUSTOM-Show dependencies</actionName>
+            <displayName>Show dependencies</displayName>
+            <goals>
+                <goal>dependency:tree</goal>
+            </goals>
+            <properties>
+                <verbose>true</verbose>
+            </properties>
+        </action>
+</actions>
