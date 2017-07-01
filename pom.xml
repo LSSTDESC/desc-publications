@@ -11,7 +11,7 @@
 
     <artifactId>org-lsstdesc-publications</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>LSSTDESC publications</name>
+    <name>LSSTDESC publications (Chee Version)</name>
     <url>http://portal.lsst-desc.org/Publications/</url>
     <packaging>war</packaging>
 
@@ -43,7 +43,7 @@
     </dependencies>
 
     <build>
-        <finalName>Publications</finalName>
+        <finalName>DESC Publications</finalName>
         <testSourceDirectory>${basedir}/src/main/test</testSourceDirectory>
         <plugins>
             <plugin>
@@ -71,12 +71,8 @@
                                     <value>${configProd}</value>
                                 </property>
                                 <property>
-                                    <name>db.datacat.prod.url</name>
-                                    <value>${datacatProd}</value>
-                                </property>
-                                <property>
-                                    <name>db.pipeline.prod.url</name>
-                                    <value>${datacatProd}</value>
+                                    <name>db.config.dev.url</name>
+                                    <value>${configDev}</value>
                                 </property>
                             </systemProperties>
                         </configuration>

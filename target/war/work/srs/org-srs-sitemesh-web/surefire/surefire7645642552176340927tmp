@@ -1,7 +1,0 @@
-#surefire
-#Thu Sep 06 16:27:09 PDT 2012
-user.dir=/a/surrey04a/vol/vol1/g.srs/hudson/srs-build01/workspace/org-srs-sitemesh-web/trunk/target/checkout
-maven.repo.local=/a/surrey04a/vol/vol1/g.srs/hudson/srs-build01/workspace/org-srs-sitemesh-web/m2_repo
-localRepository=/a/surrey04a/vol/vol1/g.srs/hudson/srs-build01/workspace/org-srs-sitemesh-web/m2_repo
-performRelease=true
-basedir=/a/surrey04a/vol/vol1/g.srs/hudson/srs-build01/workspace/org-srs-sitemesh-web/trunk/target/checkout

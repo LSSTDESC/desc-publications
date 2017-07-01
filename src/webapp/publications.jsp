@@ -12,7 +12,7 @@
 
 <!DOCTYPE html>
 
-<title>LSST-DESC Publication System</title>
+<title>LSST-DESC Publication System (Chee Version)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
 <link rel="stylesheet" href="css/pub-css"/>
