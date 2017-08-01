@@ -75,12 +75,6 @@
         join descpub_project pj on pub.project_id = pj.id  
     </sql:query>
      
-        <%-- for debugging  --%>
-    <c:forEach var="x" items="${param}">
-        <c:out value="Param: ${x.key}=${x.value}"/><br/>
-    </c:forEach>  
-     
-        
     <c:choose>  
         <c:when test="${!empty param.swgid}">
          <%-- Seth says don't allow deletion of swgs 18jul17.  <form name="deleteswg" action="show_swg.jsp?task=deleteswg">
