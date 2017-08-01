@@ -19,7 +19,7 @@
 <table>
     <tr>
         <td align="middle">
-            <img  height="140" width="230" src="${logoUrl}"/>
+            <img  height="90" width="246" src="${logoUrl}"/>
         </td>
         <td align="middle">
             <h1>${experiment} ${title}</h1>
