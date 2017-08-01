@@ -5,62 +5,117 @@
 --%>
 <%@page contentType="text/html"%>
 <%@page pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib uri="http://srs.slac.stanford.edu/displaytag" prefix="displayutils" %>
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
+<%@taglib tagdir="/WEB-INF/tags/" prefix="tg"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 
 <!DOCTYPE html>
 
  <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <script src="js/jquery-1.11.1.min.js"></script>
+      <script src="js/jquery.validate.min.js"></script>
       <link rel="stylesheet" href="css/site-demos.css">
+     
       <title>SWG Page</title>
 </head>
 
 <body>
-
-    <h2>Science Working Groups ${param.swgname}</h2>
+    <%-- Notes:
+       pgn = profile group name
+       swgname = science working group name
+       Users cannot change name of a group, that leads to inconsistencies between profile_group and profile_ug.  Users can delete a group. 
+    --%>
+    
+    <h2>Science Working Group ${param.swgname}</h2>
+    
+    <c:set var="convenerPool" value="lsst-desc-full-members"/>
     
     <sql:query var="swgs" dataSource="jdbc/config-dev">
-        select id, name, email, profile_group_name as pgn, convener_group_name as cgn from descpub_swg order by id
+        select id, name, email, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id = ? order by id
+        <sql:param value="${param.swgid}"/>
     </sql:query>
-   
+     
+    <c:set var="pgn" value="${swgs.rows[0].pgn}"/>   
+    <c:set var="cgn" value="${swgs.rows[0].cgn}"/>   
+    
+    <sql:query var="candidate_conveners" dataSource="jdbc/config-dev">
+         select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
+         join um_project_members pm on me.memidnum=pm.memidnum 
+         join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? where pm.activestatus='Y' and pm.project = ?
+         minus       
+         select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
+         join profile_ug ug on me.memidnum=ug.memidnum where group_id = ?
+        <sql:param value="${convenerPool}"/>
+        <sql:param value="${appVariables.experiment}"/>
+        <sql:param value="${cgn}"/>
+    </sql:query>
+      
+    <sql:query var="conveners" dataSource="jdbc/config-dev">
+        select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
+        join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? order by me.lastname
+        <sql:param value="${cgn}"/>
+    </sql:query>
+        
+     <sql:query var="projects" dataSource="jdbc/config-dev">
+        select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
+        from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
+        left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ?
+        <sql:param value="${param.swgid}"/>
+    </sql:query>    
+        
+    <sql:query var="pubs" dataSource="jdbc/config-dev">
+        select pub.abstract, pub.added, pub.arxiv, pub.assigned_pb_reader, pub.builder_eligible, pub.comments, pub.cwr_comments, pub.cwr_end_date, pub.id, pub.journal,
+        pub.journal_review, pub.keypub, pub.project_id, pub.published_reference, pub.state, pub.telecon, pub.title from descpub_publication pub 
+        join descpub_project pj on pub.project_id = pj.id  
+    </sql:query>
+     
+        <%-- for debugging  --%>
     <c:forEach var="x" items="${param}">
         <c:out value="Param: ${x.key}=${x.value}"/><br/>
-    </c:forEach>
+    </c:forEach>  
+     
         
-    <c:choose> 
-        <c:when test="${empty param}">
-            <a href="swg.jsp?createswg=true">create swg</a><br/>
-            <c:if test="${swgs.rowCount > 0}">
-                <display:table class="datatable"  id="Row" name="${swgs.rows}">
-                    <display:column title="Id" sortable="true" headerClass="sortable">
-                        ${Row.id}
-                    </display:column>
-                    <display:column title="Working Group" sortable="true" headerClass="sortable">
-                        <a href="show_swg.jsp?detail_id=${Row.id}">${Row.name}</a>
-                    </display:column>
-                    <display:column title="Mail List" sortable="true" headerClass="sortable">
-                        <a href="mailto:${Row.email}">${Row.email}</a>
-                    </display:column>
-                    <display:column title="Conveners" sortable="true" headerClass="sortable">
-                        <sql:query var="conveners" dataSource="jdbc/config-dev">
-                            select me.firstname, me.lastname from um_member me join profile_ug ug on me.memidnum=ug.memidnum and ug.group_id=?
-                            <sql:param value="${Row.cgn}"/>
-                        </sql:query>
-                        <c:if test="${conveners.rowCount>0}">
-                           <display:table class="datatable" id="cRow" name="${conveners.rows}"/>
-                        </c:if>
-                    </display:column>
-                </display:table>
-            </c:if>
+    <c:choose>  
+        <c:when test="${!empty param.swgid}">
+         <%-- Seth says don't allow deletion of swgs 18jul17.  <form name="deleteswg" action="show_swg.jsp?task=deleteswg">
+                <strong>delete ${param.swgname} swg </strong><input type="checkbox" name="deleteswg" value="${param.swgname}"> 
+            <input type="hidden" value="${param.swgid}" name="${swgname}"/>
+            </form> --%>
+            <p/>
+            <strong><a href="project_details.jsp?task=create_proj_form&swgname=${param.swgname}&swgid=${param.swgid}">create project</a></strong>
+            <hr/>
+            
+            <tg:groupMemberEditor experiment="${appVariables.experiment}" candidategroup="${convenerPool}" groupname="${cgn}"/>
+           
+            <p/>
+            <hr/>
+             <strong>Projects</strong><br/>
+             <display:table class="datatable" id="proj" name="${projects.rows}">
+                 <display:column property="id" title="Id" sortable="true" headerClass="sortable">
+                    <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}&name=${proj.title}">${proj.id}</a> 
+                 </display:column>
+                 <display:column title="Title" sortable="true" headerClass="sortable">
+                    <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}&name=${proj.title}">${proj.title}</a> 
+                 </display:column>
+                 <display:column title="Members" sortable="true" headerClass="sortable"/>
+                 <display:column title="State" sortable="true" headerClass="sortable">
+                     ${proj.state}
+                 </display:column>
+                 <display:column title="Documents" sortable="true" headerClass="sortable"/>
+                 <display:column title="Publications" sortable="true" headerClass="sortable"/>
+             </display:table>
+           <p/>
+           <hr/>
+           <strong>Publications</strong><br/>
+            <display:table class="datatable" id="pubs" name="${pubs.rows}">
+            </display:table>
         </c:when>
-        <c:when test="${!empty param.detail_id}">
-              go to details page for ${Row.name}
-        </c:when>
-         
         <c:otherwise>
             nothing to do
         </c:otherwise>
