@@ -6,20 +6,13 @@
 
 
 <c:if test="${ empty url }">
-    <c:set var="url" value="https://srs.slac.stanford.edu/ImageHandler/imageServlet.jsp?experimentName=LSST-DESC&name=logo"/>
+    <c:set var="url" value="https://srs.slac.stanford.edu/ImageHandler/imageServlet.jsp?experimentName=LSST-DESC&name=logo&skipExperimentFilter=true"/>
 </c:if>
-
-<c:url var="logoUrl" value="${url}">
-    <c:param name="experiment" value="${appVariables.experiment}"/>
-    <c:param name="name" value="logo"/>
-    <c:param name="skipExperimentFilter" value="true"/>
-</c:url>
-
 
 <table>
     <tr>
         <td align="middle">
-            <img  height="90" width="246" src="${logoUrl}"/>
+            <img  height="90" width="246" src="${url}"/>
         </td>
         <td align="middle">
             <h1>${experiment} ${title}</h1>
