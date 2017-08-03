@@ -7,54 +7,55 @@
 <%@attribute name="projid" required="true"%>
 <%@attribute name="swgid" required="true" %> 
 <%@attribute name="experiment" required="true" %>
+<%@attribute name="returnURL" required="true" %>
 
-    <c:set var="tmp" value="active,created,inactive,completed"/>
+    <c:set var="tmp" value="created,active,inactive,completed"/>
     <c:set var="validStates" value="${fn:split(tmp,',')}"/>
     
+    <%-- project can have multiple working groups assigned so execute separate query to get all working groups --%> 
     <sql:query var="swgcurr" dataSource="jdbc/config-dev">
          select wg.name, wg.id from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ? order by wg.name
-        <sql:param value="${param.projid}"/>
-    </sql:query>
+        <sql:param value="${projid}"/>
+    </sql:query>  
          
     <sql:query var="swgcandidates" dataSource="jdbc/config-dev">
         select name, id from descpub_swg where name not in 
         (select wg.name from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ?) 
         order by name
-        <sql:param value="${param.projid}"/>
+        <sql:param value="${projid}"/>
     </sql:query>
     
     <sql:query var="projects" dataSource="jdbc/config-dev">
-         select id, title, abstract abs, state, created, comments comm, keyprj, lastmodified from descpub_project where id = ?
-        <sql:param value="${param.projid}"/>
-    </sql:query>
-         
-    <sql:query var="wg" dataSource="jdbc/config-dev">
-        select wg.name, wg.id, wg.profile_group_name pgn, wg.convener_group_name cgn  
-        from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ? 
-    <sql:param value="${param.projid}"/>
+        select wg.name swgname, wg.profile_group_name pgn, wg.convener_group_name cgn, pj.title, pj.abstract abs, pj.state, pj.created, pj.comments comm, pj.keyprj, pj.lastmodified 
+        from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id 
+        join descpub_project pj on pj.id = ps.project_id where ps.project_id = ? and wg.id = ?
+        <sql:param value="${projid}"/>
+        <sql:param value="${swgid}"/>
     </sql:query>
     
+        <%--
+    <sql:query var="wg" dataSource="jdbc/config-dev">
+        select wg.name, wg.id, wg.profile_group_name pgn, wg.convener_group_name cgn  
+        from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ? and wg.id = ?
+    <sql:param value="${projid}"/>
+    <sql:param value="${swgid}"/>
+    </sql:query> --%>
+    
     <c:set var="keyprj" value="${projects.rows[0].keyprj}"/>
-    <c:set var="title" value="${param.name}"/>
-    <c:set var="createdate" value="${projects.rows[0].created}"/>
+    <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="state" value="${projects.rows[0].state}"/>
-    <c:set var="swgname" value="${wg.rows[0].name}"/>
-    <c:set var="swgid" value="${wg.rows[0].id}"/>
-    <c:set var="cgn" value="${wg.rows[0].cgn}"/>
     <c:set var="abs" value="${projects.rows[0].abs}"/>
     <c:set var="comm" value="${projects.rows[0].comm}"/>
 
-       
-    <h2>Project: [${param.projid}] ${title}  </h2>
-    <h2>WG: ${wg.rows[0].name} [${wg.rows[0].id}]</h2>
-    <p/>Created: ${projects.rows[0].created}<p/>
-    <strong>disable project</strong> &nbsp;&nbsp;<strong>email project members</strong>
+    <strong>Email Project Members</strong> 
+    <p/>
     
 <form action="modifySWGprojects.jsp">  
     <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />  
-    <input type="hidden" name="projid" id="projid" value="${projid}" />  
-    
-    Title: <input type="text" name="title" id="title" value="${title}" required/><p/>
+    <input type="hidden" name="projid" id="projid" value="${projid}" /> 
+    <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp" />  
+    Key Project: <input type="text" name="isKeyProj" id="isKeyProj" value="${keyprj}" size="1"/><p/>
+    Title: <input type="text" name="title" id="title" value="${title}" size="55" required/><p/>
     <table border="0">
         <tr><td>Add WG</td><td>Remove WG</td></tr>
         <tr>
@@ -74,8 +75,6 @@
     </table>
     <p/>
    
-    <p/>
-     
     <table border="0">
     <tr><td>Change State</td></tr>
     <tr><td>
@@ -91,8 +90,11 @@
     <p/>
     Comments:<br/> <textarea id="comm" rows="8" cols="50" name="comm">${comm}</textarea>
     <p/>
-    Key Project:<br/><input type="checkbox" id="isKeyProj" name="isKeyProj" value="${keyprj}"/>
+  
     <tr>
        <td><input type="submit" value="Update_Project" id="action" name="action" /></td>     
-    </tr>
-</form>  
+    </tr>  
+</form>
+
+<p/>
+<hr/>

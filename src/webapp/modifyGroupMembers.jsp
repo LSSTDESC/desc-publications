@@ -12,7 +12,7 @@
     <body>
             
     <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'ConvenerAdmin'))}">
-        <c:redirect url="noPermission.jsp"/>
+        <c:redirect url="noPermission.jsp?errmsg=1"/>
     </c:if>
         
     <sql:query var="wgs" dataSource="jdbc/config-dev">
@@ -56,7 +56,9 @@
                     </c:forEach>
                 </c:when>
             </c:choose>          
-       <c:redirect url="show_swg.jsp?swgid=${param.swgid}&swgname=${swgname}"/>    
+<%--       <c:redirect url="show_swg.jsp?swgid=${param.swgid}&swgname=${swgname}"/>    --%>
+              <c:redirect url="${param.redirectTo}?swgid=${param.swgid}&swgname=${swgname}"/>    
+
         </c:when>
     </c:choose>
     </body>

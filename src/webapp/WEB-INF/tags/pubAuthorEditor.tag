@@ -1,40 +1,37 @@
+<%-- 
+    Document   : pubAuthorEditor
+    Created on : Aug 1, 2017, 4:39:05 PM
+    Author     : chee
+--%>
 <%@tag pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 
-<%@attribute name="groupname" required="true"%>
+<%@attribute name="pubid" required="true"%>
 <%@attribute name="experiment" required="true"%>
-<%@attribute name="candidategroup" required="true" %>
-<%@attribute name="returnURL" required="true" %>
+<%@attribute name="memidnum" required="true" %>    
 
 <sql:query var="candidates" dataSource="jdbc/config-dev">
-    select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-    join um_project_members pm on me.memidnum=pm.memidnum 
-    join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? where pm.activestatus='Y' and pm.project = ?
-    minus       
-    select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-    join profile_ug ug on me.memidnum=ug.memidnum where group_id = ?
-    <sql:param value="${candidategroup}"/>
-    <sql:param value="${experiment}"/>
-    <sql:param value="${groupname}"/>
+    
 </sql:query>
 
-<sql:query var="members" dataSource="jdbc/config-dev">
-    select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-    join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? order by me.lastname
-    <sql:param value="${groupname}"/>
+<sql:query var="authors" dataSource="jdbc/config-dev">
+    select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum 
+    join profile_ug ug on me.memidnum=ug.memidnum join descpub_author au on au.memidnum = me.memidnum
+    where au.publication_id = ? order by me.lastname
+    <sql:param value="${pubid}"/>
 </sql:query>
 
-<form action="modifyGroupMembers.jsp">  
+<form action="modifyPubAuthors.jsp">  
     <input type="hidden" name="swgid" value="${param.swgid}" />  
-    <input type="hidden" name="redirectTo" value="${returnURL}"/> 
+      
     <table border="0">
         <thead>
             <tr>
                 <th>Candidates</th>
-                <th>Conveners</th>
+                <th>Authors</th>
             </tr>
         </thead>
         <tbody>

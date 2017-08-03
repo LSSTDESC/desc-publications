@@ -48,38 +48,7 @@
         where dp.id = ?
         <sql:param value="${param.id}"/>
     </sql:query>
-   
-    <%-- for debugging --%>
-    <c:forEach var="x" items="${param}">
-        <c:out value="P: ${x.key}=${x.value}"/><br/>
-    </c:forEach>  
-   
-    <%-- get sequence number here because sequence doesn't work in sql:transaction  
-    <c:choose>
-    <c:when test="${param.task == 'create_proj_form'}">
-        <sql:query var="getNum" dataSource="jdbc/config-dev">
-             select descpub_proj_seq.nextval from dual
-        </sql:query>
-         <sql:query var="getswgnum" dataSource="jdbc/config-dev">
-             select swg_seq.nextval from dual
-        </sql:query>
-    </c:when>
-    <c:when test="${param.formsubmitted == 'true'}">
-         <sql:query var="newProjNum" dataSource="jdbc/config-dev">
-             select descpub_proj_seq.currval as newProjNum from dual
-        </sql:query>
-        <c:set var="newProjNum" value="${newProjNum.rows[0]['newProjNum']}"/>
-        <h3>newProjNum ${newProjNum}</h3>
-         <sql:query var="newSwgNum" dataSource="jdbc/config-dev">
-             select swg_seq.currval as newSwgNum from dual
-        </sql:query>
-        <c:set var="newSwgNum" value="${newSwgNum.rows[0]['newSwgNum']}"/>
-        <h3>newSwgNum ${newSwgNum}</h3>
         
-    </c:when>
-    </c:choose>  
-       --%> 
-       
     <c:choose>  
         <c:when test="${param.task == 'create_proj_form'}">
              <h3>SWG: ${param.swgname}</h3><p/>
@@ -142,7 +111,7 @@
 <p/>
 Project Members
 
-<tg:groupMemberEditor experiment="${appVariables.experiment}" candidategroup="${candidate_group}" groupname="${swgs.rows[0].cgn}"/> 
+<tg:groupMemberEditor experiment="${appVariables.experiment}" candidategroup="${candidate_group}" groupname="${swgs.rows[0].cgn}" returnURL="none"/> 
 
 <hr/>
 <p/>

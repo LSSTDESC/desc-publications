@@ -70,9 +70,9 @@
     </sql:query>    
         
     <sql:query var="pubs" dataSource="jdbc/config-dev">
-        select pub.abstract, pub.added, pub.arxiv, pub.assigned_pb_reader, pub.builder_eligible, pub.comments, pub.cwr_comments, pub.cwr_end_date, pub.id, pub.journal,
+        select pub.abstract, pub.added, pub.arxiv, pub.assigned_pb_reader reader, pub.builder_eligible buildable, pub.comments comm, pub.cwr_comments, pub.cwr_end_date, pub.id, pub.journal,
         pub.journal_review, pub.keypub, pub.project_id, pub.published_reference, pub.state, pub.telecon, pub.title from descpub_publication pub 
-        join descpub_project pj on pub.project_id = pj.id  
+        join descpub_project pj on pub.project_id = pj.id 
     </sql:query>
      
     <c:choose>  
@@ -85,7 +85,7 @@
             <strong><a href="project_details.jsp?task=create_proj_form&swgname=${param.swgname}&swgid=${param.swgid}">create project</a></strong>
             <hr/>
             
-            <tg:groupMemberEditor experiment="${appVariables.experiment}" candidategroup="${convenerPool}" groupname="${cgn}"/>
+            <tg:groupMemberEditor experiment="${appVariables.experiment}" candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp"/>
            
             <p/>
             <hr/>
@@ -104,18 +104,14 @@
                  <display:column title="Documents" sortable="true" headerClass="sortable"/>
                  <display:column title="Publications" sortable="true" headerClass="sortable"/>
              </display:table>
-           <p/>
-           <hr/>
-           <strong>Publications</strong><br/>
-            <display:table class="datatable" id="pubs" name="${pubs.rows}">
-            </display:table>
+           
+            
         </c:when>
         <c:otherwise>
             nothing to do
         </c:otherwise>
     </c:choose>    
-
-    
+            
 </body>
 </html>
     

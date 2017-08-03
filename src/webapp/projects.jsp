@@ -17,9 +17,9 @@
         
         <sql:query var="projects" dataSource="jdbc/config-dev">
             select 
-            p.id, p.keyprj, p.title, p.state, p.created, p.abstract abs, p.comments, count(pub.id) as pubtot,
+            p.id projid, p.keyprj, p.title, p.state, p.created, p.abstract abs, p.comments, count(pub.id) as pubtot,
             wg.name swgname, wg.id swgid, wg.convener_group_name cgn,
-            pro.id, pro.relation, pro.memidnum, pro.project_id, 
+            pro.id memid, pro.relation, pro.memidnum, pro.project_id, 
             up.first_name, up.last_name
             from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
             left join descpub_swg wg on ps.swg_id=wg.id 
@@ -36,7 +36,7 @@
         
        <display:table class="datatable" name="${projects.rows}" id="Rows">
            <display:column title="Title" group="1">
-               ${Rows.title}
+               <a href="show_project.jsp?projid=${Rows.projid}&swgid=${Rows.swgid}">${Rows.title}</a>
            </display:column>
            <display:column title="Members">
                ${Rows.first_name} ${Rows.last_name}

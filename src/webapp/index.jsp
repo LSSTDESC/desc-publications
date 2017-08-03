@@ -27,34 +27,20 @@
      <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
         
      <h2>LSST-DESC Publications Board</h2>
-     
+    
      <%-- links to other pages --%>
      <h4><a href="members.jsp">members</a></h4>
      <h4><a href="projects.jsp">projects</a></h4>
      
-     <%-- Queries --%>
-     <%-- 
-         <sql:query var="pubdet" dataSource="jdbc/config-dev">
-            select pb.id,pb.state,pb.title,pb.journal,pb.abstract,pb.added,pb.builder_eligible,pb.comments,pb.keypub,pb.cwr_end_date,pb.assigned_pb_reader,pb.cwr_comments,
-            pb.arxiv,pb.telecon,pb.journal_review,pb.published_reference,pb.project_id
-            from descpub_publication pb join descpub_author da on pb.id=da.publication_id 
-            join descpub_project dp on dp.id=pb.project_id where pb.id=?
-            <sql:param value="${param.id}"/>
-        </sql:query> --%>
      
-     <c:set var="memberPool" value="lsst-desc-full-members"/>
+    
      
-         <sql:query var="swgs" dataSource="jdbc/config-dev">
+        <c:set var="memberPool" value="lsst-desc-full-members"/>
+         
+        <sql:query var="swgs" dataSource="jdbc/config-dev">
             select id, name, email, profile_group_name as pgn, convener_group_name as cgn from descpub_swg 
             order by id
         </sql:query>
-        
-        <%--    
-        <sql:query var="projects" dataSource="jdbc/config-dev">
-            select p.id, p.keyprj, p.title, p.state, wg.name, p.abstract as abs, p.state, p.created, p.comments, p.keyprj, p.active, wg.convener_group_name as cgn, wg.profile_group_name as pgn
-            from descpub_project p join descpub_project_swgs ps on p.id=ps.project_id
-            join descpub_swg wg on ps.swg_id=wg.id order by p.id   
-        </sql:query>  --%>
             
         <sql:query var="candidates" dataSource="jdbc/config-dev">
             select me.memidnum, me.firstname, me.lastname from um_member me join um_project_members pm on me.memidnum=pm.memidnum 

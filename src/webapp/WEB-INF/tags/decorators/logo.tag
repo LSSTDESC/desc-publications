@@ -9,6 +9,7 @@
     <c:set var="url" value="https://srs.slac.stanford.edu/ImageHandler/imageServlet.jsp?experimentName=LSST-DESC&name=logo&skipExperimentFilter=true"/>
 </c:if>
 
+<p/>
 <table>
     <tr>
         <td align="middle">
