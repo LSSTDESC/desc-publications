@@ -25,6 +25,10 @@
             ${pom.version}
         </param-value>
     </context-param>
+    <context-param>
+        <param-name>org.apache.taglibs.mailer2.server</param-name>
+        <param-value>smtpserv.slac.stanford.edu</param-value>
+    </context-param>
     <filter>
         <filter-name>ModeSwitcherFilter</filter-name>
         <filter-class>org.srs.web.base.filters.modeswitcher.ModeSwitcherFilter</filter-class>
