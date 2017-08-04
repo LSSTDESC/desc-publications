@@ -40,6 +40,11 @@
             <artifactId>org-srs-groupmanager-web</artifactId>
             <version>1.23</version>
         </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>mailer2</artifactId>
+            <version>20051205</version>
+        </dependency>
     </dependencies>
 
     <build>
