@@ -17,7 +17,7 @@
         
         <sql:query var="projects" dataSource="jdbc/config-dev">
             select 
-            p.id projid, p.keyprj, p.title, p.state, p.created, p.abstract abs, p.comments, count(pub.id) as pubtot,
+            p.id projid, p.keyprj, p.title, p.state, p.created, p.abstract abs, p.comments,
             wg.name swgname, wg.id swgid, wg.convener_group_name cgn,
             pro.id memid, pro.relation, pro.memidnum, pro.project_id, 
             up.first_name, up.last_name
@@ -32,11 +32,19 @@
             <sql:param value="${appVariables.experiment}"/>
         </sql:query>
          
+       
+            
        <h3>Projects</h3>
         
        <display:table class="datatable" name="${projects.rows}" id="Rows">
+           <display:column title="Id" group="1">
+               <a href="show_project.jsp?projid=${Rows.projid}&swgid=${Rows.swgid}">${Rows.projid}</a>
+           </display:column>
            <display:column title="Title" group="1">
                <a href="show_project.jsp?projid=${Rows.projid}&swgid=${Rows.swgid}">${Rows.title}</a>
+           </display:column>
+           <display:column title="Working Group(s)" group="2">
+               ${Rows.swgname}
            </display:column>
            <display:column title="Members">
                ${Rows.first_name} ${Rows.last_name}
@@ -44,14 +52,19 @@
            <display:column title="State">
                ${Rows.state}
            </display:column>
-           <display:column title="Working Group(s)">
-               ${Rows.swgname}
-           </display:column>
            <display:column title="Documents">
-               ?
+               <sql:query var="pubcnt" dataSource="jdbc/config-dev">
+                    select project_id, count(project_id) as tot from descpub_publication where project_id = ? group by project_id order by project_id
+                    <sql:param value="${Rows.projid}"/>
+                </sql:query>
+                ${pubcnt.rows[0].tot}
            </display:column>
             <display:column title="Publications">
-              ${Rows.pubtot}
+               <sql:query var="pubcnt" dataSource="jdbc/config-dev">
+                    select project_id, count(project_id) as tot from descpub_publication where project_id = ? group by project_id order by project_id
+                    <sql:param value="${Rows.projid}"/>
+                </sql:query>
+                ${pubcnt.rows[0].tot}
             </display:column>
        </display:table>
              

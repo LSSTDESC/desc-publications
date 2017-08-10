@@ -12,35 +12,19 @@
 
 <%-- The list of normal or fragment attributes can be specified here: --%>
 <%@attribute name="projid" required="true"%>
-<%@attribute name="swgid" required="true"%>
 <%@attribute name="experiment" required="true"%>
 <%@attribute name="returnURL" required="true" %>
 
 <script src="js/jquery-1.11.1.min.js"></script>
 <script src="js/jquery.validate.min.js"></script>
-
-<%-- any content can be specified here e.g.: --%>
-<h2>${message}</h2>
-
-<%--
-<form action="addPublication.jsp">  
-    <input type="hidden" name="projid" id="projid" value="${projid}" />  
-    <input type="hidden" name="swgid" id="swgid" value="${swgid}" />  
-    <input type="hidden" name="redirectTo" id="redirectTo" value="show_project.jsp" />  
-    Title: <input type="text" name="title" id="title" value="${title}" size="55" required/><p/>
-    Key Publication: <input type="checkbox" name="keypub"/>
-    <input type="submit" value="Add publication" name="action" /></td>
-</form> --%>
-
     
 <form action="addPublication.jsp">  
     <input type="hidden" name="projid" id="projid" value="${projid}" /> 
-    <input type="hidden" name="swgid" id="swgid" value="${swgid}" />  
     <input type="hidden" name="redirectTo" value="${returnURL}"/> 
     <table border="0">
         <thead>
             <tr>
-                <th>Enter New Publication</th>
+                <th>Add Publication</th>
             </tr>
         </thead>
         <tbody>

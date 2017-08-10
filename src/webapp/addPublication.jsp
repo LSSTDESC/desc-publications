@@ -20,7 +20,7 @@
         <c:forEach var="x" items="${param}">
             <c:out value="${x.key} = ${x.value}"/><br/>
         </c:forEach>
-       
+           
         <sql:update dataSource="jdbc/config-dev">
             insert into descpub_publication (id, title, state, added, builder_eligible, keypub, project_id) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?)
             <sql:param value="${param.title}"/>

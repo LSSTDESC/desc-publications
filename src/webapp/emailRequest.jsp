@@ -1,5 +1,5 @@
 <%-- 
-    Document   : requestAuthorship
+    Document   : emailRequest
     Created on : Aug 1, 2017, 3:24:31 PM
     Author     : chee
 --%>
@@ -21,7 +21,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="js/jquery-1.11.1.min.js"></script>
         <script src="js/jquery.validate.min.js"></script>
-        <title>Request Authorship Form</title>
+        <title>Request Be Email</title>
     </head>
     
     <body>
@@ -31,18 +31,18 @@
         
         <c:choose>
             <c:when test="${formsubmitted != 'Y'}">
-                <h3>Request Authorship For Publication ${pubname}</h3>
+                <h3>Request by Email</h3>
                 <p/>
                 Reason:
                 <p/>
-                <form action="requestAuthorship.jsp">
+                <form action="requestByMail.jsp">
                     <textarea rows="20" cols="80" required></textarea><p/>
                     <input type="hidden" name="formsubmitted" value="Y"/>
                     <input type="submit" value="submit" name="submit"/>
                 </form> 
             </c:when>
             <c:when test="${formsubmitted == 'Y'}">
-                <mt:mail subject="DESC Authorship Request" from="${theFrom}" to="${theTo}">
+                <mt:mail subject="DESC Publication Request" from="${theFrom}" to="${theTo}">
                     request authorship form submitted
                 </mt:mail>
             </c:when>    

@@ -5,18 +5,25 @@
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 
 <%@attribute name="projid" required="true"%>
-<%@attribute name="swgid" required="true" %> 
+<%@attribute name="swgid" required="true"%>
 <%@attribute name="experiment" required="true" %>
 <%@attribute name="returnURL" required="true" %>
+    
+<%--
+    <c:if test="${!(gm:isUserInGroup(pageContext,'descpubConvenerAdmin'))}">
+        <c:redirect url="noPermission.jsp?errmsg=1"/>
+    </c:if> --%>
 
     <c:set var="tmp" value="created,active,inactive,completed"/>
-    <c:set var="validStates" value="${fn:split(tmp,',')}"/>
+    <c:set var="validStates" value="${fn:split(tmp,',')}"/>  
     
     <%-- project can have multiple working groups assigned so execute separate query to get all working groups --%> 
     <sql:query var="swgcurr" dataSource="jdbc/config-dev">
          select wg.name, wg.id from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ? order by wg.name
         <sql:param value="${projid}"/>
     </sql:query>  
+     
+          
          
     <sql:query var="swgcandidates" dataSource="jdbc/config-dev">
         select name, id from descpub_swg where name not in 
@@ -33,17 +40,12 @@
         <sql:param value="${swgid}"/>
     </sql:query>
     
-        <%--
-    <sql:query var="wg" dataSource="jdbc/config-dev">
-        select wg.name, wg.id, wg.profile_group_name pgn, wg.convener_group_name cgn  
-        from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ? and wg.id = ?
-    <sql:param value="${projid}"/>
-    <sql:param value="${swgid}"/>
-    </sql:query> --%>
+        
+   
     
     <c:set var="keyprj" value="${projects.rows[0].keyprj}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
-    <c:set var="state" value="${projects.rows[0].state}"/>
+    <c:set var="projstate" value="${projects.rows[0].state}"/>
     <c:set var="abs" value="${projects.rows[0].abs}"/>
     <c:set var="comm" value="${projects.rows[0].comm}"/>
 
@@ -80,7 +82,7 @@
     <tr><td>
     <select name="chgstate" id="chgstate" size="8" multiple required>
     <c:forEach var="sta" items="${validStates}" >
-       <option value="${sta}" <c:if test="${fn:startsWith(sta,state)}">selected</c:if> >${sta}</option>
+       <option value="${sta}" <c:if test="${fn:startsWith(sta,projstate)}">selected</c:if> >${sta}</option>
     </c:forEach>
     </select> 
     </tr></td>

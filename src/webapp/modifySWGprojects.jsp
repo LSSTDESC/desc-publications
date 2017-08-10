@@ -13,7 +13,8 @@
     </head>
     <body>
    
-    <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'ConvenerAdmin'))}">
+   <%-- <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'descpubConvenerAdmin'))}"> --%>
+    <c:if test="${!(gm:isUserInGroup(pageContext,'descpubConvenerAdmin'))}">
         <c:redirect url="noPermission.jsp?errmsg=1"/>
     </c:if>
       
@@ -21,17 +22,19 @@
        select count(*) tot from descpub_project_swgs where project_id = ?
        <sql:param value="${param.projid}"/>
     </sql:query>
-      
+    
+    <%-- if only one working group remains then delete is not allowed. projects must have at least one wg --%>
     <c:if test="${swgcount.rows[0].tot < 2 && !empty param.removeprojswg}">
        <c:redirect url="noPermission.jsp?errmsg=2"/>
     </c:if>
-       
+   
+    <%--
     <sql:query var="projects" dataSource="jdbc/config-dev">
         select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
         from descpub_project p join descpub_project_swgs ps on p.id=ps.project_id
         join descpub_swg wg on ps.swg_id=wg.id where p.id = ?
         <sql:param value="${param.projid}"/>
-    </sql:query>
+    </sql:query> --%>
    
     <c:forEach var="row" items="${param}">
         <c:out value="${row.key} = ${row.value}"/><br/>

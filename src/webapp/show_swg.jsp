@@ -43,29 +43,11 @@
      
     <c:set var="pgn" value="${swgs.rows[0].pgn}"/>   
     <c:set var="cgn" value="${swgs.rows[0].cgn}"/>   
-    
-    <sql:query var="candidate_conveners" dataSource="jdbc/config-dev">
-         select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-         join um_project_members pm on me.memidnum=pm.memidnum 
-         join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? where pm.activestatus='Y' and pm.project = ?
-         minus       
-         select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-         join profile_ug ug on me.memidnum=ug.memidnum where group_id = ?
-        <sql:param value="${convenerPool}"/>
-        <sql:param value="${appVariables.experiment}"/>
-        <sql:param value="${cgn}"/>
-    </sql:query>
-      
-    <sql:query var="conveners" dataSource="jdbc/config-dev">
-        select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-        join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? order by me.lastname
-        <sql:param value="${cgn}"/>
-    </sql:query>
         
      <sql:query var="projects" dataSource="jdbc/config-dev">
         select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
-        left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ?
+        left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.title
         <sql:param value="${param.swgid}"/>
     </sql:query>    
         

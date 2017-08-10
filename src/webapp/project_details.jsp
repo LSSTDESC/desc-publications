@@ -24,6 +24,12 @@
 </head>
 
 <body>
+    
+    <c:choose>
+    <c:when test="${!(gm:isUserInGroup(pageContext,'lsst-desc-full-members'))}">
+        <c:redirect url="noPermission.jsp?errmsg=1"/>
+    </c:when>
+        <c:otherwise>
     <c:set var="candidate_group" value="lsst-desc-full-members"/>
     
     <sql:query var="swgs" dataSource="jdbc/config-dev">
@@ -115,7 +121,8 @@ Project Members
 
 <hr/>
 <p/>
- 
+        </c:otherwise>
+    </c:choose>
 </body>
 </html>
  
