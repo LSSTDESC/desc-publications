@@ -24,6 +24,10 @@
 
 <body>
     
+    <h1> <img name="construction" src="Images/construction.gif" border=0>   
+        THE DESC PUBLICATION SYSTEM IS A WORK IN PROGRESS.  
+    </h1>
+    <p/>
      <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
         
      <h2>LSST-DESC Publications Board</h2>
@@ -32,23 +36,13 @@
      <h4><a href="members.jsp">members</a></h4>
      <h4><a href="projects.jsp">projects</a></h4>
      
-     
-    
-     
         <c:set var="memberPool" value="lsst-desc-full-members"/>
          
         <sql:query var="swgs" dataSource="jdbc/config-dev">
             select id, name, email, profile_group_name as pgn, convener_group_name as cgn from descpub_swg 
             order by id
         </sql:query>
-            
-        <sql:query var="candidates" dataSource="jdbc/config-dev">
-            select me.memidnum, me.firstname, me.lastname from um_member me join um_project_members pm on me.memidnum=pm.memidnum 
-            join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ?
-            where pm.activestatus='Y' and pm.project = ?
-            <sql:param value="${memberPool}"/>
-            <sql:param value="${appVariables.experiment}"/>
-        </sql:query>
+        
             
         <c:if test="${swgs.rowCount > 0}">
             <display:table class="datatable"  id="Row" name="${swgs.rows}">
