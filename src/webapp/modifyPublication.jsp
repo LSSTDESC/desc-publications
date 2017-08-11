@@ -19,84 +19,33 @@
         <title>Modify Publication</title>
     </head>
     <body>
+         
+        <c:set var="oranames" value=""/>
         
-        <h1>Modify Publication</h1>
-  <%--
-         <sql:update dataSource="jdbc/config-dev"> 
-            update descpub_publication set 
-                <c:forEach var="x" items="${param}" varStatus="loop">
-                    <c:if test ="${!empty x.value && !fn:contains(x.key,'action')}">
-                        <c:if test="${!empty x.value && loop.last}">
-                            ${x.key} = <sql:param value="${x.value}"/>
-                        </c:if>
-                        <c:if test="${!empty x.value && !loop.last}">
-                            ${x.key} = <sql:param value="${x.value}"/>,
-                        </c:if>
-                    </c:if>
-                </c:forEach> 
-            where pubid = ?
-            <sql:param value="${param.pubid}"/>
-         </sql:update> --%>
-        
-  
-  
-  
-        <c:forEach var="x" items="${param}" varStatus="loop">
-            <c:if test ="${!empty x.value && !fn:contains(x.key,'action')}">
-                <c:if test="${!empty x.value && loop.last}">
-                    ${x.key}<br/>
-                </c:if>
-                <c:if test="${!empty x.value && !loop.last}">
-                    ${x.key}, <br/>
-                </c:if>
+        <c:forEach var="x" items="${param}">
+            <c:if test="${x.key != 'action' && x.key != 'swgid'}">
+                <c:choose>
+                <c:when test="${empty oranames}">
+                   <c:set var="oranames" value="${x.key}=? "/>
+                </c:when>
+                <c:when test="${!empty oranames}">
+                   <c:set var="oranames" value="${oranames},${x.key}=? "/>
+                </c:when>
+                </c:choose>
             </c:if>
         </c:forEach> 
-
-        
-  
-  <%--
-         <sql:update dataSource="jdbc/config-dev"> 
-            update descpub_publication set (
-                <c:forEach var="x" items="${param}" varStatus="loop">
-                    <c:if test ="${!empty x.value && !fn:contains(x.key,'action')}">
-                        <c:if test="${!empty x.value && loop.last}">
-                            ${x.key}
-                        </c:if>
-                        <c:if test="${!empty x.value && !loop.last}">
-                            ${x.key},
-                        </c:if>
-                    </c:if>
-                </c:forEach> 
-                )
-                values (
-                <c:forEach var="x" items="${param}" varStatus="loop">
-                    <c:if test ="${!empty x.value && !fn:contains(x.key,'action')}">
-                        <c:if test="${!empty x.value && loop.last}">
-                            ?
-                        </c:if>
-                        <c:if test="${!empty x.value && !loop.last}">
-                            ?,
-                        </c:if>
-                    </c:if>
-                </c:forEach> 
-               )  
-               <c:forEach var="x" items="${param}" varStatus="loop">
-                    <c:if test ="${!empty x.value && !fn:contains(x.key,'action')}">
-                        <c:if test="${!empty x.value && loop.last}">
-                            <sql:param value = "${x.value}"/>
-                        </c:if>
-                        <c:if test="${!empty x.value && !loop.last}">
-                            <sql:param value = "${x.value}"/>
-                        </c:if>
-                    </c:if>
-                </c:forEach>
-            where id = ${param.pubid}
-       </sql:update>  --%>
-                          
-            
-        Redirect to show_pub.jsp?pubid=${param.pubid}<br/>
-        <%--  <c:redirect url="show_pub.jsp?pubid=${param.pubid}"/>    --%>
-
+   
+        <sql:update dataSource="jdbc/config-dev">   
+            update descpub_publication set ${oranames} where id = ?  
+            <c:forEach var="x" items="${param}">
+                <c:if test="${x.key != 'action' && x.key != 'swgid'}">
+                <sql:param value="${x.value}"/>
+                </c:if>
+            </c:forEach>          
+            <sql:param value="${param.id}"/>
+        </sql:update>   
+           
+        <c:redirect url="show_pub.jsp?pubid=${param.id}&projid=${param.project_id}&swgid=${param.swgid}"/>     
        
     </body>
 </html>

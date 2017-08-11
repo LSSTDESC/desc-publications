@@ -21,7 +21,8 @@
         <h1>Publications</h1>
         
         <c:set var="pubid" value="${param.pubid}"/>
-        <c:set var="projid" value="${param.projid}"/> 
+        <c:set var="projid" value="${param.projid}"/>
+        <c:set var="swgid" value="${param.swgid}"/> 
         
         <sql:query var="swglist" dataSource="jdbc/config-dev">
             select sg.name, sg.id
@@ -38,10 +39,7 @@
                 </c:forEach>
             </div>    
            
-        <tg:editPublication pubid="${pubid}" projid="${projid}"/>   
-        
-
-   
-        
+        <tg:editPublication pubid="${pubid}" projid="${projid}" swgid="${swgid}"/>   
+ 
     </body>
 </html>

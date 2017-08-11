@@ -14,6 +14,9 @@
       <title>DESC Projects</title>
     </head>
     <body>
+        <h1> <img name="construction" src="Images/construction.gif" border=0>   
+        THE DESC PUBLICATION SYSTEM IS A WORK IN PROGRESS.  
+        </h1>
         
         <sql:query var="projects" dataSource="jdbc/config-dev">
             select 
@@ -44,10 +47,10 @@
                <a href="show_project.jsp?projid=${Rows.projid}&swgid=${Rows.swgid}">${Rows.title}</a>
            </display:column>
            <display:column title="Working Group(s)" group="2">
-               ${Rows.swgname}
+               <a href="show_swg.jsp?swgid=${Rows.swgid}&swgname=${Rows.swgname}">${Rows.swgname}></a>
            </display:column>
            <display:column title="Members">
-               ${Rows.first_name} ${Rows.last_name}
+               <a href="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/user.jsp?memidnum=${Rows.memid}">${Rows.first_name} ${Rows.last_name}</a>
            </display:column>
            <display:column title="State">
                ${Rows.state}

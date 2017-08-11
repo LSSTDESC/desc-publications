@@ -15,6 +15,10 @@
     </head>
     <body>
         
+        <h1> <img name="construction" src="Images/construction.gif" border=0>   
+        THE DESC PUBLICATION SYSTEM IS A WORK IN PROGRESS.  
+        </h1>
+        
         <c:set var="userURL" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/user.jsp?memidnum=${memidnum}&recType=INDB&verification=A"/>
         
         <sql:query var="mems" dataSource="jdbc/config-dev">

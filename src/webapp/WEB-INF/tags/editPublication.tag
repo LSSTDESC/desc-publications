@@ -7,6 +7,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
+<%@taglib prefix="time" uri="http://srs.slac.stanford.edu/time" %>
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 
 <script src="js/jquery-1.11.1.min.js"></script>
@@ -14,8 +15,8 @@
 
 <%@attribute name="pubid" required="true"%>
 <%@attribute name="projid" required="true"%>
+<%@attribute name="swgid" required="true"%>
 
-<h1>PUBID=${pubid}, PROJID=${projid}</h1> 
 
  <sql:query var="pubs" dataSource="jdbc/config-dev">
     select dp.ID pubid,pj.id projid,dp.STATE,dp.TITLE,dp.JOURNAL,dp.ABSTRACT,to_char(dp.ADDED,'YYYY-MON-DD') ADDED,dp.BUILDER_ELIGIBLE,dp.COMMENTS,dp.KEYPUB,dp.CWR_END_DATE,
@@ -43,13 +44,15 @@
 <h3>Publication: [${param.pubid}] ${pubs.rows[0].title} </h3>
     Added: ${pubs.rows[0].added}<br/>
     Project: <a href="show_project.jsp?projid=${projid}&swgid=${pubs.rows[0].swgid}&name=${pubs.rows[0].projtitle}">${pubs.rows[0].projtitle}</a><br/>
+ 
     
 <form action="modifyPublication.jsp">  
-   <input type="hidden" name="pubid" value="${pubid}"/> 
-   <input type="hidden" name="projid" value="${projid}"/> 
+   <input type="hidden" name="id" value="${pubid}"/> 
+   <input type="hidden" name="project_id" value="${projid}"/> 
+   <input type="hidden" name="swgid" value="${swgid}"/> 
    Title: <input type="text" value="${pubs.rows[0].title}" size="35" name="title" required/><br/>
    State: 
-   <select name="pubstate" id="pubstate">
+   <select name="state" id="pubstate">
        <c:forEach var="sta" items="${states.rows}">
            <c:if test="${fn:startsWith(pubs.rows[0].state,sta.state)}">
                <option value="${sta.state}" selected>${sta.state}</option>
@@ -59,16 +62,21 @@
    </select>
    <p/>
    Abstract: <br/>
-   <textarea name="abs" rows="10" cols="60" required>${pubs.rows[0].ABSTRACT}</textarea><br/>
+   <textarea name="abstract" rows="10" cols="60" required>${pubs.rows[0].ABSTRACT}</textarea><br/>
    Journal: <input type="text" value="${pubs.rows[0].JOURNAL}" size="35" name="journal"/><br/>
-   Comments: <input type="text" value="${pubs.rows[0].COMMENTS}" size="35" name="comm"/><br/>
+   Journal_Review: <input type="text" value="${pubs.rows[0].JOURNAL_REVIEW}" size="3" name="journal_review"/><br/>
+   Comments: <input type="text" value="${pubs.rows[0].COMMENTS}" size="35" name="comments"/><br/>
    Builder Eligible: <input type="text" value="${pubs.rows[0].BUILDER_ELIGIBLE}" size="3" name="builder_eligible"/><br/>
    Key Publication: <input type="text" value="${pubs.rows[0].KEYPUB}" size="3" name="keypub"/><br/>
    Assigned PB Reader: <input type="text" value="${pubs.rows[0].ASSIGNED_PB_READER}" size="35" name="assigned_pb_reader"/><br/>
+   Cwr_Comments: <br/>
+   <textarea name="cwr_comments" rows="10" cols="60" >${pubs.rows[0].CWR_COMMENTS}</textarea><br/>
    arXiv number: <input type="text" value="${pubs.rows[0].ARXIV}" size="35" name="arxiv"/><br/>
    Telecon: <input type="text" value="${pubs.rows[0].TELECON}" size="35" name="telecon"/><br/>
+   Published Reference: <input type="text" value="${pubs.rows[0].PUBLISHED_REFERENCE}" size="35" name="published_reference"/><br/>
+   Project Id: ${projid}<br/>
    <p/>
    <input type="submit" value="UpdatePub" name="action" />
-</form>
+</form>  
  
  

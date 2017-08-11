@@ -29,7 +29,7 @@
     <%-- Notes:
        pgn = profile group name
        swgname = science working group name
-       Users cannot change name of a group, that leads to inconsistencies between profile_group and profile_ug.  Users can delete a group. 
+       Users cannot change name of a group, that leads to inconsistencies between profile_group and profile_ug.  Users can request to delete a group. 
     --%>
     
     <h2>Science Working Group ${param.swgname}</h2>
@@ -86,8 +86,6 @@
                  <display:column title="Documents" sortable="true" headerClass="sortable"/>
                  <display:column title="Publications" sortable="true" headerClass="sortable"/>
              </display:table>
-           
-            
         </c:when>
         <c:otherwise>
             nothing to do
