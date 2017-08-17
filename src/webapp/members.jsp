@@ -5,6 +5,7 @@
 <%@taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib uri="http://srs.slac.stanford.edu/displaytag" prefix="displayutils" %>
 <%@taglib prefix="f" uri="http://lsstdesc.org/functions" %>
+<%@taglib tagdir="/WEB-INF/tags/" prefix="tg"%>
 <!DOCTYPE html>
 
 <html>
@@ -15,9 +16,7 @@
     </head>
     <body>
         
-        <h1> <img name="construction" src="Images/construction.gif" border=0>   
-        THE DESC PUBLICATION SYSTEM IS A WORK IN PROGRESS.  
-        </h1>
+        <tg:underConstruction/>
         
         <c:set var="userURL" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/user.jsp?memidnum=${memidnum}&recType=INDB&verification=A"/>
         

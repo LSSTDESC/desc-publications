@@ -10,6 +10,7 @@
 <%@taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib uri="http://srs.slac.stanford.edu/displaytag" prefix="displayutils" %>
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
+<%@taglib tagdir="/WEB-INF/tags/" prefix="tg"%>
 
 <!DOCTYPE html>
 
@@ -24,10 +25,7 @@
 
     <body>
 
-        <img name="construction" src="Images/construction.gif" border=0>   
-        The DESC publication system is a work in progress. <a href="https://github.com/LSSTDESC/desc-publications/">Code</a> and 
-        <a href="https://github.com/LSSTDESC/desc-publications/issues">Issues</a> are in github.  
-        <p/>
+        <tg:underConstruction/>
         <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
 
         <h2>LSST-DESC Publications Board</h2>
