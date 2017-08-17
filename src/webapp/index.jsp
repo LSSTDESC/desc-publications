@@ -23,16 +23,6 @@
         <title>LSST DESC Publications Board</title>
     </head>
 
-    <body>
-
-        <tg:underConstruction/>
-        <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
-
-        <h2>LSST-DESC Publications Board</h2>
-
-        <%-- links to other pages --%>
-        <h4><a href="members.jsp">members</a></h4>
-        <h4><a href="projects.jsp">projects</a></h4>
 
 <body>
      
