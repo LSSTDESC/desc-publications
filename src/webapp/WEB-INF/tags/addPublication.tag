@@ -12,12 +12,18 @@
 
 <%-- The list of normal or fragment attributes can be specified here: --%>
 <%@attribute name="projid" required="true"%>
+<%@attribute name="swgid" required="true"%>
 <%@attribute name="experiment" required="true"%>
 <%@attribute name="returnURL" required="true" %>
 
 <script src="js/jquery-1.11.1.min.js"></script>
 <script src="js/jquery.validate.min.js"></script>
-    
+ 
+<sql:query var="pubtypes" dataSource="jdbc/config-dev">
+    select pubtype from descpub_pubtypes order by pubtype
+</sql:query>
+
+
 <form action="addPublication.jsp">  
     <input type="hidden" name="projid" id="projid" value="${projid}" /> 
     <input type="hidden" name="redirectTo" value="${returnURL}"/> 
@@ -29,6 +35,14 @@
         </thead>
         <tbody>
             <tr><td>Title: <input type="text" name="title" id="title" size="200" required/><td/></tr>
+            <tr>
+                <td>Pub type: 
+                    <select name="pubtyp">
+                        <c:forEach var="ptype" items="${pubtypes.rows}">
+                            <option value="${ptype.pubtype}">${ptype.pubtype}</option>
+                        </c:forEach>
+                    </select></td>
+            </tr>
             <tr><td><input type="submit" value="Add" name="action" /></td></tr>
         </tbody>
     </table>

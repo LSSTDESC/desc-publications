@@ -18,7 +18,7 @@
  <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <link rel="stylesheet" href="css/site-demos.css">
-      <title>LSST-DESC Projects</title>
+      <title>LSST-DESC Project ${param.projid}</title>
 </head>
 
 <body>
@@ -47,11 +47,22 @@
         <sql:param value="${projid}"/>
     </sql:query>  
      
+    <sql:query var="mems" dataSource="jdbc/config-dev">
+        select wg.profile_group_name pgn, wg.convener_group_name cgn, wg.name from descpub_swg wg join descpub_project_swgs ps on ps.project_id=?
+        and ps.swg_id = wg.id and ps.swg_id = ?
+        <sql:param value="${projid}"/>
+        <sql:param value="${swgid}"/>
+    </sql:query>  
      
-        
+    <c:if test="${param.update == 'done'}">
+        <div style="color: #0000FF">
+            Project updated
+        </div>
+    </c:if> 
+    <p/>
     <h2>Project: [${projid}] ${projects.rows[0].title}  </h2>
     <h3>Created: ${projects.rows[0].crdate}</h3>
-     
+    
     <tg:editProject experiment="${appVariables.experiment}" projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp"/>  
     <p/>
      
@@ -70,10 +81,10 @@
   </display:table>  
 
   <p/>
-  <hr/>
-  <tg:addPublication experiment="${appVariables.experiment}" projid="${projid}" returnURL="show_project.jsp"/>  
-
-  
+  <tg:addPublication experiment="${appVariables.experiment}" projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/>  
+  <p/>
+  <tg:addDocument swgid="${swgid}" userName="${userName}" experiment="${appVariables.experiment}" projid="${projid}" returnURL="show_project.jsp"/>  
+ 
 </body>
 </html>
     

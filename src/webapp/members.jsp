@@ -19,8 +19,6 @@
         THE DESC PUBLICATION SYSTEM IS A WORK IN PROGRESS.  
         </h1>
         
-        <c:set var="userURL" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/user.jsp?memidnum=${memidnum}&recType=INDB&verification=A"/>
-        
         <sql:query var="mems" dataSource="jdbc/config-dev">
             select me.memidnum, me.firstname, me.lastname, hi.position, us.username, pm.activestatus, ii.institution, ro.projstartdate
             from
@@ -39,16 +37,16 @@
         <a href="index.jsp">SWGs</a><br/>
         Publications Under Review<br/>
         Speakers Bureau<br/>
-        <a href="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/newCollaborator.jsp">New User</a>
+        <a href="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/newCollaborator.jsp">New User Form</a>
         <p/>
         
        <display:table class="datatable" id="Rows" name="${mems.rows}" defaultsort="1">
            <display:column  title="Name" sortable="true"  headerClass="sortable">
-              <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Rows.memidnum}&recType=INDB&verification=A">${Rows.lastname}, ${Rows.firstname}</a>
+              <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Rows.memidnum}&recType=INDB">${Rows.lastname}, ${Rows.firstname}</a>
            </display:column>
            
            <display:column  title="Username" sortable="true" headerClass="sortable">
-                <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Rows.memidnum}&recType=INDB&verification=A">${Rows.username}</a>
+                <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Rows.memidnum}&recType=INDB">${Rows.username}</a>
            </display:column>
                                         
            <display:column  property="activestatus" title="Active" sortable="true"  headerClass="sortable"/>
@@ -56,7 +54,7 @@
                TBD
            </display:column>
            <display:column  title="Institution" sortable="true"  headerClass="sortable">
-               <a href="show_institution.jsp?name=${Rows.institution}">${Rows.institution}</a>
+               ${Rows.institution}
            </display:column>
            <display:column  title="Position" sortable="true"  headerClass="sortable">
                ${Rows.position}

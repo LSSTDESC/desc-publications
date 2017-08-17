@@ -23,8 +23,6 @@
         <sql:param value="${projid}"/>
     </sql:query>  
      
-          
-         
     <sql:query var="swgcandidates" dataSource="jdbc/config-dev">
         select name, id from descpub_swg where name not in 
         (select wg.name from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ?) 
@@ -40,9 +38,6 @@
         <sql:param value="${swgid}"/>
     </sql:query>
     
-        
-   
-    
     <c:set var="keyprj" value="${projects.rows[0].keyprj}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].state}"/>
@@ -56,7 +51,17 @@
     <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />  
     <input type="hidden" name="projid" id="projid" value="${projid}" /> 
     <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp" />  
-    Key Project: <input type="text" name="isKeyProj" id="isKeyProj" value="${keyprj}" size="1"/><p/>
+    
+    
+    Key Project: 
+    <select name="keyproj" id="keyproj">
+        <option value="${keyprj}" <c:if test="${keyprj == 'Y'}">selected</c:if> >Y</option>
+        <option value="${keyprj}" <c:if test="${keyprj == 'N'}"> selected  </c:if> >N</option>
+    </select>
+    <p/>
+   <%-- <input type="text" name="isKeyProj" id="isKeyProj" value="${keyprj}" size="1"/><p/> --%>
+    
+    
     Title: <input type="text" name="title" id="title" value="${title}" size="55" required/><p/>
     <table border="0">
         <tr><td>Add WG</td><td>Remove WG</td></tr>

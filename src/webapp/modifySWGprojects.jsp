@@ -13,11 +13,13 @@
     </head>
     <body>
    
-   <%-- <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'descpubConvenerAdmin'))}"> --%>
-    <c:if test="${!(gm:isUserInGroup(pageContext,'descpubConvenerAdmin'))}">
+   <%-- <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'descpubConvenerAdmin'))}">  
+    <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin'))}">
         <c:redirect url="noPermission.jsp?errmsg=1"/>
-    </c:if>
+    </c:if> --%>
       
+   <c:set var="update" value=""/>
+   
     <sql:query var="swgcount" dataSource="jdbc/config-dev">
        select count(*) tot from descpub_project_swgs where project_id = ?
        <sql:param value="${param.projid}"/>
@@ -28,17 +30,10 @@
        <c:redirect url="noPermission.jsp?errmsg=2"/>
     </c:if>
    
-    <%--
-    <sql:query var="projects" dataSource="jdbc/config-dev">
-        select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
-        from descpub_project p join descpub_project_swgs ps on p.id=ps.project_id
-        join descpub_swg wg on ps.swg_id=wg.id where p.id = ?
-        <sql:param value="${param.projid}"/>
-    </sql:query> --%>
    
     <c:forEach var="row" items="${param}">
         <c:out value="${row.key} = ${row.value}"/><br/>
-        <sql:update dataSource="jdbc/config-dev">
+            <sql:update dataSource="jdbc/config-dev">
                 update descpub_project set title= ?, abstract = ?, state = ?, comments = ?, keyprj = ?, lastmodified = sysdate
                 where id = ?
                 <sql:param value="${param.title}"/> 
@@ -47,7 +42,8 @@
                 <sql:param value="${param.comm}"/> 
                 <sql:param value="${empty isKeyProj ? 'N':'Y'}"/>
                 <sql:param value="${param.projid}"/> 
-            </sql:update>  
+            </sql:update>
+            <c:set var="update" value="done"/>      
     </c:forEach>
     
     <c:if test="${!empty paramValues.removeprojswg}">
@@ -57,8 +53,9 @@
                    delete from descpub_project_swgs where project_id = ? and swg_id = ?
                    <sql:param value="${param.projid}"/>
                    <sql:param value="${pv}"/>
-               </sql:update>  
+               </sql:update> 
            </c:forEach>
+           <c:set var="update" value="done"/>      
         </c:if>
         <c:if test="${fn:length(paramValues.removeprojswg) == swgcount.rows[0].tot}"> <%-- project must have at least one wg assigned to it --%>
            <c:redirect url="noPermission.jsp?errmsg=2"/>
@@ -74,10 +71,10 @@
             <sql:param value="${pv}"/>
             </sql:update>   
         </c:forEach>
-                   
+        <c:set var="update" value="done"/>      
     </c:if>
-         
-    <c:redirect url="${param.redirectURL}?projid=${param.projid}&swgid=${param.swgid}&name=${param.title}"/>  
+        
+    <c:redirect url="${param.redirectURL}?projid=${param.projid}&swgid=${param.swgid}&name=${param.title}&update=${update}"/>  
 
     </body>
 </html>

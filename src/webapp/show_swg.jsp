@@ -43,7 +43,7 @@
      
     <c:set var="pgn" value="${swgs.rows[0].pgn}"/>   
     <c:set var="cgn" value="${swgs.rows[0].cgn}"/>   
-        
+    <c:set var="swgid" value="${param.swgid}"/>   
      <sql:query var="projects" dataSource="jdbc/config-dev">
         select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
@@ -59,7 +59,7 @@
      
     <c:choose>  
         <c:when test="${!empty param.swgid}">
-         <%-- Seth says don't allow deletion of swgs 18jul17.  <form name="deleteswg" action="show_swg.jsp?task=deleteswg">
+         <%-- Don't allow deletion of swgs per S.Digel, 18jul17.  <form name="deleteswg" action="show_swg.jsp?task=deleteswg">
                 <strong>delete ${param.swgname} swg </strong><input type="checkbox" name="deleteswg" value="${param.swgname}"> 
             <input type="hidden" value="${param.swgid}" name="${swgname}"/>
             </form> --%>
@@ -67,10 +67,12 @@
             <strong><a href="project_details.jsp?task=create_proj_form&swgname=${param.swgname}&swgid=${param.swgid}">create project</a></strong>
             <hr/>
             
-            <tg:groupMemberEditor experiment="${appVariables.experiment}" candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp"/>
+            <c:if test="${projects.rowCount > 0}">
+               <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp?swgid=${swgid}"/>
+                <p/>
+                <hr/>
+            </c:if>
            
-            <p/>
-            <hr/>
              <strong>Projects</strong><br/>
              <display:table class="datatable" id="proj" name="${projects.rows}">
                  <display:column property="id" title="Id" sortable="true" headerClass="sortable">

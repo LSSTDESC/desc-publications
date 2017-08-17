@@ -23,7 +23,7 @@
 </head>
 
 <body>
-    
+     
     <h1> <img name="construction" src="Images/construction.gif" border=0>   
         THE DESC PUBLICATION SYSTEM IS A WORK IN PROGRESS.  
     </h1>
@@ -31,10 +31,6 @@
      <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
         
      <h2>LSST-DESC Publications Board</h2>
-    
-     <%-- links to other pages --%>
-     <h4><a href="members.jsp">members</a></h4>
-     <h4><a href="projects.jsp">projects</a></h4>
      
         <c:set var="memberPool" value="lsst-desc-full-members"/>
          

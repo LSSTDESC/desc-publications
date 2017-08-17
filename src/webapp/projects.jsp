@@ -23,14 +23,17 @@
             p.id projid, p.keyprj, p.title, p.state, p.created, p.abstract abs, p.comments,
             wg.name swgname, wg.id swgid, wg.convener_group_name cgn,
             pro.id memid, pro.relation, pro.memidnum, pro.project_id, 
-            up.first_name, up.last_name
-            from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
+            up.first_name, up.last_name, dd.title
+            from 
+            descpub_project p 
+            left join descpub_project_swgs ps on p.id=ps.project_id
             left join descpub_swg wg on ps.swg_id=wg.id 
             left join  descpub_projectmember pro on pro.project_id = p.id 
             left join descpub_publication pub on pub.project_id = p.id
             left join profile_user up on up.memidnum = pro.memidnum and up.experiment = ?
+            left join descpub_documentreference dd on dd.project_id = p.id
             group by p.id, p.keyprj, p.title, p.state, p.created, p.abstract, p.comments, pub.id, wg.name, wg.id, wg.convener_group_name, 
-            pro.id, pro.relation, pro.memidnum, pro.project_id, up.first_name, up.last_name
+            pro.id, pro.relation, pro.memidnum, pro.project_id, up.first_name, up.last_name, dd.title
             order by p.id
             <sql:param value="${appVariables.experiment}"/>
         </sql:query>
@@ -47,7 +50,7 @@
                <a href="show_project.jsp?projid=${Rows.projid}&swgid=${Rows.swgid}">${Rows.title}</a>
            </display:column>
            <display:column title="Working Group(s)" group="2">
-               <a href="show_swg.jsp?swgid=${Rows.swgid}&swgname=${Rows.swgname}">${Rows.swgname}></a>
+               <a href="show_swg.jsp?swgid=${Rows.swgid}&swgname=${Rows.swgname}">${Rows.swgname}</a>
            </display:column>
            <display:column title="Members">
                <a href="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/user.jsp?memidnum=${Rows.memid}">${Rows.first_name} ${Rows.last_name}</a>
@@ -56,8 +59,8 @@
                ${Rows.state}
            </display:column>
            <display:column title="Documents">
-               <sql:query var="pubcnt" dataSource="jdbc/config-dev">
-                    select project_id, count(project_id) as tot from descpub_publication where project_id = ? group by project_id order by project_id
+               <sql:query var="doccnt" dataSource="jdbc/config-dev">
+                    select count(project_id) as tot from descpub_documentreference where project_id = ? group by project_id order by project_id
                     <sql:param value="${Rows.projid}"/>
                 </sql:query>
                 ${pubcnt.rows[0].tot}

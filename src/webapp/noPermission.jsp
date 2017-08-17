@@ -16,6 +16,9 @@
         <c:when test="${param.errmsg == '2'}">
             <h3>Removing all working groups is not allowed. Projects must have at least one working group associated with it. </h3>
         </c:when>
+        <c:when test="${param.errmsg == '3'}">
+            <h3>Only members in the GroupManager database can create documents. </h3>
+        </c:when>
         </c:choose>
     </body>
 </html>

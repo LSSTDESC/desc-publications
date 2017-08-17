@@ -5,9 +5,11 @@
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 
 <%@attribute name="groupname" required="true"%>
-<%@attribute name="experiment" required="true"%>
 <%@attribute name="candidategroup" required="true" %>
 <%@attribute name="returnURL" required="true" %>
+
+
+<h2>Controlling group is ${groupname}</h2>
 
 <sql:query var="candidates" dataSource="jdbc/config-dev">
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
@@ -17,7 +19,7 @@
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
     join profile_ug ug on me.memidnum=ug.memidnum where group_id = ?
     <sql:param value="${candidategroup}"/>
-    <sql:param value="${experiment}"/>
+    <sql:param value="${appVariables.experiment}"/>
     <sql:param value="${groupname}"/>
 </sql:query>
 
@@ -26,7 +28,7 @@
     join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? order by me.lastname
     <sql:param value="${groupname}"/>
 </sql:query>
-
+     
 <form action="modifyGroupMembers.jsp">  
     <input type="hidden" name="swgid" value="${param.swgid}" />  
     <input type="hidden" name="redirectTo" value="${returnURL}"/> 
@@ -34,7 +36,7 @@
         <thead>
             <tr>
                 <th>Candidates</th>
-                <th>Conveners</th>
+                <th>Current Members</th>
             </tr>
         </thead>
         <tbody>
@@ -59,3 +61,4 @@
 
     <p/>
 </form>
+    

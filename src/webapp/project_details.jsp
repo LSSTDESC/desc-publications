@@ -24,13 +24,14 @@
 </head>
 
 <body>
-    
+   
     <c:choose>
-    <c:when test="${!(gm:isUserInGroup(pageContext,'lsst-desc-full-members'))}">
-        <c:redirect url="noPermission.jsp?errmsg=1"/>
-    </c:when>
-        <c:otherwise>
-    <c:set var="candidate_group" value="lsst-desc-full-members"/>
+    <c:when test="${( ! gm:isUserInGroup(pageContext,'lsst-desc-members') )}">  
+        <%-- change this group once testing is over, to whatever group pub-board chooses as authorized --%>
+        <c:redirect url="noPermission.jsp?errmsg=1"/>  
+    </c:when>  
+    <c:otherwise>
+    <c:set var="candidate_group" value="lsst-desc-members"/>  
     
     <sql:query var="swgs" dataSource="jdbc/config-dev">
         select id, name, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id != ?
@@ -59,7 +60,7 @@
         <c:when test="${param.task == 'create_proj_form'}">
              <h3>SWG: ${param.swgname}</h3><p/>
             <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}&swgname=${param.swgname}">
-                <strong>Title</strong> &nbsp;&nbsp;<input type="text" name="title" required/><p/>
+                <strong>Title</strong> &nbsp;&nbsp;<input type="text" name="title" size="77" required/><p/>
                 <strong>Abstract<br/></strong><textarea rows="22" cols="80" name="abs" required></textarea>
                 <input type="hidden" value="${param.swgid}" name="swgid"/><p/>
                 <input type="hidden" value="${param.swgname}" name="swgname"/><p/>
@@ -113,13 +114,19 @@
         </c:when>
     </c:choose>
 <p/>
-<hr/>
+
 <p/>
-Project Members
 
-<tg:groupMemberEditor experiment="${appVariables.experiment}" candidategroup="${candidate_group}" groupname="${swgs.rows[0].cgn}" returnURL="none"/> 
+<%--
+<tg:groupMemberEditor experiment="${appVariables.experiment}" candidategroup="${candidate_group}" groupname="${swgs.rows[0].cgn}" returnURL="none"/>
+--%>
 
-<hr/>
+<c:if test="${swg.rowCount > 0}">
+    <hr/>
+    Project Members<p/>
+    <tg:groupMemberEditor candidategroup="${swgs.rows[0].pgn}" groupname="${swgs.rows[0].cgn}" returnURL="project_details.jsp"/> 
+</c:if>
+ 
 <p/>
         </c:otherwise>
     </c:choose>

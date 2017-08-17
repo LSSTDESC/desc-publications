@@ -35,7 +35,7 @@
                 <p/>
                 Reason:
                 <p/>
-                <form action="requestByMail.jsp">
+                <form action="requestByMail.jsp" method="post">
                     <textarea rows="20" cols="80" required></textarea><p/>
                     <input type="hidden" name="formsubmitted" value="Y"/>
                     <input type="submit" value="submit" name="submit"/>

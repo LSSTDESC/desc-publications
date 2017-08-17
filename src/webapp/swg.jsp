@@ -23,7 +23,7 @@
                 Enter name of SWG and and the listserv email address of the working group<br/>
                 
                 
-                <form name="createSWG" action="swg.jsp">
+                <form name="createSWG" action="swg.jsp" method="post">
                     Name: <input type="text" name="name" id="name" size="30"/><br/>
                     Profile Group Name: <input type="text" name="profileGrpName" id="profileGrpName" size="30"/><br/>
                     Listserv Email Address: <input type="text" name="email" id="email" size="30"/><br/>

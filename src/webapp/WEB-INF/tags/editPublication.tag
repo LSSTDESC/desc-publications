@@ -17,15 +17,21 @@
 <%@attribute name="projid" required="true"%>
 <%@attribute name="swgid" required="true"%>
 
+ <sql:query var="pubtypes" dataSource="jdbc/config-dev">
+     select pubtype from descpub_pubtypes order by pubtype
+ </sql:query>
 
  <sql:query var="pubs" dataSource="jdbc/config-dev">
-    select dp.ID pubid,pj.id projid,dp.STATE,dp.TITLE,dp.JOURNAL,dp.ABSTRACT,to_char(dp.ADDED,'YYYY-MON-DD') ADDED,dp.BUILDER_ELIGIBLE,dp.COMMENTS,dp.KEYPUB,dp.CWR_END_DATE,
+    select dp.ID pubid,pj.id projid,dp.STATE,dp.TITLE pubtitle,dp.JOURNAL,dp.PUBTYPE,dp.ABSTRACT,to_char(dp.ADDED,'YYYY-MON-DD') ADDED,dp.BUILDER_ELIGIBLE,dp.COMMENTS,dp.KEYPUB,dp.CWR_END_DATE,
     dp.ASSIGNED_PB_READER,dp.CWR_COMMENTS,dp.ARXIV,dp.TELECON,dp.JOURNAL_REVIEW,dp.PUBLISHED_REFERENCE,dp.PROJECT_ID,pj.TITLE 
     FROM descpub_publication dp join descpub_project pj on pj.id = dp.project_id where pj.id = ? and dp.id = ?
    <sql:param value="${projid}"/>
    <sql:param value="${pubid}"/>
   </sql:query>  
     
+<sql:query var="pubtypes" dataSource="jdbc/config-dev">
+    select pubtype from descpub_pubtypes order by pubtype
+</sql:query>
     
 <sql:query var="states" dataSource="jdbc/config-dev">
     select state from descpub_publication_states order by state
@@ -50,7 +56,7 @@
    <input type="hidden" name="id" value="${pubid}"/> 
    <input type="hidden" name="project_id" value="${projid}"/> 
    <input type="hidden" name="swgid" value="${swgid}"/> 
-   Title: <input type="text" value="${pubs.rows[0].title}" size="35" name="title" required/><br/>
+   Title: <input type="text" value="${pubs.rows[0].pubtitle}" size="35" name="title" required/><br/>
    State: 
    <select name="state" id="pubstate">
        <c:forEach var="sta" items="${states.rows}">
@@ -61,16 +67,29 @@
        </c:forEach>
    </select>
    <p/>
-   Abstract: <br/>
-   <textarea name="abstract" rows="10" cols="60" required>${pubs.rows[0].ABSTRACT}</textarea><br/>
+   
    Journal: <input type="text" value="${pubs.rows[0].JOURNAL}" size="35" name="journal"/><br/>
    Journal_Review: <input type="text" value="${pubs.rows[0].JOURNAL_REVIEW}" size="3" name="journal_review"/><br/>
-   Comments: <input type="text" value="${pubs.rows[0].COMMENTS}" size="35" name="comments"/><br/>
+   Pubtype: <select name="pubtype">
+        <c:forEach var="ptype" items="${pubtypes.rows}">
+            <option value="${ptype.pubtype}" <c:if test="${pubs.rows[0].pubtype == ptype.pubtype}">selected</c:if>  >${ptype.pubtype}</option>
+        </c:forEach>
+    </select>
+   <br/>
+   
    Builder Eligible: <input type="text" value="${pubs.rows[0].BUILDER_ELIGIBLE}" size="3" name="builder_eligible"/><br/>
    Key Publication: <input type="text" value="${pubs.rows[0].KEYPUB}" size="3" name="keypub"/><br/>
    Assigned PB Reader: <input type="text" value="${pubs.rows[0].ASSIGNED_PB_READER}" size="35" name="assigned_pb_reader"/><br/>
+   
+   Abstract: <br/>
+   <textarea name="abstract" rows="10" cols="60" required>${pubs.rows[0].ABSTRACT}</textarea><br/>
+   
+   Comments: <br/>
+   <textarea name="comments" rows="10" cols="60">${pubs.rows[0].COMMENTS}</textarea><br/>
+   
    Cwr_Comments: <br/>
    <textarea name="cwr_comments" rows="10" cols="60" >${pubs.rows[0].CWR_COMMENTS}</textarea><br/>
+  
    arXiv number: <input type="text" value="${pubs.rows[0].ARXIV}" size="35" name="arxiv"/><br/>
    Telecon: <input type="text" value="${pubs.rows[0].TELECON}" size="35" name="telecon"/><br/>
    Published Reference: <input type="text" value="${pubs.rows[0].PUBLISHED_REFERENCE}" size="35" name="published_reference"/><br/>

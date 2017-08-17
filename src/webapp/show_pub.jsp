@@ -24,6 +24,7 @@
         <c:set var="projid" value="${param.projid}"/>
         <c:set var="swgid" value="${param.swgid}"/> 
         
+        <%-- get working groups associated with this pub --%>
         <sql:query var="swglist" dataSource="jdbc/config-dev">
             select sg.name, sg.id
             from descpub_project pr join descpub_project_swgs wg on wg.project_id = pr.id
