@@ -47,7 +47,7 @@
                <a href="show_project.jsp?projid=${Rows.projid}&swgid=${Rows.swgid}">${Rows.title}</a>
            </display:column>
            <display:column title="Working Group(s)" group="2">
-               <a href="show_swg.jsp?swgid=${Rows.swgid}&swgname=${Rows.swgname}">${Rows.swgname}></a>
+               <a href="show_swg.jsp?swgid=${Rows.swgid}&swgname=${Rows.swgname}">${Rows.swgname}</a>
            </display:column>
            <display:column title="Members">
                <a href="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/user.jsp?memidnum=${Rows.memid}">${Rows.first_name} ${Rows.last_name}</a>
