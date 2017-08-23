@@ -32,7 +32,7 @@
     <p/>
      <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
         
-     <h2>LSST-DESC Publications Board</h2>
+     <h2><a href="https://confluence.slac.stanford.edu/display/LSSTDESC/Publications+Board">LSST-DESC Publications Board</a></h2>
      
         <c:set var="memberPool" value="lsst-desc-full-members"/>
 
@@ -50,7 +50,7 @@
                 <display:column title="Mail List" sortable="true" headerClass="sortable">
                     <a href="mailto:${Row.email}">${Row.email}</a>
                 </display:column>
-                <display:column title="Conveners" sortable="true" headerClass="sortable">
+                <display:column title="Working Group Members" sortable="true" headerClass="sortable">
                     <sql:query var="conveners" dataSource="jdbc/config-dev">
                         select me.firstname, me.lastname from um_member me join profile_ug ug on me.memidnum=ug.memidnum and ug.group_id=?
                         <sql:param value="${Row.cgn}"/>

@@ -63,7 +63,9 @@
            <c:if test="${fn:startsWith(pubs.rows[0].state,sta.state)}">
                <option value="${sta.state}" selected>${sta.state}</option>
            </c:if>
+           <c:if test="${!fn:startsWith(pubs.rows[0].state,sta.state)}">
                <option value="${sta.state}">${sta.state}</option>
+           </c:if>
        </c:forEach>
    </select>
    <p/>

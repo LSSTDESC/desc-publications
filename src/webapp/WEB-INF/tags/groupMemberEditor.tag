@@ -8,9 +8,6 @@
 <%@attribute name="candidategroup" required="true" %>
 <%@attribute name="returnURL" required="true" %>
 
-
-<h2>Controlling group is ${groupname}</h2>
-
 <sql:query var="candidates" dataSource="jdbc/config-dev">
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
     join um_project_members pm on me.memidnum=pm.memidnum 
@@ -35,7 +32,7 @@
     <table border="0">
         <thead>
             <tr>
-                <th>Candidates</th>
+                <th>Members</th>
                 <th>Current Members</th>
             </tr>
         </thead>
