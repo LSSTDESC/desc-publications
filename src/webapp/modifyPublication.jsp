@@ -45,7 +45,7 @@
             <sql:param value="${param.id}"/>
         </sql:update>   
            
-        <c:redirect url="show_pub.jsp?pubid=${param.id}&projid=${param.project_id}&swgid=${param.swgid}"/>     
-       
+       <c:redirect url="show_pub.jsp?pubid=${param.id}"/>     
+
     </body>
 </html>

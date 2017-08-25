@@ -25,15 +25,16 @@
 
 
 <body>
-     
+     <%--
     <h1> <img name="construction" src="Images/construction.gif" border=0>   
         THE DESC PUBLICATION SYSTEM IS A WORK IN PROGRESS.  
-    </h1>
+    </h1> --%>
+    
+            <tg:underConstruction/>
+
     <p/>
      <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
         
-     <h2><a href="https://confluence.slac.stanford.edu/display/LSSTDESC/Publications+Board">LSST-DESC Publications Board</a></h2>
-     
         <c:set var="memberPool" value="lsst-desc-full-members"/>
 
         <sql:query var="swgs" dataSource="jdbc/config-dev">
@@ -44,20 +45,25 @@
 
         <c:if test="${swgs.rowCount > 0}">
             <display:table class="datatable"  id="Row" name="${swgs.rows}">
-                <display:column title="Science Working Group" sortable="true" headerClass="sortable">
+                <display:column title="Science Working Groups" sortable="true" headerClass="sortable">
                     <a href="show_swg.jsp?swgid=${Row.id}&swgname=${Row.name}">${Row.name}</a>
                 </display:column>
-                <display:column title="Mail List" sortable="true" headerClass="sortable">
+                <display:column title="Mail Lists" sortable="true" headerClass="sortable">
                     <a href="mailto:${Row.email}">${Row.email}</a>
                 </display:column>
+                    
                 <display:column title="Working Group Members" sortable="true" headerClass="sortable">
+                    
                     <sql:query var="conveners" dataSource="jdbc/config-dev">
-                        select me.firstname, me.lastname from um_member me join profile_ug ug on me.memidnum=ug.memidnum and ug.group_id=?
+                        select me.firstname, me.lastname, me.memidnum from um_member me join profile_ug ug on me.memidnum=ug.memidnum and ug.group_id=?
                         <sql:param value="${Row.cgn}"/>
                     </sql:query>
                     <c:if test="${conveners.rowCount>0}">
-                        <display:table class="datatable" id="cRow" name="${conveners.rows}"/>
+                        <c:forEach var="c" items="${conveners.rows}">
+                            <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${c.memidnum}&recType=INDB&verification=">${c.firstname} ${c.lastname}</a><br/>
+                        </c:forEach>
                     </c:if>
+                        
                 </display:column>
             </display:table>
         </c:if>     

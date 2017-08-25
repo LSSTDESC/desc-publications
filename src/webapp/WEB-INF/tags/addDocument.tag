@@ -46,8 +46,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr><td>Title: <input type="text" name="title" id="title" size="200" required/><td/></tr>
-            <tr><td>DocType: <input type="text" name="doctype" id="title" size="200" required/><td/></tr>
+            <tr><td>Title: <input type="text" name="title" id="title" size="80" required/><td/></tr>
+            <tr><td>DocType: <input type="text" name="doctype" id="title" size="80" required/><td/></tr>
             <tr><td><input type="submit" value="AddDoc" name="action" /></td></tr>
         </tbody>
     </table>  

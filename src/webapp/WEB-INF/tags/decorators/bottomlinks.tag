@@ -12,9 +12,12 @@
 
 <div>
     <srs_utils:conditonalLink name="Working Groups" url="${pageContext.request.contextPath}/index.jsp" /> |
-    <srs_utils:conditonalLink name="Projects" url="${pageContext.request.contextPath}/projects.jsp" /> |
-    <srs_utils:conditonalLink name="Publications" url="${pageContext.request.contextPath}/all_publications.jsp" /> |
-    <srs_utils:conditonalLink name="Members" url="${pageContext.request.contextPath}/members.jsp" /> |
+    <srs_utils:conditonalLink name="Projects" url="${pageContext.request.contextPath}/all_projects.jsp" /> |
+    <srs_utils:conditonalLink name="Publications" url="${pageContext.request.contextPath}/all_publications.jsp" /> <br/>
     <srs_utils:conditonalLink name="Publication Board" url="https://confluence.slac.stanford.edu/display/LSSTDESC/Publications+Board"/> |
-    <srs_utils:conditonalLink name="Publication Policy" url="https://confluence.slac.stanford.edu/download/attachments/213901083/LSST_DESC_Publication_Policy_v6_15aug2016.pdf?version=1&modificationDate=1471454511000&api=v2"/> 
+    <srs_utils:conditonalLink name="Publication Policy" url="https://confluence.slac.stanford.edu/download/attachments/213901083/LSST_DESC_Publication_Policy_v6_15aug2016.pdf?version=1&modificationDate=1471454511000&api=v2"/> |
+    <srs_utils:conditonalLink name="Publications Under Review" url="${pageContext.request.contextPath}/pubUnderReview.jsp"/> <br/>
+    <srs_utils:conditonalLink name="Members" url="${pageContext.request.contextPath}/members.jsp" /> 
+
+    
 </div>

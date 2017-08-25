@@ -32,7 +32,7 @@
        Users cannot change name of a group, that leads to inconsistencies between profile_group and profile_ug.  Users can request to delete a group. 
     --%>
     
-    <h2>Science Working Group ${param.swgname}</h2>
+    <h2>Science Working Group: ${param.swgname}</h2>
     
     <c:set var="convenerPool" value="lsst-desc-full-members"/>
     

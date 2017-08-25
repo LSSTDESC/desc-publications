@@ -18,11 +18,17 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        <h1>Publications</h1>
         
         <c:set var="pubid" value="${param.pubid}"/>
+        
+        <%--
         <c:set var="projid" value="${param.projid}"/>
-        <c:set var="swgid" value="${param.swgid}"/> 
+        <c:set var="swgid" value="${param.swgid}"/> --%>
+        
+        <sql:query var="info" dataSource="jdbc/config-dev">
+            select project_id from descpub_publication where id = ?
+            <sql:param value="${pubid}"/>
+        </sql:query>
         
         <%-- get working groups associated with this pub --%>
         <sql:query var="swglist" dataSource="jdbc/config-dev">
@@ -30,17 +36,23 @@
             from descpub_project pr join descpub_project_swgs wg on wg.project_id = pr.id
             join descpub_swg sg on sg.id=wg.swg_id
             where pr.id = ?
-            <sql:param value="${projid}"/>
+            <sql:param value="${info.rows[0].project_id}"/>
         </sql:query>
         
             <div>
                 <h3>Working Groups<h3/>
-                <c:forEach var="sRow" items="${swglist.rows}">
+                <c:forEach var="sRow" items="${swglist.rows}" varStatus="loop">
+                    <c:if test="${!loop.last}">
+                    <a href=show_swg.jsp?swgid=${sRow.id}&name=${sRow.name}>${sRow.name}, </a>
+                    </c:if>
+                    <c:if test="${loop.last}">
                     <a href=show_swg.jsp?swgid=${sRow.id}&name=${sRow.name}>${sRow.name}</a>
+                    </c:if>
                 </c:forEach>
             </div>    
            
-        <tg:editPublication pubid="${pubid}" projid="${projid}" swgid="${swgid}"/>   
- 
+     <%--   <tg:editPublication pubid="${pubid}" projid="${projid}" swgid="${swgid}"/>   --%>
+         <tg:editPublication pubid="${pubid}"/>   
+
     </body>
 </html>

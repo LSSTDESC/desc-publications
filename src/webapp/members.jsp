@@ -28,26 +28,20 @@
             join um_member_inst_history hi on hi.meminstidnum=ii.meminstidnum and hi.currentposition='Y'
             join um_projmem_history ro on ro.projmemidnum=pm.projmemidnum
             join profile_ug ug on ug.memidnum = me.memidnum
-            where ug.group_id = 'lsst-desc-full-members' and pm.project=? 
+            where ug.group_id = 'lsst-desc-full-members' and me.lastname != 'gpc1' and pm.project=? order by me.lastname
             <sql:param value="${appVariables.experiment}"/>
         </sql:query>
-            
-           
-        <a href="index.jsp">SWGs</a><br/>
-        Publications Under Review<br/>
-        Speakers Bureau<br/>
-        <a href="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/newCollaborator.jsp">New User Form</a>
-        <p/>
         
        <display:table class="datatable" id="Rows" name="${mems.rows}" defaultsort="1">
-           <display:column  title="Name" sortable="true"  headerClass="sortable">
+           <display:column  title="First Name" sortable="true"  headerClass="sortable">
+               ${Rows.firstname}
+           </display:column>
+           <display:column  title="Last Name" sortable="true"  headerClass="sortable">
+               ${Rows.lastname}
+           </display:column>
+           <display:column  title="Profile" sortable="true"  headerClass="sortable">
               <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Rows.memidnum}&recType=INDB">${Rows.lastname}, ${Rows.firstname}</a>
-           </display:column>
-           
-           <display:column  title="Username" sortable="true" headerClass="sortable">
-                <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Rows.memidnum}&recType=INDB">${Rows.username}</a>
-           </display:column>
-                                        
+           </display:column>     
            <display:column  property="activestatus" title="Active" sortable="true"  headerClass="sortable"/>
            <display:column  title="Builder" sortable="true"  headerClass="sortable">
                TBD
@@ -58,16 +52,12 @@
            <display:column  title="Position" sortable="true"  headerClass="sortable">
                ${Rows.position}
            </display:column>
-           <display:column  title="Status" sortable="true"  headerClass="sortable">
-           </display:column>
            <display:column  title="Admin" sortable="true"  headerClass="sortable">
            </display:column>
            <display:column  title="PB Admin" sortable="true"  headerClass="sortable">
            </display:column>
            <display:column  title="SB Admin" sortable="true"  headerClass="sortable">
            </display:column>
-       </display:table>
-            
-             
+       </display:table> 
     </body>
 </html>

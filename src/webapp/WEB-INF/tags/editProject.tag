@@ -5,17 +5,22 @@
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 
 <%@attribute name="projid" required="true"%>
-<%@attribute name="swgid" required="true"%>
+<%-- <%@attribute name="swgid" required="true"%> --%>
 <%@attribute name="experiment" required="true" %>
 <%@attribute name="returnURL" required="true" %>
     
 <%--
     <c:if test="${!(gm:isUserInGroup(pageContext,'descpubConvenerAdmin'))}">
         <c:redirect url="noPermission.jsp?errmsg=1"/>
-    </c:if> --%>
+    </c:if>  
 
-    <c:set var="tmp" value="created,active,inactive,completed"/>
+    <c:set var="tmp" value="created,active,inactive,completed,papers_under_review"/>
     <c:set var="validStates" value="${fn:split(tmp,',')}"/>  
+    --%>
+    
+    <sql:query var="validStates" dataSource="jdbc/config-dev">
+        select state from descpub_project_states order by state
+    </sql:query>
     
     <%-- project can have multiple working groups assigned so execute separate query to get all working groups --%> 
     <sql:query var="swgcurr" dataSource="jdbc/config-dev">
@@ -30,41 +35,46 @@
         <sql:param value="${projid}"/>
     </sql:query>
     
-    <sql:query var="projects" dataSource="jdbc/config-dev">
+   <%-- <sql:query var="projects" dataSource="jdbc/config-dev">
         select wg.name swgname, wg.profile_group_name pgn, wg.convener_group_name cgn, pj.title, pj.abstract abs, pj.state, pj.created, pj.comments comm, pj.keyprj, pj.lastmodified 
         from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id 
         join descpub_project pj on pj.id = ps.project_id where ps.project_id = ? and wg.id = ?
         <sql:param value="${projid}"/>
         <sql:param value="${swgid}"/>
+    </sql:query> --%>
+        
+     <sql:query var="projects" dataSource="jdbc/config-dev">
+        select title, abstract abs, state, created crdate, comments comm, keyprj, lastmodified moddate from descpub_project where id = ?  
+        <sql:param value="${projid}"/>
     </sql:query>
-    
-    <c:set var="keyprj" value="${projects.rows[0].keyprj}"/>
+        
+    <c:set var="keyproj" value="${projects.rows[0].keyprj}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].state}"/>
     <c:set var="abs" value="${projects.rows[0].abs}"/>
     <c:set var="comm" value="${projects.rows[0].comm}"/>
 
+    <h2>Project: [${projid}] ${projects.rows[0].title}  </h2>
+    <h3>Created: ${projects.rows[0].crdate} &nbsp;&nbsp; Last Modified: ${projects.rows[0].moddate}</h3>
+    
     <strong>Email Project Members</strong> 
     <p/>
     
 <form action="modifySWGprojects.jsp">  
-    <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />  
+   <%-- <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />  --%>
     <input type="hidden" name="projid" id="projid" value="${projid}" /> 
-    <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp" />  
-    
+    <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp?projid=${projid}" />  
     
     Key Project: 
-    <select name="keyproj" id="keyproj">
-        <option value="${keyprj}" <c:if test="${keyprj == 'Y'}">selected</c:if> >Y</option>
-        <option value="${keyprj}" <c:if test="${keyprj == 'N'}"> selected  </c:if> >N</option>
-    </select>
+    <select name="isKeyprj" id="isKeyprj">
+        <option value="Y" <c:if test="${keyproj == 'Y'}"> selected</c:if> > Y</option>
+        <option value="N" <c:if test="${keyproj == 'N'}"> selected</c:if> > N</option>
+    </select> 
     <p/>
-   <%-- <input type="text" name="isKeyProj" id="isKeyProj" value="${keyprj}" size="1"/><p/> --%>
-    
-    
+   
     Title: <input type="text" name="title" id="title" value="${title}" size="55" required/><p/>
     <table border="0">
-        <tr><td>Add WG</td><td>Remove WG</td></tr>
+        <tr><td>Add working group</td><td>Remove working group</td></tr>
         <tr>
             <td><select name="addprojswg" id="addprojswg" size="8" multiple>
             <c:forEach var="addrow" items="${swgcandidates.rows}">
@@ -83,11 +93,11 @@
     <p/>
    
     <table border="0">
-    <tr><td>Change State</td></tr>
+    <tr><td>State</td></tr>
     <tr><td>
     <select name="chgstate" id="chgstate" size="8" multiple required>
-    <c:forEach var="sta" items="${validStates}" >
-       <option value="${sta}" <c:if test="${fn:startsWith(sta,projstate)}">selected</c:if> >${sta}</option>
+    <c:forEach var="sta" items="${validStates.rows}" >
+       <option value="${sta.state}" <c:if test="${fn:startsWith(sta.state,projstate)}">selected</c:if> >${sta.state}</option>
     </c:forEach>
     </select> 
     </tr></td>
@@ -102,6 +112,5 @@
        <td><input type="submit" value="Update_Project" id="action" name="action" /></td>     
     </tr>  
 </form>
-
 <p/>
-<hr/>
+<p/>
