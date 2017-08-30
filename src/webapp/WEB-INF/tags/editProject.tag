@@ -2,6 +2,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
+<%@taglib tagdir="/WEB-INF/tags/" prefix="tg"%>
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 
 <%@attribute name="projid" required="true"%>
@@ -9,15 +10,11 @@
 <%@attribute name="experiment" required="true" %>
 <%@attribute name="returnURL" required="true" %>
     
-<%--
-    <c:if test="${!(gm:isUserInGroup(pageContext,'descpubConvenerAdmin'))}">
+ 
+    <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-publications'))}">
         <c:redirect url="noPermission.jsp?errmsg=1"/>
     </c:if>  
-
-    <c:set var="tmp" value="created,active,inactive,completed,papers_under_review"/>
-    <c:set var="validStates" value="${fn:split(tmp,',')}"/>  
-    --%>
-    
+   
     <sql:query var="validStates" dataSource="jdbc/config-dev">
         select state from descpub_project_states order by state
     </sql:query>
@@ -34,16 +31,9 @@
         order by name
         <sql:param value="${projid}"/>
     </sql:query>
-    
-   <%-- <sql:query var="projects" dataSource="jdbc/config-dev">
-        select wg.name swgname, wg.profile_group_name pgn, wg.convener_group_name cgn, pj.title, pj.abstract abs, pj.state, pj.created, pj.comments comm, pj.keyprj, pj.lastmodified 
-        from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id 
-        join descpub_project pj on pj.id = ps.project_id where ps.project_id = ? and wg.id = ?
-        <sql:param value="${projid}"/>
-        <sql:param value="${swgid}"/>
-    </sql:query> --%>
+   
         
-     <sql:query var="projects" dataSource="jdbc/config-dev">
+    <sql:query var="projects" dataSource="jdbc/config-dev">
         select title, abstract abs, state, created crdate, comments comm, keyprj, lastmodified moddate from descpub_project where id = ?  
         <sql:param value="${projid}"/>
     </sql:query>
@@ -53,7 +43,7 @@
     <c:set var="projstate" value="${projects.rows[0].state}"/>
     <c:set var="abs" value="${projects.rows[0].abs}"/>
     <c:set var="comm" value="${projects.rows[0].comm}"/>
-
+   
     <h2>Project: [${projid}] ${projects.rows[0].title}  </h2>
     <h3>Created: ${projects.rows[0].crdate} &nbsp;&nbsp; Last Modified: ${projects.rows[0].moddate}</h3>
     
@@ -93,16 +83,16 @@
     <p/>
    
     <table border="0">
-    <tr><td>State</td></tr>
-    <tr><td>
-    <select name="chgstate" id="chgstate" size="8" multiple required>
-    <c:forEach var="sta" items="${validStates.rows}" >
-       <option value="${sta.state}" <c:if test="${fn:startsWith(sta.state,projstate)}">selected</c:if> >${sta.state}</option>
-    </c:forEach>
-    </select> 
-    </tr></td>
+        <tr><td>State</td></tr>
+        <tr><td>
+        <select name="chgstate" id="chgstate" size="8" required>
+        <c:forEach var="sta" items="${validStates.rows}" >
+           <option value="${sta.state}" <c:if test="${fn:startsWith(sta.state,projstate)}">selected</c:if> >${sta.state}</option>
+        </c:forEach>
+        </select> 
+        </tr></td>
     </table>
-    
+    <p/>
     Abstract:<br/> <textarea id="abs" rows="8" cols="50" name="abs">${abs}</textarea>
     <p/>
     Comments:<br/> <textarea id="comm" rows="8" cols="50" name="comm">${comm}</textarea>

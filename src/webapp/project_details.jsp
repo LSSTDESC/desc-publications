@@ -20,11 +20,11 @@
     <link rel="stylesheet" href="css/site-demos.css">
     <script src="js/jquery-1.11.1.min.js"></script>
     <script src="js/jquery.validate.min.js"></script>
-    <title>LSST-DESC Project Details</title>
+    <title>LSST-DESC Create Project</title>
 </head>
 
 <body>
-   
+    
     <c:choose>
     <c:when test="${( ! gm:isUserInGroup(pageContext,'lsst-desc-members') )}">  
         <%-- change this group once testing is over, to whatever group pub-board chooses as authorized --%>
@@ -58,7 +58,7 @@
         
     <c:choose>  
         <c:when test="${param.task == 'create_proj_form'}">
-             <h3>SWG: ${param.swgname}</h3><p/>
+             <h3>Working Group: ${param.swgname}</h3><p/>
             <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}&swgname=${param.swgname}">
                 <strong>Title</strong> &nbsp;&nbsp;<input type="text" name="title" size="77" required/><p/>
                 <strong>Abstract<br/></strong><textarea rows="22" cols="80" name="abs" required></textarea>
@@ -75,7 +75,7 @@
             <c:catch var="trapError">
                 <sql:transaction dataSource="jdbc/config-dev">
                     <sql:update >
-                    insert into configdev.descpub_project (id,title,abstract,state,created,keyprj) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate,?)
+                    insert into descpub_project (id,title,abstract,state,created,keyprj) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate,?)
                     <sql:param value="${param.title}"/>
                     <sql:param value="${param.abs}"/>
                     <sql:param value="${param.state}"/>
@@ -84,11 +84,11 @@
 
                      
                     <sql:query var="projNum">
-                        select configdev.descpub_proj_seq.currval as newProjNum from dual
+                        select descpub_proj_seq.currval as newProjNum from dual
                     </sql:query>  
 
                     <sql:update var="swg_proj">
-                        insert into configdev.descpub_project_swgs (id,project_id,swg_id) values(SWG_SEQ.nextval,?,?)
+                        insert into descpub_project_swgs (id,project_id,swg_id) values(SWG_SEQ.nextval,?,?)
                         <sql:param value="${projNum.rows[0]['newProjNum']}"/>
                         <sql:param value="${param.swgid}"/>
                     </sql:update>
@@ -116,10 +116,6 @@
 <p/>
 
 <p/>
-
-<%--
-<tg:groupMemberEditor experiment="${appVariables.experiment}" candidategroup="${candidate_group}" groupname="${swgs.rows[0].cgn}" returnURL="none"/>
---%>
 
 <c:if test="${swg.rowCount > 0}">
     <hr/>

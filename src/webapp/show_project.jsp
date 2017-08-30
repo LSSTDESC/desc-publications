@@ -29,7 +29,7 @@
        
      <sql:query var="publications" dataSource="jdbc/config-dev">
         select pb.id,pb.state,pb.title,pb.journal,pb.abstract,pb.added,pb.builder_eligible,pb.comments,pb.keypub,pb.cwr_end_date,pb.assigned_pb_reader,pb.cwr_comments,
-        pb.arxiv,pb.telecon,pb.journal_review,pb.published_reference,pb.project_id
+        pb.arxiv,pb.journal_review,pb.published_reference,pb.project_id
         from descpub_publication pb join descpub_project dp on dp.id=pb.project_id where dp.id=?
         <sql:param value="${projid}"/>
     </sql:query> 
@@ -61,7 +61,6 @@
                 
     <tg:editProject experiment="${appVariables.experiment}" projid="${projid}" returnURL="show_project.jsp?projid=${projid}"/>  
  
-    
     <p/>
   <display:table class="datatable" id="Rows" name="${pubs.rows}" defaultsort="1">
         <display:column title="Pub ID" sortable="true" headerClass="sortable">

@@ -24,7 +24,7 @@
 
  <sql:query var="pubs" dataSource="jdbc/config-dev">
   select ID , STATE, TITLE  , JOURNAL, PUBTYPE, ABSTRACT, to_char(ADDED,'YYYY-MON-DD') ADDED,  to_char(DATE_MODIFIED,'YYYY-MON-DD') MODDATE, BUILDER_ELIGIBLE, COMMENTS, KEYPUB, CWR_END_DATE,
-    ASSIGNED_PB_READER, CWR_COMMENTS, ARXIV, TELECON, JOURNAL_REVIEW, PUBLISHED_REFERENCE, PROJECT_ID
+    ASSIGNED_PB_READER, CWR_COMMENTS, ARXIV, JOURNAL_REVIEW, PUBLISHED_REFERENCE, PROJECT_ID
     FROM descpub_publication where id = ?
     <sql:param value="${pubid}"/>
  </sql:query>
@@ -88,7 +88,6 @@
    <textarea name="cwr_comments" rows="10" cols="60" >${pubs.rows[0].CWR_COMMENTS}</textarea><br/>
   
    arXiv number: <input type="text" value="${pubs.rows[0].ARXIV}" size="35" name="arxiv"/><br/>
-   Telecon: <input type="text" value="${pubs.rows[0].TELECON}" size="35" name="telecon"/><br/>
    Published Reference: <input type="text" value="${pubs.rows[0].PUBLISHED_REFERENCE}" size="35" name="published_reference"/><br/>
    Project Id: ${pubs.rows[0].project_id}<br/>
    <p/>

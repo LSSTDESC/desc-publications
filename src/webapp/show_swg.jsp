@@ -53,7 +53,7 @@
         
     <sql:query var="pubs" dataSource="jdbc/config-dev">
         select pub.abstract, pub.added, pub.arxiv, pub.assigned_pb_reader reader, pub.builder_eligible buildable, pub.comments comm, pub.cwr_comments, pub.cwr_end_date, pub.id, pub.journal,
-        pub.journal_review, pub.keypub, pub.project_id, pub.published_reference, pub.state, pub.telecon, pub.title from descpub_publication pub 
+        pub.journal_review, pub.keypub, pub.project_id, pub.published_reference, pub.state, pub.title from descpub_publication pub 
         join descpub_project pj on pub.project_id = pj.id 
     </sql:query>
      
@@ -64,15 +64,20 @@
             <input type="hidden" value="${param.swgid}" name="${swgname}"/>
             </form> --%>
             <p/>
-            <strong><a href="project_details.jsp?task=create_proj_form&swgname=${param.swgname}&swgid=${param.swgid}">create project</a></strong>
-            <hr/>
             
-            <c:if test="${projects.rowCount > 0}">
-               <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp?swgid=${swgid}"/>
+         <%--   <c:if test="${gm:isUserInGroup(pageContext,projects.rows[0].cgn)}"> --%>
+         <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications')}">
+                <strong><a href="project_details.jsp?task=create_proj_form&swgname=${param.swgname}&swgid=${param.swgid}">create project</a></strong>
                 <p/>
                 <hr/>
+                Add members to the working group<br/>
+                <c:if test="${projects.rowCount > 0}">
+                   <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp?swgid=${swgid}"/>
+                    <p/>
+                    <hr/>
+                </c:if>
+                    
             </c:if>
-           
              <strong>Projects</strong><br/>
              <display:table class="datatable" id="proj" name="${projects.rows}">
                  <display:column property="id" title="Id" sortable="true" headerClass="sortable">

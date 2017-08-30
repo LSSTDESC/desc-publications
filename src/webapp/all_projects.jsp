@@ -28,7 +28,7 @@
         </sql:query>   
          
         <display:table class="datatable" id="Row" name="${pjs.rows}">
-            <display:column title="Project Title">
+            <display:column title="Project Title" sortable="true" headerClass="sortable">
                 <a href="show_project.jsp?projid=${Row.id}">${Row.title}</a>
             </display:column>
             <c:if test="${! empty Row.active}">
@@ -37,15 +37,15 @@
                 </display:column>
             </c:if>
                 
-            <display:column title="State">
+            <display:column title="State" sortable="true" headerClass="sortable">
                 ${Row.state}
             </display:column>
             
-            <display:column title="Key Project">
+            <display:column title="Key Project" sortable="true" headerClass="sortable">
                 ${Row.keyprj}
             </display:column>
             
-            <display:column title="Working Groups">
+            <display:column title="Working Groups" sortable="true" headerClass="sortable">
                 <sql:query var="wgs" dataSource="jdbc/config-dev">
                         select s.id, s.name from descpub_swg s join descpub_project_swgs j on s.id = j.swg_id and j.project_id = ?
                         <sql:param value="${Row.id}"/>
@@ -55,7 +55,7 @@
                           <a href="show_swg.jsp?swgid=${w.id}&swgname=${w.name}">${w.name}</a><br/>
                     </c:forEach>  
                 </c:if>
-            </display:column>
+            </display:column>   
         </display:table>
     </body>
     

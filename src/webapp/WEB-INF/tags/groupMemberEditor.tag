@@ -27,7 +27,8 @@
 </sql:query>
      
 <form action="modifyGroupMembers.jsp">  
-    <input type="hidden" name="swgid" value="${param.swgid}" />  
+    <input type="hidden" name="groupname" value="${groupname}"/> 
+    <input type="hidden" name="candidategroup" value="${candidategroup}"/> 
     <input type="hidden" name="redirectTo" value="${returnURL}"/> 
     <table border="0">
         <thead>
