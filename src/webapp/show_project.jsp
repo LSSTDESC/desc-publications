@@ -28,7 +28,7 @@
     <c:set var="memberPool" value="lsst-desc-full-members"/>
        
      <sql:query var="publications" dataSource="jdbc/config-dev">
-        select pb.id,pb.state,pb.title,pb.journal,pb.abstract,pb.added,pb.builder_eligible,pb.comments,pb.keypub,pb.cwr_end_date,pb.assigned_pb_reader,pb.cwr_comments,
+        select pb.id,pb.state,pb.title,pb.journal,pb.abstract,pb.added,pb.builder_eligible,pb.comments,pb.keypub,pb.cwr_end_date,pb.responsible_pb_reader,pb.cwr_comments,
         pb.arxiv,pb.journal_review,pb.published_reference,pb.project_id
         from descpub_publication pb join descpub_project dp on dp.id=pb.project_id where dp.id=?
         <sql:param value="${projid}"/>

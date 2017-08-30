@@ -52,7 +52,7 @@
     </sql:query>    
         
     <sql:query var="pubs" dataSource="jdbc/config-dev">
-        select pub.abstract, pub.added, pub.arxiv, pub.assigned_pb_reader reader, pub.builder_eligible buildable, pub.comments comm, pub.cwr_comments, pub.cwr_end_date, pub.id, pub.journal,
+        select pub.abstract, pub.added, pub.arxiv, pub.responsible_pb_reader reader, pub.builder_eligible buildable, pub.comments comm, pub.cwr_comments, pub.cwr_end_date, pub.id, pub.journal,
         pub.journal_review, pub.keypub, pub.project_id, pub.published_reference, pub.state, pub.title from descpub_publication pub 
         join descpub_project pj on pub.project_id = pj.id 
     </sql:query>

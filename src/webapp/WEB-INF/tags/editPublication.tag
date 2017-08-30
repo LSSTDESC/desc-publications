@@ -24,7 +24,7 @@
 
  <sql:query var="pubs" dataSource="jdbc/config-dev">
   select ID , STATE, TITLE  , JOURNAL, PUBTYPE, ABSTRACT, to_char(ADDED,'YYYY-MON-DD') ADDED,  to_char(DATE_MODIFIED,'YYYY-MON-DD') MODDATE, BUILDER_ELIGIBLE, COMMENTS, KEYPUB, CWR_END_DATE,
-    ASSIGNED_PB_READER, CWR_COMMENTS, ARXIV, JOURNAL_REVIEW, PUBLISHED_REFERENCE, PROJECT_ID
+    RESPONSIBLE_PB_READER, CWR_COMMENTS, ARXIV, JOURNAL_REVIEW, PUBLISHED_REFERENCE, PROJECT_ID
     FROM descpub_publication where id = ?
     <sql:param value="${pubid}"/>
  </sql:query>
@@ -76,7 +76,7 @@
    
    Builder Eligible: <input type="text" value="${pubs.rows[0].BUILDER_ELIGIBLE}" size="3" name="builder_eligible"/><br/>
    Key Publication: <input type="text" value="${pubs.rows[0].KEYPUB}" size="3" name="keypub"/><br/>
-   Assigned PB Reader: <input type="text" value="${pubs.rows[0].ASSIGNED_PB_READER}" size="35" name="assigned_pb_reader"/><br/>
+   Assigned PB Reader: <input type="text" value="${pubs.rows[0].RESPONSIBLE_PB_READER}" size="35" name="responsible_pb_reader"/><br/>
    
    Abstract: <br/>
    <textarea name="abstract" rows="10" cols="60" required>${pubs.rows[0].ABSTRACT}</textarea><br/>
