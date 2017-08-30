@@ -11,7 +11,7 @@
 <%@attribute name="returnURL" required="true" %>
     
  
-    <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-publications'))}">
+    <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-members'))}">
         <c:redirect url="noPermission.jsp?errmsg=1"/>
     </c:if>  
    

@@ -44,7 +44,7 @@
     <c:set var="pgn" value="${swgs.rows[0].pgn}"/>   
     <c:set var="cgn" value="${swgs.rows[0].cgn}"/>   
     <c:set var="swgid" value="${param.swgid}"/>   
-     <sql:query var="projects" dataSource="jdbc/config-dev">
+    <sql:query var="projects" dataSource="jdbc/config-dev">
         select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.title
@@ -59,20 +59,27 @@
      
     <c:choose>  
         <c:when test="${!empty param.swgid}">
-         <%-- Don't allow deletion of swgs per S.Digel, 18jul17.  <form name="deleteswg" action="show_swg.jsp?task=deleteswg">
-                <strong>delete ${param.swgname} swg </strong><input type="checkbox" name="deleteswg" value="${param.swgname}"> 
-            <input type="hidden" value="${param.swgid}" name="${swgname}"/>
-            </form> --%>
-            <p/>
+         <%-- Don't allow deletion of swgs per S.Digel, 18jul17.   --%>
             
-         <%--   <c:if test="${gm:isUserInGroup(pageContext,projects.rows[0].cgn)}"> --%>
-         <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications')}">
+               <%--   <c:if test="${gm:isUserInGroup(pageContext,projects.rows[0].cgn)}"> --%>
+               <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications')}">
+                   
                 <strong><a href="project_details.jsp?task=create_proj_form&swgname=${param.swgname}&swgid=${param.swgid}">create project</a></strong>
                 <p/>
                 <hr/>
-                Add members to the working group<br/>
+                <p/>
+                Manage <strong>conveners</strong> of the working group <br/>
                 <c:if test="${projects.rowCount > 0}">
                    <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp?swgid=${swgid}"/>
+                    <p/>
+                    <hr/>
+                </c:if>
+                    
+                <p/>
+                
+                Manage <strong>members</strong> of the working group<br/>
+                <c:if test="${projects.rowCount > 0}">
+                   <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${pgn}" returnURL="show_swg.jsp?swgid=${swgid}"/>
                     <p/>
                     <hr/>
                 </c:if>

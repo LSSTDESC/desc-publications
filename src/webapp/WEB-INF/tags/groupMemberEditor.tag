@@ -31,12 +31,6 @@
     <input type="hidden" name="candidategroup" value="${candidategroup}"/> 
     <input type="hidden" name="redirectTo" value="${returnURL}"/> 
     <table border="0">
-        <thead>
-            <tr>
-                <th>Members</th>
-                <th>Current Members</th>
-            </tr>
-        </thead>
         <tbody>
             <tr>
                 <td><input type="submit" value="Join" name="action" /></td>
