@@ -44,6 +44,7 @@
     <c:set var="pgn" value="${swgs.rows[0].pgn}"/>   
     <c:set var="cgn" value="${swgs.rows[0].cgn}"/>   
     <c:set var="swgid" value="${param.swgid}"/> 
+    <c:set var="swgname" value="${swgs.rows[0].name}"/>
     
     <sql:query var="projects" dataSource="jdbc/config-dev">
         select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
@@ -72,7 +73,7 @@
                 <p/>
                 <c:if test="${projects.rowCount > 0}">
                    Manage <strong>conveners</strong> of the working group <br/>
-                   <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp?swgid=${swgid}"/>
+                   <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp?swgid=${swgid}&swgname=${swgname}"/>
                     <p/>
                     <hr/>
                 </c:if>
@@ -80,7 +81,7 @@
                 <p/>
                 <c:if test="${projects.rowCount > 0}">
                     Manage <strong>members</strong> of the working group<br/>
-                   <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${pgn}" returnURL="show_swg.jsp?swgid=${swgid}"/>
+                   <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${pgn}" returnURL="show_swg.jsp?swgid=${swgid}&swgname=${swgname}"/>
                     <p/>
                     <hr/>
                 </c:if>
