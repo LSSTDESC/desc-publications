@@ -28,6 +28,17 @@
         </sql:query>   
          
         <display:table class="datatable" id="Row" name="${pjs.rows}">
+             <display:column title="Working Groups" sortable="true" headerClass="sortable">
+                <sql:query var="wgs" dataSource="jdbc/config-dev">
+                        select s.id, s.name from descpub_swg s join descpub_project_swgs j on s.id = j.swg_id and j.project_id = ?
+                        <sql:param value="${Row.id}"/>
+                </sql:query>
+                <c:if test="${wgs.rowCount>0}">
+                    <c:forEach var="w" items="${wgs.rows}">  
+                          <a href="show_swg.jsp?swgid=${w.id}&swgname=${w.name}">${w.name}</a><br/>
+                    </c:forEach>  
+                </c:if>
+            </display:column>  
             <display:column title="Project Title" sortable="true" headerClass="sortable">
                 <a href="show_project.jsp?projid=${Row.id}">${Row.title}</a>
             </display:column>
@@ -45,17 +56,10 @@
                 ${Row.keyprj}
             </display:column>
             
-            <display:column title="Working Groups" sortable="true" headerClass="sortable">
-                <sql:query var="wgs" dataSource="jdbc/config-dev">
-                        select s.id, s.name from descpub_swg s join descpub_project_swgs j on s.id = j.swg_id and j.project_id = ?
-                        <sql:param value="${Row.id}"/>
-                </sql:query>
-                <c:if test="${wgs.rowCount>0}">
-                    <c:forEach var="w" items="${wgs.rows}">  
-                          <a href="show_swg.jsp?swgid=${w.id}&swgname=${w.name}">${w.name}</a><br/>
-                    </c:forEach>  
-                </c:if>
-            </display:column>   
+           
+            <display:column title="Project ID" sortable="true" headerClass="sortable">
+                <a href="show_project.jsp?projid=${Row.id}">${Row.id}</a>
+            </display:column>
         </display:table>
     </body>
     

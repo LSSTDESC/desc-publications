@@ -43,19 +43,21 @@
      
     <c:set var="pgn" value="${swgs.rows[0].pgn}"/>   
     <c:set var="cgn" value="${swgs.rows[0].cgn}"/>   
-    <c:set var="swgid" value="${param.swgid}"/>   
+    <c:set var="swgid" value="${param.swgid}"/> 
+    
     <sql:query var="projects" dataSource="jdbc/config-dev">
         select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.title
         <sql:param value="${param.swgid}"/>
     </sql:query>    
-        
+      
+        <%--
     <sql:query var="pubs" dataSource="jdbc/config-dev">
         select pub.abstract, pub.added, pub.arxiv, pub.responsible_pb_reader reader, pub.builder_eligible buildable, pub.comments comm, pub.cwr_comments, pub.cwr_end_date, pub.id, pub.journal,
         pub.journal_review, pub.keypub, pub.project_id, pub.published_reference, pub.state, pub.title from descpub_publication pub 
         join descpub_project pj on pub.project_id = pj.id 
-    </sql:query>
+    </sql:query> --%>
      
     <c:choose>  
         <c:when test="${!empty param.swgid}">
@@ -68,17 +70,16 @@
                 <p/>
                 <hr/>
                 <p/>
-                Manage <strong>conveners</strong> of the working group <br/>
                 <c:if test="${projects.rowCount > 0}">
+                   Manage <strong>conveners</strong> of the working group <br/>
                    <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp?swgid=${swgid}"/>
                     <p/>
                     <hr/>
                 </c:if>
                     
                 <p/>
-                
-                Manage <strong>members</strong> of the working group<br/>
                 <c:if test="${projects.rowCount > 0}">
+                    Manage <strong>members</strong> of the working group<br/>
                    <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${pgn}" returnURL="show_swg.jsp?swgid=${swgid}"/>
                     <p/>
                     <hr/>
@@ -90,15 +91,32 @@
                  <display:column property="id" title="Id" sortable="true" headerClass="sortable">
                     <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}&name=${proj.title}">${proj.id}</a> 
                  </display:column>
-                 <display:column title="Title" sortable="true" headerClass="sortable">
+                 <display:column title="Project Title" sortable="true" headerClass="sortable">
                     <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}&name=${proj.title}">${proj.title}</a> 
                  </display:column>
-                 <display:column title="Members" sortable="true" headerClass="sortable"/>
+                 <display:column title="Members" sortable="true" headerClass="sortable">
+                     TBD
+                 </display:column>
                  <display:column title="State" sortable="true" headerClass="sortable">
                      ${proj.state}
                  </display:column>
-                 <display:column title="Documents" sortable="true" headerClass="sortable"/>
-                 <display:column title="Publications" sortable="true" headerClass="sortable"/>
+                 <display:column title="Documents" sortable="true" headerClass="sortable">
+                     TBD
+                 </display:column>
+                 <display:column title="Publications" sortable="true" headerClass="sortable">
+                     <sql:query var="results" dataSource="jdbc/config-dev">
+                        select p.id projid, ub.id pubid, ub.keypub, ub.state, ub.title, ub.keypub
+                        from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
+                        left join descpub_swg wg on ps.swg_id=wg.id 
+                        left join descpub_publication ub on ub.project_id = p.id
+                        where wg.id = ? and p.id = ?
+                        <sql:param value="${param.swgid}"/>
+                        <sql:param value="${proj.id}"/>
+                     </sql:query>
+                     <c:forEach var="pub" items="${results.rows}">
+                        <a href="show_pub.jsp?pubid=${pub.pubid}&projid=${proj.id}">${pub.title}</a><br/>
+                     </c:forEach>
+                 </display:column>
              </display:table>
         </c:when>
         <c:otherwise>
