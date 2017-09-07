@@ -19,15 +19,11 @@
     </head>
     <body>
         
-        <c:set var="pubid" value="${param.pubid}"/>
-        
-        <%--
-        <c:set var="projid" value="${param.projid}"/>
-        <c:set var="swgid" value="${param.swgid}"/> --%>
+        <c:set var="paperid" value="${param.paperid}"/>
         
         <sql:query var="info" dataSource="jdbc/config-dev">
-            select project_id from descpub_publication where id = ?
-            <sql:param value="${pubid}"/>
+            select project_id from descpub_publication where paperid = ?
+            <sql:param value="${paperid}"/>
         </sql:query>
         
         <%-- get working groups associated with this pub --%>
@@ -39,20 +35,20 @@
             <sql:param value="${info.rows[0].project_id}"/>
         </sql:query>
         
-            <div>
-                <h3>Working Groups<h3/>
-                <c:forEach var="sRow" items="${swglist.rows}" varStatus="loop">
-                    <c:if test="${!loop.last}">
-                    <a href=show_swg.jsp?swgid=${sRow.id}&name=${sRow.name}>${sRow.name}, </a>
-                    </c:if>
-                    <c:if test="${loop.last}">
-                    <a href=show_swg.jsp?swgid=${sRow.id}&name=${sRow.name}>${sRow.name}</a>
-                    </c:if>
-                </c:forEach>
-            </div>    
+            
+        <div>
+            <h3>Working Groups<h3/>
+            <c:forEach var="sRow" items="${swglist.rows}" varStatus="loop">
+                <c:if test="${!loop.last}">
+                <a href="show_swg.jsp?swgid=${sRow.id}&swgname=${sRow.name}">${sRow.name}, </a>
+                </c:if>
+                <c:if test="${loop.last}">
+                <a href="show_swg.jsp?swgid=${sRow.id}&swgname=${sRow.name}">${sRow.name}</a>
+                </c:if>
+            </c:forEach>
+        </div>    
            
-     <%--   <tg:editPublication pubid="${pubid}" projid="${projid}" swgid="${swgid}"/>   --%>
-         <tg:editPublication pubid="${pubid}"/>   
+         <tg:editPublication paperid="${paperid}"/> 
 
     </body>
 </html>

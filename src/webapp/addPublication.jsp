@@ -22,7 +22,7 @@
         </c:forEach>  --%> 
           
         <sql:update dataSource="jdbc/config-dev">
-            insert into descpub_publication (id, title, state, added, builder_eligible, keypub, project_id, pubtype) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?)
+            insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?)
             <sql:param value="${param.title}"/>
             <sql:param value="in preparation"/>
             <sql:param value="U"/>

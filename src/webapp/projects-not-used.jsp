@@ -31,7 +31,7 @@
             left join descpub_publication pub on pub.project_id = p.id
             left join profile_user up on up.memidnum = pro.memidnum and up.experiment = ?
             left join descpub_documentreference dd on dd.project_id = p.id
-            group by p.id, p.keyprj, p.title, p.state, p.created, p.abstract, p.comments, pub.id, wg.name, wg.id, wg.convener_group_name, 
+            group by p.id, p.keyprj, p.title, p.state, p.created, p.abstract, p.comments, pub.paperid, wg.name, wg.id, wg.convener_group_name, 
             pro.id, pro.relation, pro.memidnum, pro.project_id, up.first_name, up.last_name, dd.title
             order by p.id
             <sql:param value="${appVariables.experiment}"/>

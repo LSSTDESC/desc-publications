@@ -89,7 +89,7 @@
             </c:if>
              <strong>Projects</strong><br/>
              <display:table class="datatable" id="proj" name="${projects.rows}">
-                 <display:column property="id" title="Id" sortable="true" headerClass="sortable">
+                 <display:column title="Id" sortable="true" headerClass="sortable">
                     <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}&name=${proj.title}">${proj.id}</a> 
                  </display:column>
                  <display:column title="Project Title" sortable="true" headerClass="sortable">
@@ -106,7 +106,7 @@
                  </display:column>
                  <display:column title="Publications" sortable="true" headerClass="sortable">
                      <sql:query var="results" dataSource="jdbc/config-dev">
-                        select p.id projid, ub.id pubid, ub.keypub, ub.state, ub.title, ub.keypub
+                        select p.id projid, ub.paperid, ub.keypub, ub.state, ub.title, ub.keypub
                         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
                         left join descpub_swg wg on ps.swg_id=wg.id 
                         left join descpub_publication ub on ub.project_id = p.id
@@ -115,7 +115,7 @@
                         <sql:param value="${proj.id}"/>
                      </sql:query>
                      <c:forEach var="pub" items="${results.rows}">
-                        <a href="show_pub.jsp?pubid=${pub.pubid}&projid=${proj.id}">${pub.title}</a><br/>
+                        <a href="show_pub.jsp?paperid=${pub.paperid}&projid=${proj.id}">${pub.title}</a><br/>
                      </c:forEach>
                  </display:column>
              </display:table>

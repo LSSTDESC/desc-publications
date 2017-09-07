@@ -13,7 +13,7 @@
 <script src="js/jquery-1.11.1.min.js"></script>
 <script src="js/jquery.validate.min.js"></script>
 
-<%@attribute name="pubid" required="true"%>
+<%@attribute name="paperid" required="true"%>
 <%--
 <%@attribute name="projid" required="true"%>
 <%@attribute name="swgid" required="true"%> --%>
@@ -23,10 +23,10 @@
  </sql:query>
 
  <sql:query var="pubs" dataSource="jdbc/config-dev">
-  select ID , STATE, TITLE  , JOURNAL, PUBTYPE, ABSTRACT, to_char(ADDED,'YYYY-MON-DD') ADDED,  to_char(DATE_MODIFIED,'YYYY-MON-DD') MODDATE, BUILDER_ELIGIBLE, COMMENTS, KEYPUB, CWR_END_DATE,
+  select PAPERID , STATE, TITLE  , JOURNAL, PUBTYPE, ABSTRACT, to_char(ADDED,'YYYY-MON-DD') ADDED,  to_char(DATE_MODIFIED,'YYYY-MON-DD') MODDATE, BUILDER_ELIGIBLE, COMMENTS, KEYPUB, CWR_END_DATE,
     RESPONSIBLE_PB_READER, CWR_COMMENTS, ARXIV, JOURNAL_REVIEW, PUBLISHED_REFERENCE, PROJECT_ID
-    FROM descpub_publication where id = ?
-    <sql:param value="${pubid}"/>
+    FROM descpub_publication where paperid = ?
+    <sql:param value="${paperid}"/>
  </sql:query>
     
 <sql:query var="states" dataSource="jdbc/config-dev">
@@ -44,16 +44,16 @@
     <sql:param value="${pubs.rows[0].project_id}"/>
 </sql:query>
     
-<h3>Publication: [${param.pubid}] ${pubs.rows[0].title} </h3>
+<h3>Publication: [${param.paperid}] ${pubs.rows[0].title} </h3>
     Added: ${pubs.rows[0].added}<br/> 
     
 <form action="modifyPublication.jsp">  
-   <input type="hidden" name="id" value="${pubid}"/> 
+   <input type="hidden" name="paperid" value="${paperid}"/> 
    <input type="hidden" name="project_id" value="${pubs.rows[0].project_id}"/> 
-   <input type="hidden" name="swgid" value="${swgid}"/> 
+   <input type="hidden" name="swgid" value="${param.swgid}"/> 
    Title: <input type="text" value="${pubs.rows[0].title}" size="35" name="title" required/><br/>
    State: 
-   <select name="state" id="pubstate">
+   <select name="state" id="state">
        <c:forEach var="sta" items="${states.rows}">
            <c:if test="${fn:startsWith(pubs.rows[0].state,sta.state)}">
                <option value="${sta.state}" selected>${sta.state}</option>
@@ -76,7 +76,7 @@
    
    Builder Eligible: <input type="text" value="${pubs.rows[0].BUILDER_ELIGIBLE}" size="3" name="builder_eligible"/><br/>
    Key Publication: <input type="text" value="${pubs.rows[0].KEYPUB}" size="3" name="keypub"/><br/>
-   Assigned PB Reader: <input type="text" value="${pubs.rows[0].RESPONSIBLE_PB_READER}" size="35" name="responsible_pb_reader"/><br/>
+   Responsible PB Reader: <input type="text" value="${pubs.rows[0].RESPONSIBLE_PB_READER}" size="35" name="responsible_pb_reader"/><br/>
    
    Abstract: <br/>
    <textarea name="abstract" rows="10" cols="60" required>${pubs.rows[0].ABSTRACT}</textarea><br/>

@@ -9,7 +9,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 
-<%@attribute name="pubid" required="true"%>
+<%@attribute name="paperid" required="true"%>
 <%@attribute name="experiment" required="true"%>
 <%@attribute name="memidnum" required="true" %>    
 
@@ -21,7 +21,7 @@
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum 
     join profile_ug ug on me.memidnum=ug.memidnum join descpub_author au on au.memidnum = me.memidnum
     where au.publication_id = ? order by me.lastname
-    <sql:param value="${pubid}"/>
+    <sql:param value="${paperid}"/>
 </sql:query>
 
 <form action="modifyPubAuthors.jsp">  

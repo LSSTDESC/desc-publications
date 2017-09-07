@@ -28,7 +28,7 @@
     <c:set var="memberPool" value="lsst-desc-full-members"/>
        
      <sql:query var="publications" dataSource="jdbc/config-dev">
-        select pb.id,pb.state,pb.title,pb.journal,pb.abstract,pb.added,pb.builder_eligible,pb.comments,pb.keypub,pb.cwr_end_date,pb.responsible_pb_reader,pb.cwr_comments,
+        select pb.paperid,pb.state,pb.title,pb.journal,pb.abstract,pb.added,pb.builder_eligible,pb.comments,pb.keypub,pb.cwr_end_date,pb.responsible_pb_reader,pb.cwr_comments,
         pb.arxiv,pb.journal_review,pb.published_reference,pb.project_id
         from descpub_publication pb join descpub_project dp on dp.id=pb.project_id where dp.id=?
         <sql:param value="${projid}"/>
@@ -41,7 +41,7 @@
     </sql:query>        
     
     <sql:query var="pubs" dataSource="jdbc/config-dev">
-        select id, state, title, abstract, added, builder_eligible, keypub from descpub_publication where project_id = ? 
+        select paperid, state, title, abstract, added, builder_eligible, keypub from descpub_publication where project_id = ? 
         order by title
         <sql:param value="${projid}"/>
     </sql:query>  
@@ -63,11 +63,11 @@
  
     <p/>
   <display:table class="datatable" id="Rows" name="${pubs.rows}" defaultsort="1">
-        <display:column title="Pub ID" sortable="true" headerClass="sortable">
-            <a href="show_pub.jsp?pubid=${Rows.id}&projid=${projid}&swgid=${swgid}">${Rows.id}<a/>
+        <display:column title="Paper ID" sortable="true" headerClass="sortable">
+            <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.paperid}<a/>
         </display:column>
         <display:column title="Publication Title" sortable="true" headerClass="sortable">
-            <a href="show_pub.jsp?pubid=${Rows.id}&projid=${projid}&swgid=${swgid}">${Rows.title}<a/>
+            <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.title}<a/>
         </display:column>
         <display:column property="state" title="State" sortable="true" headerClass="sortable"/>
         <display:column property="abstract" title="Abstract" sortable="true" headerClass="sortable"/>
