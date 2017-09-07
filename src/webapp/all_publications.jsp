@@ -24,15 +24,15 @@
         <tg:underConstruction/>
         
         <sql:query var="pubs" dataSource="jdbc/config-dev">
-            select paperid, state, keypub, title, project_id, pubtype from descpub_publication order by id
+            select paperid, state, keypub, title, project_id, pubtype from descpub_publication order by paperid
         </sql:query>
           
         <display:table class="datatable" id="Row" name="${pubs.rows}">
-            <display:column title="Pub ID">
-                <a href="show_pub.jsp?paperid=${Row.id}">${Row.id}</a>
+            <display:column title="Paper ID">
+                <a href="show_pub.jsp?paperid=${Row.paperid}">${Row.paperid}</a>
             </display:column>
             <display:column title="Title">
-                <a href="show_pub.jsp?paperid=${Row.id}">${Row.title}</a>
+                <a href="show_pub.jsp?paperid=${Row.paperid}">${Row.title}</a>
             </display:column>
             <display:column title="Key Publication">
                 ${Row.keypub}
