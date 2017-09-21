@@ -37,7 +37,7 @@
         
         <c:set var="memberPool" value="lsst-desc-full-members"/>
 
-        <sql:query var="swgs" dataSource="jdbc/config-dev">
+        <sql:query var="swgs">
             select id, name, email, profile_group_name as pgn, convener_group_name as cgn from descpub_swg 
             order by id
         </sql:query>
@@ -50,19 +50,11 @@
                 <display:column title="Mail Lists" sortable="true" headerClass="sortable">
                     <a href="mailto:${Row.email}">${Row.email}</a>
                 </display:column>
-                <display:column title="Working Group Members" sortable="true" headerClass="sortable">
-                    <sql:query var="members" dataSource="jdbc/config-dev">
-                        select me.firstname, me.lastname, me.memidnum from um_member me join profile_ug ug on me.memidnum=ug.memidnum and ug.group_id=?
-                        <sql:param value="${Row.pgn}"/>
-                    </sql:query>
-                    <c:if test="${members.rowCount>0}">
-                        <c:forEach var="c" items="${members.rows}">
-                            <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${c.memidnum}&recType=INDB&verification=">${c.firstname} ${c.lastname}</a><br/>
-                        </c:forEach>
-                    </c:if>
-                </display:column>   
+                <display:column title="Link to working group membership">
+                     <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/group.jsp?name=${Row.name}">${Row.name}</a><br/>
+                </display:column> 
                 <display:column title="Working Group Conveners" sortable="true" headerClass="sortable">
-                    <sql:query var="conveners" dataSource="jdbc/config-dev">
+                    <sql:query var="conveners">
                         select me.firstname, me.lastname, me.memidnum from um_member me join profile_ug ug on me.memidnum=ug.memidnum and ug.group_id=?
                         <sql:param value="${Row.cgn}"/>
                     </sql:query>

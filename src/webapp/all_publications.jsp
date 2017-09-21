@@ -23,7 +23,7 @@
     <body>
         <tg:underConstruction/>
         
-        <sql:query var="pubs" dataSource="jdbc/config-dev">
+        <sql:query var="pubs" >
             select paperid, state, keypub, title, project_id, pubtype from descpub_publication order by paperid
         </sql:query>
           
@@ -41,7 +41,7 @@
                 ${Row.state}
             </display:column>  
             <display:column title="Working Group(s)">
-                <sql:query var="wgs" dataSource="jdbc/config-dev">
+               <sql:query var="wgs">
                         select s.id, s.name from descpub_swg s join descpub_project_swgs j on s.id = j.swg_id and j.project_id = ?
                         <sql:param value="${Row.project_id}"/>
                 </sql:query>

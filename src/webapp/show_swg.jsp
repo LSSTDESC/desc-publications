@@ -28,6 +28,7 @@
 <body>
     <%-- Notes:
        pgn = profile group name
+       cgn = convener group name
        swgname = science working group name
        Users cannot change name of a group, that leads to inconsistencies between profile_group and profile_ug.  Users can request to delete a group. 
     --%>
@@ -35,8 +36,9 @@
     <h2>Science Working Group: ${param.swgname}</h2>
     
     <c:set var="convenerPool" value="lsst-desc-full-members"/>
+    <c:set var="pubPool" value="lsst-desc-publications"/>
     
-    <sql:query var="swgs" dataSource="jdbc/config-dev">
+    <sql:query var="swgs">
         select id, name, email, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id = ? order by id
         <sql:param value="${param.swgid}"/>
     </sql:query>
@@ -46,7 +48,7 @@
     <c:set var="swgid" value="${param.swgid}"/> 
     <c:set var="swgname" value="${swgs.rows[0].name}"/>
     
-    <sql:query var="projects" dataSource="jdbc/config-dev">
+    <sql:query var="projects" >
         select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.title
@@ -65,7 +67,7 @@
          <%-- Don't allow deletion of swgs per S.Digel, 18jul17.   --%>
             
                <%--   <c:if test="${gm:isUserInGroup(pageContext,projects.rows[0].cgn)}"> --%>
-               <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications')}">
+               <c:if test="${gm:isUserInGroup(pageContext,pubPool)}">
                    
                 <strong><a href="project_details.jsp?task=create_proj_form&swgname=${param.swgname}&swgid=${param.swgid}">create project</a></strong>
                 <p/>
@@ -105,7 +107,7 @@
                      TBD
                  </display:column>
                  <display:column title="Publications" sortable="true" headerClass="sortable">
-                     <sql:query var="results" dataSource="jdbc/config-dev">
+                     <sql:query var="results">
                         select p.id projid, ub.paperid, ub.keypub, ub.state, ub.title, ub.keypub
                         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
                         left join descpub_swg wg on ps.swg_id=wg.id 

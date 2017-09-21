@@ -49,30 +49,19 @@
         
         <c:set var="array" value="${fn:split(orafields,',')}"/><p/>
         
-        <sql:update dataSource="jdbc/config-dev">
-        update descpub_publication set ${oranames}
-        <c:forEach var="ar" items="${array}">
-            <c:forEach var="y" items="${param}">
-                <c:if test="${ar == y.key}">
-                    <sql:param value="${y.value}"/>
-                </c:if>
-            </c:forEach>
-        </c:forEach>         
-        where paperid = ? and project_id = ?
-        <sql:param value="${paperid}"/>
-        <sql:param value="${projid}"/>
+        <sql:update>
+            update descpub_publication set ${oranames}
+            <c:forEach var="ar" items="${array}">
+                <c:forEach var="y" items="${param}">
+                    <c:if test="${ar == y.key}">
+                        <sql:param value="${y.value}"/>
+                    </c:if>
+                </c:forEach>
+            </c:forEach>         
+            where paperid = ? and project_id = ?
+            <sql:param value="${paperid}"/>
+            <sql:param value="${projid}"/>
         </sql:update>
-        <%--
-        <sql:update dataSource="jdbc/config-dev"> 
-            update descpub_publication set ${oranames} where paperid = ?   
-            <c:forEach var="x" items="${param}">
-                <c:if test="${x.key != 'action' && x.key != 'swgid'}">
-                <sql:param value="${x.value}"/> 
-                </c:if>
-            </c:forEach>          
-         <sql:param value="${param.id}"/>
-        </sql:update>  --%>
-        
                 
    <c:redirect url="show_pub.jsp?paperid=${paperid}&projid=${projid}&swgid=${swgid}"/>    
     </body>

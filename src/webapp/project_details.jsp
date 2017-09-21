@@ -33,23 +33,23 @@
     <c:otherwise>
     <c:set var="candidate_group" value="lsst-desc-members"/>  
     
-    <sql:query var="swgs" dataSource="jdbc/config-dev">
+    <sql:query var="swgs">
         select id, name, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id != ?
         <sql:param value="${param.swgid}"/>
     </sql:query>
         
-    <sql:query var="swgproj" dataSource="jdbc/config-dev">
+    <sql:query var="swgproj">
         select p.id, p.keyprj, p.title, p.state, wg.name from descpub_project p join descpub_project_swgs ps on p.id=ps.project_id
         join descpub_swg wg on ps.swg_id=wg.id where p.id=? order by p.id
         <sql:param value="${param.id}"/>
     </sql:query>
         
-    <sql:query var="detail" dataSource="jdbc/config-dev">
+    <sql:query var="detail">
         select id,title,abstract as abs,state,created,comments,keyprj from descpub_project where active='Y' and id=? 
         <sql:param value="${param.id}"/>
     </sql:query>
     
-    <sql:query var="details" dataSource="jdbc/config-dev">    
+    <sql:query var="details">    
         select dp.title, dp.abstract as abs, dp.state, dp.keyprj, wg.name, wg.profile_group_name as pgn from 
         descpub_project dp join descpub_project_swgs sg on dp.id = sg.project_id join descpub_swg wg on wg.id = sg.swg_id
         where dp.id = ?
@@ -73,7 +73,7 @@
         <c:when test="${param.formsubmitted == 'true'}">
             <c:set var="trapError" value=""/>
             <c:catch var="trapError">
-                <sql:transaction dataSource="jdbc/config-dev">
+                <sql:transaction>
                     <sql:update >
                     insert into descpub_project (id,title,abstract,state,created,keyprj) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate,?)
                     <sql:param value="${param.title}"/>

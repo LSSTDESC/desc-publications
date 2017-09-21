@@ -19,7 +19,7 @@
 <script src="js/jquery-1.11.1.min.js"></script>
 <script src="js/jquery.validate.min.js"></script>
  
-<sql:query var="pubtypes" dataSource="jdbc/config-dev">
+<sql:query var="pubtypes">
     select pubtype from descpub_pubtypes order by pubtype
 </sql:query>
 

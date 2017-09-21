@@ -23,13 +23,13 @@
     <body>
         <tg:underConstruction/>
             
-        <sql:query var="pjs" dataSource="jdbc/config-dev">
+        <sql:query var="pjs" >
              select id, title, active, state, keyprj, lastmodified from descpub_project order by id
         </sql:query>   
          
         <display:table class="datatable" id="Row" name="${pjs.rows}">
              <display:column title="Working Groups" sortable="true" headerClass="sortable">
-                <sql:query var="wgs" dataSource="jdbc/config-dev">
+                <sql:query var="wgs">
                         select s.id, s.name from descpub_swg s join descpub_project_swgs j on s.id = j.swg_id and j.project_id = ?
                         <sql:param value="${Row.id}"/>
                 </sql:query>

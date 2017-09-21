@@ -27,26 +27,26 @@
     <c:set var="swgid" value="${param.swgid}"/>
     <c:set var="memberPool" value="lsst-desc-full-members"/>
        
-     <sql:query var="publications" dataSource="jdbc/config-dev">
+     <sql:query var="publications" >
         select pb.paperid,pb.state,pb.title,pb.journal,pb.abstract,pb.added,pb.builder_eligible,pb.comments,pb.keypub,pb.cwr_end_date,pb.responsible_pb_reader,pb.cwr_comments,
         pb.arxiv,pb.journal_review,pb.published_reference,pb.project_id
         from descpub_publication pb join descpub_project dp on dp.id=pb.project_id where dp.id=?
         <sql:param value="${projid}"/>
     </sql:query> 
         
-     <sql:query var="projects" dataSource="jdbc/config-dev">
+     <sql:query var="projects" >
          select id, keyprj, title, state, to_char(created,'YYYY-MON-DD') crdate, to_char(lastmodified,'YYYY-MON-DD') moddate,
         created, abstract abs, comments from descpub_project where id = ?
         <sql:param value="${projid}"/>
     </sql:query>        
     
-    <sql:query var="pubs" dataSource="jdbc/config-dev">
+    <sql:query var="pubs">
         select paperid, state, title, abstract, added, builder_eligible, keypub from descpub_publication where project_id = ? 
         order by title
         <sql:param value="${projid}"/>
     </sql:query>  
      
-    <sql:query var="mems" dataSource="jdbc/config-dev">
+    <sql:query var="mems">
         select wg.profile_group_name pgn, wg.convener_group_name cgn, wg.name from descpub_swg wg join descpub_project_swgs ps on ps.project_id=?
         and ps.swg_id = wg.id and ps.swg_id = ?
         <sql:param value="${projid}"/>

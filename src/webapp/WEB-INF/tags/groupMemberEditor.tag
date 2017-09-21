@@ -8,7 +8,7 @@
 <%@attribute name="candidategroup" required="true" %>
 <%@attribute name="returnURL" required="true" %>
 
-<sql:query var="candidates" dataSource="jdbc/config-dev">
+<sql:query var="candidates">
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
     join um_project_members pm on me.memidnum=pm.memidnum 
     join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? where pm.activestatus='Y' and pm.project = ?
@@ -20,7 +20,7 @@
     <sql:param value="${groupname}"/>
 </sql:query>
 
-<sql:query var="members" dataSource="jdbc/config-dev">
+<sql:query var="members">
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
     join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? order by me.lastname
     <sql:param value="${groupname}"/>

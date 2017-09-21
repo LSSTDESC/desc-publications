@@ -17,11 +17,8 @@
     </head>
     <body>
         <h1>Add publication to project ${param.projid} and working group ${param.swgid} on experiment ${param.experiment}</h1>
-    <%--     <c:forEach var="x" items="${param}">
-            <c:out value="${x.key} = ${x.value}"/><br/>
-        </c:forEach>  --%> 
           
-        <sql:update dataSource="jdbc/config-dev">
+       <sql:update >
             insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?)
             <sql:param value="${param.title}"/>
             <sql:param value="in preparation"/>

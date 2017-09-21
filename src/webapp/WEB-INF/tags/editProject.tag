@@ -15,17 +15,17 @@
         <c:redirect url="noPermission.jsp?errmsg=1"/>
     </c:if>  
    
-    <sql:query var="validStates" dataSource="jdbc/config-dev">
+    <sql:query var="validStates">
         select state from descpub_project_states order by state
     </sql:query>
     
     <%-- project can have multiple working groups assigned so execute separate query to get all working groups --%> 
-    <sql:query var="swgcurr" dataSource="jdbc/config-dev">
+    <sql:query var="swgcurr">
          select wg.name, wg.id from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ? order by wg.name
         <sql:param value="${projid}"/>
     </sql:query>  
      
-    <sql:query var="swgcandidates" dataSource="jdbc/config-dev">
+    <sql:query var="swgcandidates">
         select name, id from descpub_swg where name not in 
         (select wg.name from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ?) 
         order by name
@@ -33,7 +33,7 @@
     </sql:query>
    
         
-    <sql:query var="projects" dataSource="jdbc/config-dev">
+    <sql:query var="projects">
         select title, abstract abs, state, created crdate, comments comm, keyprj, lastmodified moddate from descpub_project where id = ?  
         <sql:param value="${projid}"/>
     </sql:query>

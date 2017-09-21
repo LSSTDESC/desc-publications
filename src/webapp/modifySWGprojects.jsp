@@ -15,7 +15,7 @@
       
    <c:set var="updateProj" value=""/>
    
-    <sql:query var="swgcount" dataSource="jdbc/config-dev">
+    <sql:query var="swgcount">
        select count(*) tot from descpub_project_swgs where project_id = ?
        <sql:param value="${param.projid}"/>
     </sql:query>
@@ -27,7 +27,7 @@
    
     <c:set var="orafields" value="title= ?, abstract = ?, state = ?, comments = ?, keyprj = ?, lastmodified = sysdate"/>
     <c:catch var="catchError">
-        <sql:update dataSource="jdbc/config-dev">
+       <sql:update>
             update descpub_project set ${orafields} where id = ?
             <sql:param value="${param.title}"/> 
             <sql:param value="${param.abs}"/>
@@ -40,7 +40,7 @@
         <c:if test="${!empty paramValues.removeprojswg}">
             <c:if test="${fn:length(paramValues.removeprojswg) < swgcount.rows[0].tot}">
                <c:forEach var="pv" items="${paramValues.removeprojswg}">
-                    <sql:update dataSource="jdbc/config-dev">
+                   <sql:update>
                        delete from descpub_project_swgs where project_id = ? and swg_id = ?
                        <sql:param value="${param.projid}"/>
                        <sql:param value="${pv}"/>
@@ -55,7 +55,7 @@
 
         <c:if test="${!empty paramValues.addprojswg}">
             <c:forEach var="pv" items="${paramValues.addprojswg}">
-                <sql:update dataSource="jdbc/config-dev">
+                <sql:update>
                     insert into descpub_project_swgs (id,project_id,swg_id) values (descpub_proj_swg_seq.nextval,?,?)
                 <sql:param value="${param.projid}"/>
                 <sql:param value="${pv}"/>

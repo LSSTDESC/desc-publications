@@ -18,27 +18,27 @@
 <%@attribute name="projid" required="true"%>
 <%@attribute name="swgid" required="true"%> --%>
 
- <sql:query var="pubtypes" dataSource="jdbc/config-dev">
+ <sql:query var="pubtypes" >
      select pubtype from descpub_pubtypes order by pubtype
  </sql:query>
 
- <sql:query var="pubs" dataSource="jdbc/config-dev">
+ <sql:query var="pubs">
   select PAPERID , STATE, TITLE  , JOURNAL, PUBTYPE, ABSTRACT, to_char(ADDED,'YYYY-MON-DD') ADDED,  to_char(DATE_MODIFIED,'YYYY-MON-DD') MODDATE, BUILDER_ELIGIBLE, COMMENTS, KEYPUB, CWR_END_DATE,
     RESPONSIBLE_PB_READER, CWR_COMMENTS, ARXIV, JOURNAL_REVIEW, PUBLISHED_REFERENCE, PROJECT_ID
     FROM descpub_publication where paperid = ?
     <sql:param value="${paperid}"/>
  </sql:query>
     
-<sql:query var="states" dataSource="jdbc/config-dev">
+<sql:query var="states">
     select state from descpub_publication_states order by state
 </sql:query>
     
-<sql:query var="projinfo" dataSource="jdbc/config-dev">
+<sql:query var="projinfo">
     select title from descpub_project where id = ?
    <sql:param value="${pubs.rows[0].project_id}"/>
 </sql:query>
     
-<sql:query var="wgs" dataSource="jdbc/config-dev">
+<sql:query var="wgs" >
     select wg.name, wg.id, wg.convener_group_name, wg.profile_group_name from descpub_project_swgs jo join descpub_swg wg on jo.swg_id = wg.id
     where jo.project_id = ?
     <sql:param value="${pubs.rows[0].project_id}"/>

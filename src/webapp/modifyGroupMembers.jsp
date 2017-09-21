@@ -24,7 +24,7 @@
                         <c:set var="userVals" value="${fn:split(line,':')}"/>  
                         <c:set var="memidnum" value="${userVals[0]}"/>
                         <c:set var="uid" value="${userVals[1]}"/>
-                    <sql:update dataSource="jdbc/config-dev">
+                       <sql:update >
                             DELETE FROM PROFILE_UG WHERE MEMIDNUM=? AND GROUP_ID=? AND EXPERIMENT=? AND USER_ID=?
                             <sql:param value="${memidnum}"/>
                             <sql:param value="${param.groupname}"/>
@@ -39,7 +39,7 @@
                         <c:set var="memidnum" value="${userVals[0]}"/>
                         <c:set var="uid" value="${userVals[1]}"/>
                         
-                    <sql:update dataSource="jdbc/config-dev">
+                        <sql:update>
                             INSERT INTO PROFILE_UG (USER_ID,GROUP_ID,EXPERIMENT,MEMIDNUM) VALUES(?,?,?,?)
                             <sql:param value="${uid}"/>
                             <sql:param value="${param.groupname}"/>

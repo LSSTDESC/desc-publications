@@ -34,7 +34,7 @@
             </c:when>
             <c:when test="${param.formsubmitted =='true'}">
                 insert into descpub_swg (id, name, email,profile_group_name) values(swg_seq.nextval,${param.name},${param.email},${param.profileGrpName})<br/>
-                <sql:update var="ins" dataSource="jdbc/config-dev">
+                <sql:update var="ins">
                     insert into descpub_swg (id, name, email,profile_group_name) values(swg_seq.nextval,?,?,?)
                     <sql:param value="${param.name}"/>
                     <sql:param value="${param.email}"/>

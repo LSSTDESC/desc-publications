@@ -18,7 +18,7 @@
         
         <tg:underConstruction/>
         
-        <sql:query var="mems" dataSource="jdbc/config-dev">
+       <sql:query var="mems">
             select me.memidnum, me.firstname, me.lastname, hi.position, us.username, pm.activestatus, ii.institution, ro.projstartdate
             from
             um_member me join um_project_members pm on pm.memidnum=me.memidnum

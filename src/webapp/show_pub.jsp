@@ -21,13 +21,13 @@
         
         <c:set var="paperid" value="${param.paperid}"/>
         
-        <sql:query var="info" dataSource="jdbc/config-dev">
+        <sql:query var="info">
             select project_id from descpub_publication where paperid = ?
             <sql:param value="${paperid}"/>
         </sql:query>
         
         <%-- get working groups associated with this pub --%>
-        <sql:query var="swglist" dataSource="jdbc/config-dev">
+        <sql:query var="swglist">
             select sg.name, sg.id
             from descpub_project pr join descpub_project_swgs wg on wg.project_id = pr.id
             join descpub_swg sg on sg.id=wg.swg_id
