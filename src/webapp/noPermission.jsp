@@ -19,6 +19,12 @@
         <c:when test="${param.errmsg == '3'}">
             <h3>Only members in the GroupManager database can create documents. </h3>
         </c:when>
+        <c:when test="${param.errmsg == '4'}">
+            <h3>Only Descpub admins can add/remove users from groups.</h3>
+        </c:when>
+        <c:when test="${param.errmsg == '5'}">
+            <h3>Only working group leaders or the analysis co-ordinator can add/remove users from groups.</h3>
+        </c:when>
         </c:choose>
     </body>
 </html>

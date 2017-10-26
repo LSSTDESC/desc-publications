@@ -5,12 +5,13 @@
 --%>
 <%@page contentType="text/html"%>
 <%@page pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib tagdir="/WEB-INF/tags/" prefix="tg"%>
-<%@taglib uri="http://srs.slac.stanford.edu/displaytag" prefix="displayutils" %>
-<%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions"  prefix="fn" %>
+<%@taglib uri="http://displaytag.sf.net"  prefix="display" %>
+<%@taglib uri="http://srs.slac.stanford.edu/displaytag" prefix="displayutils"  %>
+<%@taglib uri="http://srs.slac.stanford.edu/GroupManager" prefix="gm" %>
 
 <!DOCTYPE html>
 
@@ -24,14 +25,24 @@
 </head>
 
 <body>
-    
+   
+    <tg:underConstruction/>
+
     <c:choose>
     <c:when test="${( ! gm:isUserInGroup(pageContext,'lsst-desc-members') )}">  
         <%-- change this group once testing is over, to whatever group pub-board chooses as authorized --%>
         <c:redirect url="noPermission.jsp?errmsg=1"/>  
     </c:when>  
     <c:otherwise>
-    <c:set var="candidate_group" value="lsst-desc-members"/>  
+    <c:set var="candidategroup" value="lsst-desc-members"/>  
+   
+    <sql:query var="candidates">
+        select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
+        join um_project_members pm on me.memidnum=pm.memidnum 
+        join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? where pm.activestatus='Y' and pm.project = ? order by me.lastname
+        <sql:param value="${candidategroup}"/>
+        <sql:param value="${appVariables.experiment}"/>
+    </sql:query>
     
     <sql:query var="swgs">
         select id, name, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id != ?
@@ -45,12 +56,12 @@
     </sql:query>
         
     <sql:query var="detail">
-        select id,title,abstract as abs,state,created,comments,keyprj from descpub_project where active='Y' and id=? 
+        select id,title,summary,state,created,keyprj from descpub_project where id=? 
         <sql:param value="${param.id}"/>
     </sql:query>
     
     <sql:query var="details">    
-        select dp.title, dp.abstract as abs, dp.state, dp.keyprj, wg.name, wg.profile_group_name as pgn from 
+        select dp.title, dp.summary, dp.state, dp.keyprj, wg.name, wg.profile_group_name as pgn from 
         descpub_project dp join descpub_project_swgs sg on dp.id = sg.project_id join descpub_swg wg on wg.id = sg.swg_id
         where dp.id = ?
         <sql:param value="${param.id}"/>
@@ -60,8 +71,16 @@
         <c:when test="${param.task == 'create_proj_form'}">
              <h3>Working Group: ${param.swgname}</h3><p/>
             <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}&swgname=${param.swgname}">
-                <strong>Title</strong> &nbsp;&nbsp;<input type="text" name="title" size="77" required/><p/>
-                <strong>Abstract<br/></strong><textarea rows="22" cols="80" name="abs" required></textarea>
+                <strong>Title</strong><p/><input type="text" name="title" size="77" required/><p/>
+                <strong>Summary<br/></strong><textarea rows="22" cols="80" name="summary" required></textarea>
+                <p/>
+                <strong>Select project leads</strong><p/>
+                <select name="addLeads" size="8" multiple required>
+                    <c:forEach var="addrow" items="${candidates.rows}">
+                        <option value="${addrow.memidnum}:${addrow.username}">${addrow.firstname} ${addrow.lastname}</option>
+                    </c:forEach>
+                </select>
+                
                 <input type="hidden" value="${param.swgid}" name="swgid"/><p/>
                 <input type="hidden" value="${param.swgname}" name="swgname"/><p/>
                 <input type="hidden" value="created" name="state"/><p/>
@@ -72,17 +91,23 @@
         </c:when>
         <c:when test="${param.formsubmitted == 'true'}">
             <c:set var="trapError" value=""/>
+          <%--  
+            <c:forEach var="x" items="${param}">
+                <c:forEach var="y" items="${paramValues[x.key]}">
+                    <c:out value="key = ${x.key} paramValue: ${y}"/><br/>
+                </c:forEach>
+            </c:forEach> --%>
+            
             <c:catch var="trapError">
                 <sql:transaction>
                     <sql:update >
-                    insert into descpub_project (id,title,abstract,state,created,keyprj) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate,?)
+                    insert into descpub_project (id,title,summary,state,created,keyprj,active) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate,?,'Y')
                     <sql:param value="${param.title}"/>
-                    <sql:param value="${param.abs}"/>
+                    <sql:param value="${param.summary}"/>
                     <sql:param value="${param.state}"/>
                     <sql:param value="${param.keyprj}"/>
                     </sql:update>
 
-                     
                     <sql:query var="projNum">
                         select descpub_proj_seq.currval as newProjNum from dual
                     </sql:query>  
@@ -92,20 +117,24 @@
                         <sql:param value="${projNum.rows[0]['newProjNum']}"/>
                         <sql:param value="${param.swgid}"/>
                     </sql:update>
+            
+                    <c:forEach var="x" items="${param}">
+                        <c:if test="${x.key == 'addLeads'}">
+                            <c:forEach var="y" items="${paramValues[x.key]}">
+                                <c:set var="array" value="${fn:split(y,':')}"/>
+                                <sql:update var="leaders">
+                                    insert into descpub_project_leads (relation, project_id, memidnum) values ('active',?,?)
+                                    <sql:param value="${projNum.rows[0]['newProjNum']}"/>
+                                    <sql:param value="${array[0]}"/>
+                                </sql:update>
+                             </c:forEach>
+                         </c:if>
+                    </c:forEach>
               </sql:transaction>
-            </c:catch>
+            </c:catch> 
 
             <c:if test="${!empty trapError}">
                 Create project ${param.title} failed.<br/>
-             <%--   <h3> insert into descpub_project (id,title,abstract,state,created,keyprj) <br/>
-                values(${projNum.rows[0]['newProjNum']},${param.title},${param.abs},'created',sysdate,'N')<br/>
-                <p/>
-                    
-                insert into descpub_project_swgs (id, project_id, swg_id)<br/>
-                values(${swg_seq.currval},${projNum.rows[0]['newProjNum']}, ${param.swgid}<br/>
-                
-                project id =${projNum.rows[0]['newProjNum']}<br/>
-                swgid = ${param.swgid}<h3/> --%>
                 ${trapError}
             </c:if> 
             <c:if test="${empty trapError}">
@@ -115,10 +144,8 @@
     </c:choose>
 <p/>
 
-<p/>
-
 <c:if test="${swg.rowCount > 0}">
-    <hr/>
+    <hr align="left" width="50%"/>
     Project Members<p/>
     <tg:groupMemberEditor candidategroup="${swgs.rows[0].pgn}" groupname="${swgs.rows[0].cgn}" returnURL="project_details.jsp"/> 
 </c:if>

@@ -6,10 +6,10 @@
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 
 <%@attribute name="projid" required="true"%>
-<%-- <%@attribute name="swgid" required="true"%> --%>
+<%@attribute name="swgid" required="true"%>  
+<%@attribute name="wgname" required="true"%>  
 <%@attribute name="experiment" required="true" %>
 <%@attribute name="returnURL" required="true" %>
-    
  
     <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-members'))}">
         <c:redirect url="noPermission.jsp?errmsg=1"/>
@@ -32,37 +32,28 @@
         <sql:param value="${projid}"/>
     </sql:query>
    
-        
     <sql:query var="projects">
-        select title, abstract abs, state, created crdate, comments comm, keyprj, lastmodified moddate from descpub_project where id = ?  
+        select id, title, summary, state, created crdate, keyprj, lastmodified moddate from descpub_project where id = ?  
         <sql:param value="${projid}"/>
     </sql:query>
         
     <c:set var="keyproj" value="${projects.rows[0].keyprj}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].state}"/>
-    <c:set var="abs" value="${projects.rows[0].abs}"/>
+    <c:set var="summary" value="${projects.rows[0].summary}"/>
     <c:set var="comm" value="${projects.rows[0].comm}"/>
-   
-    <h2>Project: [${projid}] ${projects.rows[0].title}  </h2>
-    <h3>Created: ${projects.rows[0].crdate} &nbsp;&nbsp; Last Modified: ${projects.rows[0].moddate}</h3>
     
-    <strong>Email Project Members</strong> 
-    <p/>
-    
+<p id="pagelabel">Project Details</p>
 <form action="modifySWGprojects.jsp">  
-   <%-- <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />  --%>
+    <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />
     <input type="hidden" name="projid" id="projid" value="${projid}" /> 
     <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp?projid=${projid}" />  
     
-    Key Project: 
-    <select name="isKeyprj" id="isKeyprj">
-        <option value="Y" <c:if test="${keyproj == 'Y'}"> selected</c:if> > Y</option>
-        <option value="N" <c:if test="${keyproj == 'N'}"> selected</c:if> > N</option>
-    </select> 
-    <p/>
-   
-    Title: <input type="text" name="title" id="title" value="${title}" size="55" required/><p/>
+    Project ID: ${projid} &nbsp;&nbsp;&nbsp;
+    Created: ${projects.rows[0].crdate}&nbsp;&nbsp;&nbsp;
+    Last Modified: ${projects.rows[0].moddate}<p/>
+    
+    Title: <br/><input type="text" name="title" id="title" value="${title}" size="55" required/><p/>
     <table border="0">
         <tr><td>Add working group</td><td>Remove working group</td></tr>
         <tr>
@@ -81,26 +72,24 @@
         </tr>
     </table>
     <p/>
-   
-    <table border="0">
-        <tr><td>State</td></tr>
-        <tr><td>
-        <select name="chgstate" id="chgstate" size="8" required>
+    
+    Key Project:<br/>
+    <select name="keyprj" id="keyprj" required>
+        <option value="Y" <c:if test="${projects.rows[0].keyprj == 'Y'}"> selected</c:if> > Y</option>
+        <option value="N" <c:if test="${projects.rows[0].keyprj == 'N'}"> selected</c:if> > N</option>
+    </select> 
+    <p/>
+    
+    State:<br/>  
+    <select name="state" id="state" size="6" required>
         <c:forEach var="sta" items="${validStates.rows}" >
            <option value="${sta.state}" <c:if test="${fn:startsWith(sta.state,projstate)}">selected</c:if> >${sta.state}</option>
         </c:forEach>
-        </select> 
-        </tr></td>
-    </table>
+    </select> 
+    
     <p/>
-    Abstract:<br/> <textarea id="abs" rows="8" cols="50" name="abs">${abs}</textarea>
+    Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
-    Comments:<br/> <textarea id="comm" rows="8" cols="50" name="comm">${comm}</textarea>
-    <p/>
-  
-    <tr>
-       <td><input type="submit" value="Update_Project" id="action" name="action" /></td>     
-    </tr>  
+    <input type="submit" value="Update_Project_Details" id="action" name="action" />    
 </form>
-<p/>
 <p/>

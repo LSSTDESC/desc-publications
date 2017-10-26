@@ -7,8 +7,9 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
-<%@taglib prefix="time" uri="http://srs.slac.stanford.edu/time" %>
-<%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
+<%@taglib uri="http://srs.slac.stanford.edu/time" prefix="time"%>
+<%@taglib uri="http://srs.slac.stanford.edu/GroupManager" prefix="gm"%>
+<%@taglib tagdir="/WEB-INF/tags" prefix="tg"%>
 
 <script src="js/jquery-1.11.1.min.js"></script>
 <script src="js/jquery.validate.min.js"></script>
@@ -18,14 +19,14 @@
 <%@attribute name="projid" required="true"%>
 <%@attribute name="swgid" required="true"%> --%>
 
+ 
  <sql:query var="pubtypes" >
      select pubtype from descpub_pubtypes order by pubtype
  </sql:query>
 
  <sql:query var="pubs">
-  select PAPERID , STATE, TITLE  , JOURNAL, PUBTYPE, ABSTRACT, to_char(ADDED,'YYYY-MON-DD') ADDED,  to_char(DATE_MODIFIED,'YYYY-MON-DD') MODDATE, BUILDER_ELIGIBLE, COMMENTS, KEYPUB, CWR_END_DATE,
-    RESPONSIBLE_PB_READER, CWR_COMMENTS, ARXIV, JOURNAL_REVIEW, PUBLISHED_REFERENCE, PROJECT_ID
-    FROM descpub_publication where paperid = ?
+  select paperid, state, title, journal, pubtype, summary, to_char(added,'yyyy-mon-dd') added, to_char(date_modified,'yyyy-mon-dd') moddate, builder_eligible, keypub,
+  pb_reader_approved, arxiv, published_reference, project_id, swgid from descpub_publication where paperid = ?
     <sql:param value="${paperid}"/>
  </sql:query>
     
@@ -45,13 +46,14 @@
 </sql:query>
     
 <h3>Publication: [${param.paperid}] ${pubs.rows[0].title} </h3>
-    Added: ${pubs.rows[0].added}<br/> 
+    Project Id: ${pubs.rows[0].project_id} &nbsp; &nbsp; Working Group Id: ${pubs.rows[0].swgid} &nbsp; &nbsp; Added: ${pubs.rows[0].added}
+    <p/> 
     
 <form action="modifyPublication.jsp">  
    <input type="hidden" name="paperid" value="${paperid}"/> 
    <input type="hidden" name="project_id" value="${pubs.rows[0].project_id}"/> 
    <input type="hidden" name="swgid" value="${param.swgid}"/> 
-   Title: <input type="text" value="${pubs.rows[0].title}" size="35" name="title" required/><br/>
+   Title: <input type="text" value="${pubs.rows[0].title}" size="35" name="title" required/><p/>
    State: 
    <select name="state" id="state">
        <c:forEach var="sta" items="${states.rows}">
@@ -65,33 +67,50 @@
    </select>
    <p/>
    
-   Journal: <input type="text" value="${pubs.rows[0].JOURNAL}" size="35" name="journal"/><br/>
-   Journal_Review: <input type="text" value="${pubs.rows[0].JOURNAL_REVIEW}" size="3" name="journal_review"/><br/>
-   Pubtype: <select name="pubtype">
+   Journal: <input type="text" value="${pubs.rows[0].JOURNAL}" size="35" name="journal"/>
+   <p/>
+   Pubtype: 
+   <select name="pubtype" id="pubtype">
         <c:forEach var="ptype" items="${pubtypes.rows}">
             <option value="${ptype.pubtype}" <c:if test="${pubs.rows[0].pubtype == ptype.pubtype}">selected</c:if>  >${ptype.pubtype}</option>
         </c:forEach>
     </select>
-   <br/>
-   
-   Builder Eligible: <input type="text" value="${pubs.rows[0].BUILDER_ELIGIBLE}" size="3" name="builder_eligible"/><br/>
-   Key Publication: <input type="text" value="${pubs.rows[0].KEYPUB}" size="3" name="keypub"/><br/>
-   Responsible PB Reader: <input type="text" value="${pubs.rows[0].RESPONSIBLE_PB_READER}" size="35" name="responsible_pb_reader"/><br/>
-   
-   Abstract: <br/>
-   <textarea name="abstract" rows="10" cols="60" required>${pubs.rows[0].ABSTRACT}</textarea><br/>
-   
-   Comments: <br/>
-   <textarea name="comments" rows="10" cols="60">${pubs.rows[0].COMMENTS}</textarea><br/>
-   
-   Cwr_Comments: <br/>
-   <textarea name="cwr_comments" rows="10" cols="60" >${pubs.rows[0].CWR_COMMENTS}</textarea><br/>
-  
-   arXiv number: <input type="text" value="${pubs.rows[0].ARXIV}" size="35" name="arxiv"/><br/>
-   Published Reference: <input type="text" value="${pubs.rows[0].PUBLISHED_REFERENCE}" size="35" name="published_reference"/><br/>
-   Project Id: ${pubs.rows[0].project_id}<br/>
    <p/>
+   
+   Builder Eligible:<br/>
+   <select name="builder_eligible" id="builder_eligible" required>
+       <option value=""></option>
+       <option value="Y" <c:if test="${pubs.rows[0].builder_eligible == 'Y'}">selected</c:if> >Y</option>
+       <option value="N" <c:if test="${pubs.rows[0].builder_eligible == 'N'}">selected</c:if> >N </option>
+   </select>
+   <p/>
+   
+   Key Paper:<br/>
+   <select name="keypub" id="keypub" required>
+       <option value=""></option>
+       <option value="Y" <c:if test="${pubs.rows[0].keypub == 'Y'}">selected</c:if> >Y</option>
+       <option value="N" <c:if test="${pubs.rows[0].keypub == 'N'}">selected</c:if> >N</option>
+   </select>
+   
+   <p/>
+   Approved by a PubBoard Reader:<br/> 
+   <select name="pb_reader_approved" id="pb_reader_approved" required>
+       <option value=""></option>
+       <option value="Y" <c:if test="${pubs.rows[0].pb_reader_approved == 'Y'}">selected</c:if> >Y</option>
+       <option value="N" <c:if test="${pubs.rows[0].pb_reader_approved == 'N'}">selected</c:if> >N</option>
+   </select>
+   <p/>
+   Brief Summary: <br/>
+   <textarea name="summary" rows="10" cols="60" required>${pubs.rows[0].SUMMARY}</textarea><br/>
+   <p/>
+   arXiv number: <br/><input type="text" value="${pubs.rows[0].ARXIV}" size="35" name="arxiv"/>
+   <p/>
+   Published Reference: <br/><input type="text" value="${pubs.rows[0].PUBLISHED_REFERENCE}" size="35" name="published_reference"/>
+   <p/>
+   
+   <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin')}">
    <input type="submit" value="UpdatePub" name="action" />
+   </c:if>
 </form>  
  
  

@@ -17,69 +17,88 @@
 
  <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <link rel="stylesheet" href="css/site-demos.css">
+      <link rel="stylesheet" type="text/css" href="css/pubstyles.css">
       <title>LSST-DESC Project ${param.projid}</title>
 </head>
 
 <body>
-   
+    <%-- show_project allows edits by project leads only --%>
+    
+    <tg:underConstruction/>
+
     <c:set var="projid" value="${param.projid}"/>
     <c:set var="swgid" value="${param.swgid}"/>
+    <c:set var="wgname" value="${param.name}"/>
     <c:set var="memberPool" value="lsst-desc-full-members"/>
-       
-     <sql:query var="publications" >
-        select pb.paperid,pb.state,pb.title,pb.journal,pb.abstract,pb.added,pb.builder_eligible,pb.comments,pb.keypub,pb.cwr_end_date,pb.responsible_pb_reader,pb.cwr_comments,
-        pb.arxiv,pb.journal_review,pb.published_reference,pb.project_id
-        from descpub_publication pb join descpub_project dp on dp.id=pb.project_id where dp.id=?
-        <sql:param value="${projid}"/>
-    </sql:query> 
-        
-     <sql:query var="projects" >
-         select id, keyprj, title, state, to_char(created,'YYYY-MON-DD') crdate, to_char(lastmodified,'YYYY-MON-DD') moddate,
-        created, abstract abs, comments from descpub_project where id = ?
-        <sql:param value="${projid}"/>
-    </sql:query>        
-    
+    <c:set var="groupname" value="project_${projid}"/>
+    <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
+  
     <sql:query var="pubs">
-        select paperid, state, title, abstract, added, builder_eligible, keypub from descpub_publication where project_id = ? 
+        select paperid, state, title, added, builder_eligible, keypub from descpub_publication where project_id = ? 
         order by title
         <sql:param value="${projid}"/>
-    </sql:query>  
-     
-    <sql:query var="mems">
-        select wg.profile_group_name pgn, wg.convener_group_name cgn, wg.name from descpub_swg wg join descpub_project_swgs ps on ps.project_id=?
-        and ps.swg_id = wg.id and ps.swg_id = ?
-        <sql:param value="${projid}"/>
-        <sql:param value="${swgid}"/>
-    </sql:query>  
+    </sql:query>    
      
     <c:if test="${param.updateProj == 'done'}">
         <div style="color: #0000FF">
             Project updated
         </div>
     </c:if> 
-                
-    <tg:editProject experiment="${appVariables.experiment}" projid="${projid}" returnURL="show_project.jsp?projid=${projid}"/>  
- 
+            
+    <tg:editProject experiment="${appVariables.experiment}" projid="${projid}" swgid="${swgid}" wgname="${wgname}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}&wgname=${wgname}"/>  
+    
+  
     <p/>
-  <display:table class="datatable" id="Rows" name="${pubs.rows}" defaultsort="1">
+    <hr align="left" width="45%"/>
+    
+    <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'AnalysisCoordinator') || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+        <p id="pagelabel">Add or Remove Project Members </p>
+        
+        <tg:groupMemberEditor groupname="${groupname}" returnURL="${returnURL}"/> 
+        <hr align="left" width="45%"/>
+    </c:if>
+    
+    <p id="pagelabel">List of Publications</p>
+    <display:table class="datatable" id="Rows" name="${pubs.rows}" defaultsort="1">
         <display:column title="Paper ID" sortable="true" headerClass="sortable">
-            <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.paperid}<a/>
+            <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.paperid}</a>
         </display:column>
         <display:column title="Publication Title" sortable="true" headerClass="sortable">
-            <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.title}<a/>
+            <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.title}</a>
         </display:column>
         <display:column property="state" title="State" sortable="true" headerClass="sortable"/>
-        <display:column property="abstract" title="Abstract" sortable="true" headerClass="sortable"/>
         <display:column property="added" title="Created" sortable="true" headerClass="sortable"/> 
         <display:column property="builder_eligible" title="Builder" sortable="true" headerClass="sortable"/>        
         <display:column property="keypub" title="Key Pub" sortable="true" headerClass="sortable"/>        
-  </display:table>  
-  <p/>
-  <tg:addPublication experiment="${appVariables.experiment}" projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/>  
-  <p/>
-  <tg:addDocument swgid="${swgid}" userName="${userName}" experiment="${appVariables.experiment}" projid="${projid}" returnURL="show_project.jsp"/>  
+    </display:table>  
    
+    <p/> 
+     
+    <hr align="left" width="45%"/> 
+    
+    <p/>
+    
+    <%--
+    <a href="addPublication.jsp?projid=${projid}&swgid=${swgid}&name=${wgname}">Add Publication</a>  
+    --%>
+    
+    <form action="addPublication.jsp">
+        <input type="hidden" name="task" value="create_publication_form"/>
+        <input type="hidden" name="swgname" value="${wgname}"/>
+        <input type="hidden" name="swgid" value="${swgid}"/>
+        <input type="hidden" name="projid" value="${projid}"/>
+        <input type="submit" value="Create Publication"/>
+    </form>
+    
+    <%--
+    <a href="addDocument.jsp?projid=${projid}&swgid=${swgid}">Add Document</a>
+
+    
+    <tg:addPublication experiment="${appVariables.experiment}" projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/>  
+    
+    <p/>
+    <tg:addDocument swgid="${swgid}" userName="${userName}" experiment="${appVariables.experiment}" projid="${projid}" returnURL="show_project.jsp"/>  
+   --%>
 </body>
 </html>
     

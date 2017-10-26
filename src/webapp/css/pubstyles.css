@@ -1,0 +1,26 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 25, 2017, 5:01:14 PM
+    Author     : chee
+*/
+
+#pagelabel {
+    /*color: #0000FF;*/
+    color: #000000;
+    font-family: georgia,serif;
+    font-size: 12px;
+}
+
+h2 {
+    
+}
+
+hr.style1 {
+    border-top: 1px dotted #8c8b8b;
+    border-bottom: 1px dotted #fff;
+    width: 50%;
+}

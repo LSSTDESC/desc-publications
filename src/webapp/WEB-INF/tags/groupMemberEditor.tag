@@ -5,16 +5,22 @@
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 
 <%@attribute name="groupname" required="true"%>
-<%@attribute name="candidategroup" required="true" %>
+<%@attribute name="candidategroup" required="false" %>
 <%@attribute name="returnURL" required="true" %>
+ 
+
+<c:if test="${empty candidategroup}">
+    <c:set var="candidategroup" value="lsst-desc-members"/>
+</c:if>
 
 <sql:query var="candidates">
+    with tmp_names as (
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
     join um_project_members pm on me.memidnum=pm.memidnum 
     join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? where pm.activestatus='Y' and pm.project = ?
     minus       
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-    join profile_ug ug on me.memidnum=ug.memidnum where group_id = ?
+    join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? ) select * from tmp_names order by lastname
     <sql:param value="${candidategroup}"/>
     <sql:param value="${appVariables.experiment}"/>
     <sql:param value="${groupname}"/>
@@ -26,10 +32,11 @@
     <sql:param value="${groupname}"/>
 </sql:query>
      
-<form action="modifyGroupMembers.jsp">  
+<form action="modifyGroupMembers.jsp" method="get">  
     <input type="hidden" name="groupname" value="${groupname}"/> 
     <input type="hidden" name="candidategroup" value="${candidategroup}"/> 
-    <input type="hidden" name="redirectTo" value="${returnURL}"/> 
+  <%--  <input type="hidden" name="redirectTo" value="${returnURL}"/> --%>
+    <input type="hidden" name="returnURL" value="${returnURL}"/> 
     <table border="0">
         <tbody>
             <tr>
@@ -53,4 +60,4 @@
 
     <p/>
 </form>
-    
+  

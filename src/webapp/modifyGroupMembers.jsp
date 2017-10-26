@@ -10,12 +10,11 @@
         <title>${appVariables.experiment} Group Manager: Modify </title>
     </head>
     <body>
-    
-        
+         
     <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications'))}">
         <c:redirect url="noPermission.jsp?errmsg=1"/>
     </c:if>  
-     
+               
     <c:choose>
         <c:when test="${gm:isUserInExperiment(pageContext)}">  
             <c:choose>
@@ -24,7 +23,7 @@
                         <c:set var="userVals" value="${fn:split(line,':')}"/>  
                         <c:set var="memidnum" value="${userVals[0]}"/>
                         <c:set var="uid" value="${userVals[1]}"/>
-                       <sql:update >
+                        <sql:update >
                             DELETE FROM PROFILE_UG WHERE MEMIDNUM=? AND GROUP_ID=? AND EXPERIMENT=? AND USER_ID=?
                             <sql:param value="${memidnum}"/>
                             <sql:param value="${param.groupname}"/>
@@ -38,18 +37,29 @@
                         <c:set var="userVals" value="${fn:split(user,':')}"/>  
                         <c:set var="memidnum" value="${userVals[0]}"/>
                         <c:set var="uid" value="${userVals[1]}"/>
-                        
+                        <c:if test="${!empty uid && !empty param.groupname && !empty memidnum}">
                         <sql:update>
                             INSERT INTO PROFILE_UG (USER_ID,GROUP_ID,EXPERIMENT,MEMIDNUM) VALUES(?,?,?,?)
                             <sql:param value="${uid}"/>
                             <sql:param value="${param.groupname}"/>
                             <sql:param value="${appVariables.experiment}"/>
                             <sql:param value="${memidnum}"/>
-                        </sql:update>  
+                        </sql:update> 
+                        </c:if>  
+                        <c:if test="${empty uid || empty param.groupname || empty memidnum}">
+                            One of uid, groupname or memidnum is empty:
+                            ${uid}<br/>
+                            ${param.groupname}<br/>
+                            ${memidnum}<br/>
+                            No update done<br/>
+                            returnURL = ${param.returnURL}<br/>
+                            <c:redirect url="${param.returnURL}"/>
+                        </c:if>     
                     </c:forEach>
                 </c:when>
             </c:choose> 
-           <c:redirect url="${param.redirectTo}"/>     
+           <%-- <c:redirect url="${param.redirectTo}"/> --%>
+        <c:redirect url="${param.returnURL}"/>  
         </c:when>
     </c:choose>   
     

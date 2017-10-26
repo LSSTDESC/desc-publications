@@ -22,8 +22,10 @@
          
         <c:set var="oranames" value=""/>
         <c:set var="orafields" value=""/>
+       
 
         <c:forEach var="x" items="${param}">
+            <c:out value="KEY: ${x.key} =${x.value}"/><br/>
             <c:if test="${x.key == 'project_id'}">
                 <c:set var="projid" value="${x.value}"/>
             </c:if>
@@ -36,33 +38,32 @@
             <c:if test="${x.key != 'action' && x.key != 'swgid' && x.key != 'added' && x.key != 'project_id' && x.key != 'paperid'}">
                 <c:choose>
                     <c:when test="${empty oranames}">
-                       <c:set var="oranames" value="${x.key}=? "/>
-                       <c:set var="orafields" value="${x.key}"/>
+                        <c:if test="${! empty x.value}">
+                           <c:set var="oranames" value="${x.key}=? "/>
+                           <c:set var="orafields" value="${x.value}"/>
+                        </c:if>
                     </c:when>
                     <c:when test="${!empty oranames}">
-                       <c:set var="oranames" value="${oranames},${x.key}=? "/>
-                       <c:set var="orafields" value="${orafields},${x.key}"/>
+                        <c:if test="${! empty x.value}">
+                           <c:set var="oranames" value="${oranames},${x.key}=? "/>
+                           <c:set var="orafields" value="${orafields},${x.value}"/>
+                        </c:if>
                     </c:when>
                 </c:choose>
             </c:if>
         </c:forEach> 
-        
-        <c:set var="array" value="${fn:split(orafields,',')}"/><p/>
+     
         
         <sql:update>
-            update descpub_publication set ${oranames}
-            <c:forEach var="ar" items="${array}">
-                <c:forEach var="y" items="${param}">
-                    <c:if test="${ar == y.key}">
-                        <sql:param value="${y.value}"/>
-                    </c:if>
+            update descpub_publication set ${oranames} 
+                <c:forEach var="y" items="${orafields}">
+                     <sql:param value="${y}"/>
                 </c:forEach>
-            </c:forEach>         
-            where paperid = ? and project_id = ?
+                where paperid = ? and project_id = ?
             <sql:param value="${paperid}"/>
             <sql:param value="${projid}"/>
-        </sql:update>
-                
-   <c:redirect url="show_pub.jsp?paperid=${paperid}&projid=${projid}&swgid=${swgid}"/>    
+        </sql:update>   
+            
+  <c:redirect url="show_pub.jsp?paperid=${paperid}&projid=${projid}&swgid=${swgid}"/>    
     </body>
 </html>

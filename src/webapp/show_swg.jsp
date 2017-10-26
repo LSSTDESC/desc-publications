@@ -33,10 +33,13 @@
        Users cannot change name of a group, that leads to inconsistencies between profile_group and profile_ug.  Users can request to delete a group. 
     --%>
     
-    <h2>Science Working Group: ${param.swgname}</h2>
+    <tg:underConstruction/>
+
+    <h2>Working Group: ${param.swgname}</h2>
     
     <c:set var="convenerPool" value="lsst-desc-full-members"/>
     <c:set var="pubPool" value="lsst-desc-publications"/>
+    <c:set var="pubAdmin" value="lsst-desc-publications-admin"/>
     
     <sql:query var="swgs">
         select id, name, email, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id = ? order by id
@@ -49,56 +52,41 @@
     <c:set var="swgname" value="${swgs.rows[0].name}"/>
     
     <sql:query var="projects" >
-        select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.abstract abs, p.comments 
+        select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.profile_group_name pgn, wg.convener_group_name cgn, p.summary 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.title
         <sql:param value="${param.swgid}"/>
     </sql:query>    
       
         <%--
-    <sql:query var="pubs" dataSource="jdbc/config-dev">
-        select pub.abstract, pub.added, pub.arxiv, pub.responsible_pb_reader reader, pub.builder_eligible buildable, pub.comments comm, pub.cwr_comments, pub.cwr_end_date, pub.id, pub.journal,
-        pub.journal_review, pub.keypub, pub.project_id, pub.published_reference, pub.state, pub.title from descpub_publication pub 
-        join descpub_project pj on pub.project_id = pj.id 
-    </sql:query> --%>
      
+    <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">  
+        <c:redirect url="noPermission.jsp?errmsg=4"/>
+    </c:if> --%>
+                    
+   <%--  <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}"> --%>     
     <c:choose>  
-        <c:when test="${!empty param.swgid}">
+    <%-- <c:when test="${!empty param.swgid && gm:isUserInGroup(pageContext,pubAdmin) || gm:isUserInGroup(pageContext,projects.rows[0].pgn) }"> --%>
+       <c:when test="${!empty param.swgid && gm:isUserInGroup(pageContext,'lsst-desc-members')}">
          <%-- Don't allow deletion of swgs per S.Digel, 18jul17.   --%>
             
-               <%--   <c:if test="${gm:isUserInGroup(pageContext,projects.rows[0].cgn)}"> --%>
-               <c:if test="${gm:isUserInGroup(pageContext,pubPool)}">
-                   
-                <strong><a href="project_details.jsp?task=create_proj_form&swgname=${param.swgname}&swgid=${param.swgid}">create project</a></strong>
-                <p/>
-                <hr/>
-                <p/>
-                <c:if test="${projects.rowCount > 0}">
-                   Manage <strong>conveners</strong> of the working group <br/>
-                   <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${cgn}" returnURL="show_swg.jsp?swgid=${swgid}&swgname=${swgname}"/>
-                    <p/>
-                    <hr/>
-                </c:if>
-                    
-                <p/>
-                <c:if test="${projects.rowCount > 0}">
-                    Manage <strong>members</strong> of the working group<br/>
-                   <tg:groupMemberEditor candidategroup="${convenerPool}" groupname="${pgn}" returnURL="show_swg.jsp?swgid=${swgid}&swgname=${swgname}"/>
-                    <p/>
-                    <hr/>
-                </c:if>
-                    
+            <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+                <form action="project_details.jsp">
+                    <input type="hidden" name="task" value="create_proj_form"/>
+                    <input type="hidden" name="swgname" value="${param.swgname}"/>
+                    <input type="hidden" name="swgid" value="${param.swgid}"/>
+                    <input type="submit" value="Create Project"/>
+                </form>
             </c:if>
+             
+             <p/>        
              <strong>Projects</strong><br/>
              <display:table class="datatable" id="proj" name="${projects.rows}">
                  <display:column title="Id" sortable="true" headerClass="sortable">
-                    <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}&name=${proj.title}">${proj.id}</a> 
+                    <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}&wgname=${proj.title}">${proj.id}</a> 
                  </display:column>
                  <display:column title="Project Title" sortable="true" headerClass="sortable">
-                    <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}&name=${proj.title}">${proj.title}</a> 
-                 </display:column>
-                 <display:column title="Members" sortable="true" headerClass="sortable">
-                     TBD
+                    <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">${proj.title}</a> 
                  </display:column>
                  <display:column title="State" sortable="true" headerClass="sortable">
                      ${proj.state}
@@ -123,9 +111,12 @@
              </display:table>
         </c:when>
         <c:otherwise>
-            nothing to do
+            Only DESC members and members of the following groups have access:<br/> 
+            ${cgn}<br/>
+            ${pgn}  
         </c:otherwise>
     </c:choose>    
+  <%--  </c:if> --%>
             
 </body>
 </html>
