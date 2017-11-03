@@ -162,7 +162,7 @@ public class FileUploadServlet extends HttpServlet {
             try {
                 String dbUrl = System.getProperty("groupmanager.db.url", "jdbc:oracle:thin:@sca-oracle01.slac.stanford.edu:1521:DPF01");
                 String dbUsername = System.getProperty("groupmanager.db.username", "CONFIG");
-                String dbPassword = System.getProperty("groupmanager.db.password", "M20177102Ay12");
+                String dbPassword = System.getProperty("groupmanager.db.password", "");
                 Connection connection = null;
                 if (dbUrl.contains("oracle:oci")) {
                     WalletConnectionManager connectionManager = new WalletConnectionManager(dbUrl, "", "");
