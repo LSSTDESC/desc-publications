@@ -53,7 +53,7 @@
                 <form action="upload" method="post" enctype="multipart/form-data">
                     <input type="file" name="fileToUpload" id="fileToUpload">
                     <input type="submit" value="Upload Document" name="submit">
-                    <input type="hidden" name="forwardTo" value="uploadPub.jsp" />
+                    <input type="hidden" name="forwardTo" value="/uploadPub.jsp" />
                     <input type="hidden" name="paperid" value="${paperid}"/>
                     <input type="hidden" name="projid" value="${projid}"/>
                     <input type="hidden" name="wgid" value="${wgid}"/>
