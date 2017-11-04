@@ -1,7 +1,10 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib uri="http://displaytag.sf.net" prefix="display"%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,57 +15,60 @@
         <title>Upload </title>
     </head>
     <body>
-              
+        <fmt:setTimeZone value="UTC"/>   
+
+        <c:if test="${!empty msg}">
+            <p id="pagelabel">${msg}</p> 
+        </c:if>
         <c:choose>
-            <c:when test="${!empty msg}">
-                <p id="pagelabel">${msg}</p> 
-                <a href="all_publications.jsp">return to publication page</a>
-            </c:when>
-            <c:when test="${empty param}">
+
+            <c:when test="${empty param.paperId}">
                 <sql:query var="list">
-                    select paperid, title, project_id, swgid from descpub_publication
+                    select paperid, title from descpub_publication
                 </sql:query>
-                
+
                 Choose your paper:<p/>
                 <form action="uploadPub.jsp">
-                     <select name="paper" size="8" required>
+                    <select name="paperId" size="8" required>
                         <c:forEach var="p" items="${list.rows}">
-                            <option value="${p.paperid}:${p.project_id}:${p.swgid}:${p.title}">${p.title}</option>
+                            <option value="${p.paperid}">${p.title}</option>
                         </c:forEach>
-                     </select>
-                     <p/>
-                     Remarks: <br/>
-                     <input type="text" id="remarks" name="remarks"/>
-                     <p/>
-                     <input type="submit" value="Go" name="submit">
+                    </select>
+                    <br>
+                    <input type="submit" value="Go" name="submit">
                 </form>
             </c:when>
-            <c:when test="${!empty param}">   
-                <c:if test="${!empty param.paper}">
-                  <c:set var="array" value="${fn:split(param.paper,':')}"/> 
-                  <c:set var="paperid" value="${array[0]}"/>
-                  <c:set var="projid" value="${array[1]}"/>
-                  <c:set var="wgid" value="${array[2]}"/>
-                  <c:set var="title" value="${array[3]}"/> 
-                  <c:set var="remarks" value="${param.remarks}"/>
-                </c:if> 
-                      
-                You are about to upload a new version of <strong>${title}</strong><p/>
-                
-                 
-                <form action="upload" method="post" enctype="multipart/form-data">
+            <c:otherwise>   
+
+
+                <h2>Paper <strong>DESC-${param.paperId}</strong></h2>
+
+                <sql:query var="list">
+                    select paperid, version, tstamp, remarks from descpub_publication_versions where paperId=? order by version
+                    <sql:param value="${param.paperId}"/>
+                </sql:query>
+
+                <display:table class="datatable" id="row" name="${list.rows}">
+                    <display:column title="Version" sortable="true" headerClass="sortable" property="version"/>
+                    <display:column title="Remarks" property="remarks"/>
+                    <display:column title="Uploaded (UTC)">
+                       <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                    </display:column>
+                    <display:column title="Links">
+                        <a href="download?paperId=${row.paperId}&version=${row.version}">Download</a>
+                    </display:column>
+                </display:table>                    
+                <h3>Upload new version</h3>
+                <form action="upload.jsp" method="post" enctype="multipart/form-data">
                     <input type="file" name="fileToUpload" id="fileToUpload">
-                    <input type="submit" value="Upload Document" name="submit">
-                    <input type="hidden" name="forwardTo" value="/uploadPub.jsp" />
-                    <input type="hidden" name="paperid" value="${paperid}"/>
-                    <input type="hidden" name="projid" value="${projid}"/>
-                    <input type="hidden" name="wgid" value="${wgid}"/>
-                    <input type="hidden" name="title" value="${title}"/>
-                    <input type="hidden" name="remarks" value="${remarks}"/>
+                    <p>
+                        Remarks: <input type="text" name="remarks">
+                    <p>
+                        <input type="submit" value="Upload Document" name="submit">
+                        <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperId=${param.paperId}" />
+                        <input type="hidden" name="paperId" value="${param.paperId}"/>
                 </form>  
-                
-                
-            </c:when>
+            </c:otherwise>
         </c:choose>
     </body>
 </html>

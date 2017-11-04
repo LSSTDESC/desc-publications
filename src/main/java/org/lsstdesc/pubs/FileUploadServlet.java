@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -54,7 +53,6 @@ public class FileUploadServlet extends HttpServlet {
 
             String forwardTo = null;
             int paperId = 0;
-            int projId = 0;
             String remarks = null;
             FileItem file = null;
 
@@ -67,17 +65,15 @@ public class FileUploadServlet extends HttpServlet {
                         file = item;
                     } else if ("forwardTo".equals(item.getFieldName())) {
                         forwardTo = item.getString();
-                    } else if ("paperid".equals(item.getFieldName())) {
+                    } else if ("paperId".equals(item.getFieldName())) {
                         paperId = Integer.parseInt(item.getString());
-                    } else if ("projid".equals(item.getFieldName())) {
-                        projId = Integer.parseInt(item.getString());
                     } else if ("remarks".equals(item.getFieldName())) {
                         remarks = item.getString();
                     }
                 }
 
-                if (paperId == 0 || projId == 0) {
-                    throw new ServletException("Missing paper or project id");
+                if (paperId == 0) {
+                    throw new ServletException("Missing paper id");
                 }
                 if (file == null) {
                     throw new ServletException("Missing file");
@@ -89,7 +85,7 @@ public class FileUploadServlet extends HttpServlet {
                 try (Connection conn = ConnectionManager.getConnection(request)) {
                     DBUtilities dbUtil = new DBUtilities(conn);
                     int nextVersion = dbUtil.getMaxExistingVersion(paperId) + 1;
-
+                    int projId = dbUtil.getProjectForPaper(paperId);
                     checkIfPDF(file);
                     File saveFile = getPathForFile(paperId, projId, nextVersion);
                     file.write(saveFile);

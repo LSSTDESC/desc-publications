@@ -1,5 +1,6 @@
 package org.lsstdesc.pubs;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,5 +49,34 @@ public class DBUtilities {
 
     void commit() throws SQLException {
         conn.commit();
+    }
+
+    File getFile(int paperId, int version) throws SQLException {
+        String sql = "select uniquename from DESCPUB_PUBLICATION_VERSIONS where version=? and paperid=?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, version);
+            stmt.setInt(2, paperId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new File(rs.getString(1));
+                } else {
+                    throw new SQLException("Invalid file paperId="+paperId+" version="+version);
+                }
+            }
+        }
+    }
+
+    int getProjectForPaper(int paperId) throws SQLException {
+        String sql = "select project_id from descpub_publication where paperid=?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, paperId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                } else {
+                    throw new SQLException("Invalid file paperId="+paperId);
+                }
+            }
+        }        
     }
 }
