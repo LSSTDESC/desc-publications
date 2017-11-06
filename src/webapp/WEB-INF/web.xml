@@ -101,32 +101,23 @@
         <servlet-class>org.lsstdesc.pubs.FileUploadServlet</servlet-class>
         <init-param>
             <param-name>baseDir</param-name>
-            <param-value>/afs/slac.stanford.edu/u/ec/chee/pubTestdir</param-value>
-          <!--  <param-value>/nfs/farm/g/desc/u1/Pubs</param-value> -->
+            <param-value>/nfs/farm/g/desc/u1/Pubs</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>FileUploadServlet</servlet-name>
-        <url-pattern>/upload</url-pattern>
+        <url-pattern>/upload.jsp</url-pattern>
     </servlet-mapping>
-   
-    <!--
-     <servlet>
-        <servlet-name>FileUploadServlet</servlet-name>
-        <servlet-class>org.lsstdesc.pubs.FileUploadServlet</servlet-class>
-        <init-param>
-            <param-name>baseDir</param-name>
-      (production dir) <param-value>/nfs/farm/g/desc/u1/Pubs</param-value>  
-            <param-value>/afs/slac.stanford.edu/u/ec/chee/pubTestdir</param-value>
-        </init-param>
+
+    <servlet>
+        <servlet-name>FileDownloadServlet</servlet-name>
+        <servlet-class>org.lsstdesc.pubs.FileDownloadServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>FileUploadServlet</servlet-name>
-        <url-pattern>/upload</url-pattern>
+        <servlet-name>FileDownloadServlet</servlet-name>
+        <url-pattern>/download</url-pattern>
     </servlet-mapping>
-   -->
-    
-    
+            
     <welcome-file-list>
         <welcome-file>
             index.jsp
