@@ -32,7 +32,7 @@
     <sql:param value="${groupname}"/>
 </sql:query>
      
-<form action="modifyGroupMembers.jsp" method="get">  
+<form action="modifyGroupMembers.jsp" method="post">  
     <input type="hidden" name="groupname" value="${groupname}"/> 
     <input type="hidden" name="candidategroup" value="${candidategroup}"/> 
   <%--  <input type="hidden" name="redirectTo" value="${returnURL}"/> --%>

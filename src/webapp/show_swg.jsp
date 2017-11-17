@@ -32,6 +32,9 @@
        swgname = science working group name
        Users cannot change name of a group, that leads to inconsistencies between profile_group and profile_ug.  Users can request to delete a group. 
     --%>
+    <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-members')}">  
+        <c:redirect url="noPermission.jsp?errmsg=1"/>
+    </c:if>
     
     <tg:underConstruction/>
 
@@ -51,7 +54,7 @@
     <c:set var="swgid" value="${param.swgid}"/> 
     <c:set var="swgname" value="${swgs.rows[0].name}"/>
     
-    <sql:query var="projects" >
+    <sql:query var="projects">
         select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.profile_group_name pgn, wg.convener_group_name cgn, p.summary 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.title
@@ -91,22 +94,12 @@
                  <display:column title="State" sortable="true" headerClass="sortable">
                      ${proj.state}
                  </display:column>
-                 <display:column title="Documents" sortable="true" headerClass="sortable">
-                     TBD
-                 </display:column>
-                 <display:column title="Publications" sortable="true" headerClass="sortable">
+                 <display:column title="# of Documents" sortable="true" headerClass="sortable">
                      <sql:query var="results">
-                        select p.id projid, ub.paperid, ub.keypub, ub.state, ub.title, ub.keypub
-                        from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
-                        left join descpub_swg wg on ps.swg_id=wg.id 
-                        left join descpub_publication ub on ub.project_id = p.id
-                        where wg.id = ? and p.id = ?
-                        <sql:param value="${param.swgid}"/>
+                        select count(*) tot from descpub_publication pub join descpub_project_papers proj on pub.paperid=proj.paperid where proj.project_id = ?
                         <sql:param value="${proj.id}"/>
                      </sql:query>
-                     <c:forEach var="pub" items="${results.rows}">
-                        <a href="show_pub.jsp?paperid=${pub.paperid}&projid=${proj.id}">${pub.title}</a><br/>
-                     </c:forEach>
+                     ${results.rows[0].tot}
                  </display:column>
              </display:table>
         </c:when>

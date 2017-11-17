@@ -15,7 +15,7 @@
         <script src="../js/jquery-1.11.1.min.js"></script>
         <script src="../js/jquery.validate.min.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pubstyles.css">
-        <title>Add Publication Page</title>
+        <title>Add Document Page</title>
     </head>
     <body>
 
@@ -49,11 +49,11 @@
                 </sql:query>
 
                 <div class="intro">
-                    <p id="pagelabel">Publication Details</p>
+                    <p id="pagelabel">Document Details</p>
                     <strong>Project id [ ${projInfo.rows[0].id} ] ${projInfo.rows[0].title}. <br/> Working group: ${projInfo.rows[0].name}</strong>
                 </div>
                 <p/>
-                <form action="addPublication.jsp">  
+                <form action="addPublication.jsp" method="post">  
                     <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
                     <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
                     <input type="hidden" name="wgname" id="wgname" value="${param.name}"/> 
@@ -77,9 +77,9 @@
                     
                     <p/>
                     Select Correspondent Author(s):<br/>
-                    <select name="authcontacts" multiple="1" size="10" required>
+                    <select name="authcontacts" multiple size="10" required>
                     <c:forEach var="auth" items="${poolOfCandidates.rows}">
-                        <option value="${auth.memidnum}:${auth.firstname} ${auth.lastname}">${auth.lastname},  ${auth.firstname} </option>
+                        <option value="${auth.memidnum}:${auth.firstname} ${auth.lastname}:${auth.username}">${auth.lastname},  ${auth.firstname} </option>
                     </c:forEach>
                     </select>
                     <p/>
@@ -98,41 +98,19 @@
                     </c:forEach>
                     </select> 
                     <p/>
-                    <input type="submit" value="Create Publication Entry" name="addPub" />  
+                    <input type="submit" value="Create Document Entry" name="addPub" />  
                 </form>
                 <p/>
                 <hr align="left" width="50%"/>
                 <p/>
-                <p id="pagelabel">Upload Publication</p>
+                <p id="pagelabel">Upload Document</p>
 
                 <form action="uploadPub.jsp" method="post" enctype="multipart/form-data">
                     <input type="file" name="fileToUpload" id="fileToUpload">
                     <input type="submit" value="Upload Document" name="submit">
-                    <input type="hidden" name="forwardTo" value="/uploadTest.jsp" />
+                  <%--  <input type="hidden" name="forwardTo" value="/uploadTest.jsp" /> --%>
+                    <input type="hidden" name="forwardTo" value="/uploadPub.jsp" />
                 </form>  
-        </c:when>
-        <c:when test="${param.formsubmitted && debugMode}">
-            <c:set var="grpmanager" value="lsst-desc-publications"/>
-            <c:set var="group_name" value="pub_10000"/>  
-            
-            <c:forEach var="x" items="${param}">
-               <%-- <c:out value="${x.key} = ${x.value}"/><br/> --%>
-                
-                <c:if test = "${x.key  == 'authcontacts'}">
-                    <c:forEach var="y" items="${paramValues[x.key]}">
-                        <c:set var="array" value="${fn:split(y,':')}"/>
-                       <%-- <c:out value="${array[0]}, ${array[1]}"/><br/> --%>
-                     <%--   insert into descpub_contact_authors (memidnum, author_name, paperid) values(?,?,?) --%>
-                        insert into descpub_contact_authors (memidnum, author_name, paperid) values(${array[0]},${array[1]},DESCPUB_SEQ_SEQ.currval)<br/>
-                    </c:forEach>
-                </c:if>
-            </c:forEach>  
-      
-            <c:set var="filePath" value="/nfs/farm/g/desc/u1/Pubs/"/>
-            insert into profile_group (group_name, group_manager, experiment) values( ${group_name},${grpmanager},${appVariables.experiment} )<p/>
-            insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, swgid, pubtype) values(DESCPUB_PUB_SEQ.nextval,${param.title},${param.pubstate},sysdate,${param.builder},${param.keypaper},${param.projid},${param.swgid},${param.pubtyp})<p/>
-            insert into descpub_publication_versions (paperid,tstamp,version,remarks,location) values('paper_'DESCPUB_SEQ.currval, sysdate, version, remarks, ${filePath}'paper_'DESCPUB_PUB.SEQ.currval
-
         </c:when>
         <c:when test="${param.formsubmitted && ! debugMode}">
            <%--
@@ -164,31 +142,42 @@
             </sql:query>
                   
             <c:set var="current" value="${curr.rows[0].currval}"/>
-            <c:set var="grpmanager" value="lsst-desc-publications"/>
-            <c:set var="group_name" value="pub_${current}"/> 
-            <c:out value="Current Seq: ${current}  GroupName=${group_name}  ManagerGrp=${grpmanager}"/><br/>
+            <c:set var="group_name" value="paper_${current}"/> 
+            <c:set var="leadauthgrp" value="paper_leads_${current}"/>
+            <c:set var="grpmanager" value="${leadauthgrp}"/>
             
+            <%-- insert the paper into the junction tables --%>
++           <sql:update>
++               insert into descpub_project_papers (paperid, project_id, swg_id) values(?,?)
++               <sql:param value="${current}"/>
++               <sql:param value="${param.projid}"/>
++               <sql:param value="${param.swg_id}"/>
++           </sql:update>
+
+            <%-- insert paper into profile_group --%>
             <sql:update>
                 insert into profile_group (group_name, group_manager, experiment) values (?, ?, ?)
                 <sql:param value="${group_name}"/>
                 <sql:param value="${grpmanager}"/>
                 <sql:param value="${appVariables.experiment}"/>
             </sql:update> 
-                
+         
+            <%-- add lead authors to the paper group and lead author group --%>
             <c:forEach var="con" items="${paramValues['authcontacts']}">
                 <c:set var="array" value="${fn:split(con,':')}"/>
                 <sql:update>
-                    insert into descpub_contact_authors (memidnum, author_name, paperid) values(?,?,?)
+                    insert into profile_ug (user_id, group_id, experiment, memidnum) values(?,?,?)
+                    <sql:param value="${array[2]}"/>
+                    <sql:param value="${leadauthgrp}"/>
+                    <sql:param value="${appVariables.experiment}"/>
                     <sql:param value="${array[0]}"/>
-                    <sql:param value="${array[1]}"/>
-                    <sql:param value="${current}"/>
                 </sql:update> 
             </c:forEach>
             </sql:transaction>
         </c:catch>
         
         <c:if test="${trapError != null}">
-            <h1>Error. Failed to create${param.title}<br/>
+            <h1>Error. Failed to create document: ${param.title}<br/>
                 ${trapError}
             </h1>
         </c:if>

@@ -19,24 +19,19 @@
 <%@attribute name="projid" required="true"%>
 <%@attribute name="swgid" required="true"%> --%>
 
- 
+<c:set var="paperleads" value="paper_leads_${paperid}"/> 
  <sql:query var="pubtypes" >
      select pubtype from descpub_pubtypes order by pubtype
  </sql:query>
 
  <sql:query var="pubs">
   select paperid, state, title, journal, pubtype, summary, to_char(added,'yyyy-mon-dd') added, to_char(date_modified,'yyyy-mon-dd') moddate, builder_eligible, keypub,
-  pb_reader_approved, arxiv, published_reference, project_id, swgid from descpub_publication where paperid = ?
+  pb_reader_approved, arxiv, published_reference from descpub_publication where paperid = ?
     <sql:param value="${paperid}"/>
  </sql:query>
     
 <sql:query var="states">
     select state from descpub_publication_states order by state
-</sql:query>
-    
-<sql:query var="projinfo">
-    select title from descpub_project where id = ?
-   <sql:param value="${pubs.rows[0].project_id}"/>
 </sql:query>
     
 <sql:query var="wgs" >
@@ -67,7 +62,7 @@
    </select>
    <p/>
    
-   Journal: <input type="text" value="${pubs.rows[0].JOURNAL}" size="35" name="journal"/>
+   Journal: <input type="text" name="journal" value="${pubs.rows[0].JOURNAL}" size="35" name="journal"/>
    <p/>
    Pubtype: 
    <select name="pubtype" id="pubtype">
@@ -80,24 +75,24 @@
    Builder Eligible:<br/>
    <select name="builder_eligible" id="builder_eligible" required>
        <option value=""></option>
-       <option value="Y" <c:if test="${pubs.rows[0].builder_eligible == 'Y'}">selected</c:if> >Y</option>
-       <option value="N" <c:if test="${pubs.rows[0].builder_eligible == 'N'}">selected</c:if> >N </option>
+       <option value="Y" <c:if test="${pubs.rows[0].builder_eligible == 'Y'}">selected</c:if> >Yes</option>
+       <option value="N" <c:if test="${pubs.rows[0].builder_eligible == 'N'}">selected</c:if> >No </option>
    </select>
    <p/>
    
    Key Paper:<br/>
    <select name="keypub" id="keypub" required>
        <option value=""></option>
-       <option value="Y" <c:if test="${pubs.rows[0].keypub == 'Y'}">selected</c:if> >Y</option>
-       <option value="N" <c:if test="${pubs.rows[0].keypub == 'N'}">selected</c:if> >N</option>
+       <option value="Y" <c:if test="${pubs.rows[0].keypub == 'Y'}">selected</c:if> >Yes</option>
+       <option value="N" <c:if test="${pubs.rows[0].keypub == 'N'}">selected</c:if> >No</option>
    </select>
    
    <p/>
    Approved by a PubBoard Reader:<br/> 
    <select name="pb_reader_approved" id="pb_reader_approved" required>
        <option value=""></option>
-       <option value="Y" <c:if test="${pubs.rows[0].pb_reader_approved == 'Y'}">selected</c:if> >Y</option>
-       <option value="N" <c:if test="${pubs.rows[0].pb_reader_approved == 'N'}">selected</c:if> >N</option>
+       <option value="Y" <c:if test="${pubs.rows[0].pb_reader_approved == 'Y'}">selected</c:if> >Yes</option>
+       <option value="N" <c:if test="${pubs.rows[0].pb_reader_approved == 'N'}">selected</c:if> >No</option>
    </select>
    <p/>
    Brief Summary: <br/>
@@ -108,7 +103,7 @@
    Published Reference: <br/><input type="text" value="${pubs.rows[0].PUBLISHED_REFERENCE}" size="35" name="published_reference"/>
    <p/>
    
-   <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin')}">
+   <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,paperleads)}">
    <input type="submit" value="UpdatePub" name="action" />
    </c:if>
 </form>  

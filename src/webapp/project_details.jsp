@@ -38,8 +38,8 @@
    
     <sql:query var="candidates">
         select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-        join um_project_members pm on me.memidnum=pm.memidnum 
-        join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? where pm.activestatus='Y' and pm.project = ? order by me.lastname
+        join um_project_members pm on me.memidnum=pm.memidnum join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? 
+        where pm.activestatus='Y' and pm.project = ?  and me.lastname != 'lsstdesc-user' order by me.lastname
         <sql:param value="${candidategroup}"/>
         <sql:param value="${appVariables.experiment}"/>
     </sql:query>
@@ -101,7 +101,7 @@
             <c:catch var="trapError">
                 <sql:transaction>
                     <sql:update >
-                    insert into descpub_project (id,title,summary,state,created,keyprj,active) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate,?,'Y')
+                    insert into descpub_project (id,title,summary,state,created,keyprj) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate,?)
                     <sql:param value="${param.title}"/>
                     <sql:param value="${param.summary}"/>
                     <sql:param value="${param.state}"/>

@@ -53,13 +53,18 @@
      
         <tg:editPublication paperid="${paperid}"/> 
          
-         <p/>
+         <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'AnalysisCoordinator') || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+         <p></p>
          <hr align="left" width="50%"/>
-         <p/>
+         <p></p>
          Add or Remove Authors
-         <p/>
+         <p></p>
          <tg:groupMemberEditor groupname="paper_${paperid}" returnURL="${returnURL}"/> 
+         <p></p>
+         <a href="uploadPub.jsp">upload Document</a> &nbsp;&nbsp;&nbsp;&nbsp;
          
+         </c:if>
+         <a href="requestAuthorship.jsp?paperid=${paperid}">Request Authorship</a>
       
     </body>
 </html>

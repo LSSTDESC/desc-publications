@@ -18,15 +18,15 @@ public class DBUtilities {
         this.conn = conn;
     }
 
-    void insertPaperVersion(int paperId, int version, String remarks, String origname, String uniqueName) throws SQLException {
+    void insertPaperVersion(int paperId, int version, String remarks, String origname, String location) throws SQLException {
 
-        String insStr = "insert into descpub_publication_versions (paperid, tstamp, version, remarks, origname, uniquename) values (?, sysdate, ?, ?, ?, ?)";
+        String insStr = "insert into descpub_publication_versions (paperid, tstamp, version, remarks, origname, location) values (?, sysdate, ?, ?, ?, ?)";
         try (PreparedStatement insertStatement = conn.prepareStatement(insStr)) {
             insertStatement.setInt(1, paperId);
             insertStatement.setInt(2, version);
             insertStatement.setString(3, remarks);
             insertStatement.setString(4, origname);
-            insertStatement.setString(5, uniqueName);
+            insertStatement.setString(5, location);
             insertStatement.execute();
         }
 
@@ -52,7 +52,7 @@ public class DBUtilities {
     }
 
     File getFile(int paperId, int version) throws SQLException {
-        String sql = "select uniquename from DESCPUB_PUBLICATION_VERSIONS where version=? and paperid=?";
+        String sql = "select location from DESCPUB_PUBLICATION_VERSIONS where version=? and paperid=?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, version);
             stmt.setInt(2, paperId);

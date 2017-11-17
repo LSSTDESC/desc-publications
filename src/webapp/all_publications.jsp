@@ -18,13 +18,14 @@
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%--  <link rel="stylesheet" href="css/site-demos.css"> --%>
-      <title>DESC Publications</title>
+          <link rel="stylesheet" type="text/css" href="css/pubstyles.css">
+      <title>DESC Documents</title>
     </head>
     <body>
         <tg:underConstruction/>
         
         <sql:query var="pubs" >
-            select paperid, added, state, keypub, title, project_id, swgid, pubtype from descpub_publication order by paperid
+            select paperid, added, state, keypub, title, project_id, pubtype from descpub_publication order by paperid
         </sql:query>
           
         <display:table class="datatable" id="Row" name="${pubs.rows}">

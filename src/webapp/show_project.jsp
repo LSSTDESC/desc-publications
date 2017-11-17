@@ -39,14 +39,23 @@
         <sql:param value="${projid}"/>
     </sql:query>    
      
+    <sql:query var="leads">
+        select convener_group_name from descpub_swg where id = ?
+        <sql:param value="${swgid}"/>
+    </sql:query> 
+    <c:set var="leaders" value="${leads.rows[0].convener_group_name}"/>
+    
+        
     <c:if test="${param.updateProj == 'done'}">
         <div style="color: #0000FF">
             Project updated
         </div>
     </c:if> 
             
-    <tg:editProject experiment="${appVariables.experiment}" projid="${projid}" swgid="${swgid}" wgname="${wgname}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}&wgname=${wgname}"/>  
-    
+    <%-- 
+<tg:editProject experiment="${appVariables.experiment}" projid="${projid}" swgid="${swgid}" wgname="${wgname}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}&wgname=${wgname}"/>  
+    --%>
+    <tg:editProject projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/> 
   
     <p/>
     <hr align="left" width="45%"/>
@@ -87,7 +96,7 @@
         <input type="hidden" name="swgname" value="${wgname}"/>
         <input type="hidden" name="swgid" value="${swgid}"/>
         <input type="hidden" name="projid" value="${projid}"/>
-        <input type="submit" value="Create Publication"/>
+        <input type="submit" value="Create Document"/>
     </form>
     
     <%--
