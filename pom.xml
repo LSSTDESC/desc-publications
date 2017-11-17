@@ -40,15 +40,32 @@
             <artifactId>org-srs-groupmanager-web</artifactId>
             <version>1.23</version>
         </dependency>
+         <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.5.2</version>
+        </dependency>
         <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>mailer2</artifactId>
-            <version>20051205</version>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.1</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
             <version>1.3.3</version>
+        </dependency>
+        <dependency>
+           <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.0.2</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 
