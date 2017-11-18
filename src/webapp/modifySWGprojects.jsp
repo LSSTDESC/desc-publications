@@ -123,59 +123,15 @@
         </sql:transaction>
     </c:catch> 
       
-    catchError = ${catchError}<br/>
-    Title ${newTitle}<br/>
-    Summary ${newSummary}<br/>
-    <%--    
-    <c:catch var="catchError">
-        
-        <h2>  UPDATE DESCPUB_PROJECT SET ${orafields} VALUES(${param.title},${param.abs}, ${param.chgstate},${param.isKeyprj}, ${param.userName} WHERE ID=${param.projid}</h2>
-        
-        
-        <p/>
-       <sql:update>
-            update descpub_project set ${orafields} where id = ?
-            <sql:param value="${param.title}"/> 
-            <sql:param value="${param.abs}"/>
-            <sql:param value="${param.chgstate}"/>
-            <sql:param value="${param.isKeyprj}"/>
-            <sql:param value="${param.userName}"/>
-            <sql:param value="${param.projid}"/> 
-        </sql:update>
- 
-        <c:if test="${!empty paramValues.removeprojswg}">
-            <c:if test="${fn:length(paramValues.removeprojswg) < swgcount.rows[0].tot}">
-               <c:forEach var="pv" items="${paramValues.removeprojswg}">
-                   <sql:update>
-                       delete from descpub_project_swgs where project_id = ? and swg_id = ?
-                       <sql:param value="${param.projid}"/>
-                       <sql:param value="${pv}"/>
-                   </sql:update> 
-               </c:forEach>
-               <c:set var="updateProj" value="done"/>      
-            </c:if>
-            <c:if test="${fn:length(paramValues.removeprojswg) == swgcount.rows[0].tot}"> project must have at least one wg assigned to it  
-               <c:redirect url="noPermission.jsp?errmsg=2"/>
-            </c:if>
-        </c:if>
-
-        <c:if test="${!empty paramValues.addprojswg}">
-            <c:forEach var="pv" items="${paramValues.addprojswg}">
-                <sql:update>
-                    insert into descpub_project_swgs (id,project_id,swg_id) values (descpub_proj_swg_seq.nextval,?,?)
-                <sql:param value="${param.projid}"/>
-                <sql:param value="${pv}"/>
-                </sql:update>   
-            </c:forEach>
-            <c:set var="updateProj" value="done"/>      
-        </c:if>
-    </c:catch>  
-                
-    <c:if test="${catchError != null}">
-        UPDATES Failed.
-    </c:if> --%>
-  
-     
-     <c:redirect url="${param.redirectURL}&updateProj=${updateProj}"/>  
+    <c:choose>
+        <c:when test="${!empty catchError}">
+            <h3>Error: ${catchError}</h3>
+        </c:when>
+        <c:otherwise>
+            <c:redirect url="${param.redirectURL}&updateProj=${updateProj}"/>  
+        </c:otherwise>
+    </c:choose>
+    
+    
     </body>
 </html>

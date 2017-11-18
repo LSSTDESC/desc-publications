@@ -39,7 +39,7 @@
     <sql:query var="candidates">
         select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
         join um_project_members pm on me.memidnum=pm.memidnum join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? 
-        where pm.activestatus='Y' and pm.project = ?  and me.lastname != 'lsstdesc-user' order by me.lastname
+        where pm.activestatus='Y' and pm.project = ?  and me.lastname != 'lsstdesc-user' order by lower(me.lastname)
         <sql:param value="${candidategroup}"/>
         <sql:param value="${appVariables.experiment}"/>
     </sql:query>
@@ -118,13 +118,29 @@
                         <sql:param value="${param.swgid}"/>
                     </sql:update>
             
+                    <sql:update>
+                        insert into profile_group (group_name, group_manager, experiment) values (?,?,?)
+                        <sql:param value="project_${projNum.rows[0]['newProjNum']}"/>
+                        <sql:param value="lsst-desc-publications-admin"/>
+                        <sql:param value="${appVariables.experiment}"/>
+                    </sql:update>  
+                        
+                    <sql:update var="projleads">
+                        insert into profile_group (group_name, group_manager, experiment) values (?,?,?)
+                        <sql:param value="project_leads_${projNum.rows[0]['newProjNum']}"/>
+                        <sql:param value="lsst-desc-publications-admin"/>
+                        <sql:param value="${appVariables.experiment}"/>
+                    </sql:update>
+                        
                     <c:forEach var="x" items="${param}">
                         <c:if test="${x.key == 'addLeads'}">
                             <c:forEach var="y" items="${paramValues[x.key]}">
                                 <c:set var="array" value="${fn:split(y,':')}"/>
                                 <sql:update var="leaders">
-                                    insert into descpub_project_leads (relation, project_id, memidnum) values ('active',?,?)
-                                    <sql:param value="${projNum.rows[0]['newProjNum']}"/>
+                                    insert into profile_ug (user_id, group_id, experiment, memidnum) values (?,?,?,?)
+                                    <sql:param value="${array[1]}"/>
+                                    <sql:param value="project_leads_${projNum.rows[0]['newProjNum']}"/>
+                                    <sql:param value="${appVariables.experiment}"/>
                                     <sql:param value="${array[0]}"/>
                                 </sql:update>
                              </c:forEach>

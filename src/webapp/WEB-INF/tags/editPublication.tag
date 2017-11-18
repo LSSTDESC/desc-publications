@@ -46,7 +46,6 @@
     
 <form action="modifyPublication.jsp">  
    <input type="hidden" name="paperid" value="${paperid}"/> 
-   <input type="hidden" name="project_id" value="${pubs.rows[0].project_id}"/> 
    <input type="hidden" name="swgid" value="${param.swgid}"/> 
    Title: <input type="text" value="${pubs.rows[0].title}" size="35" name="title" required/><p/>
    State: 

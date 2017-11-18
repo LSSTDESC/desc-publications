@@ -30,7 +30,7 @@
     <c:set var="swgid" value="${param.swgid}"/>
     <c:set var="wgname" value="${param.name}"/>
     <c:set var="memberPool" value="lsst-desc-full-members"/>
-    <c:set var="groupname" value="project_${projid}"/>
+    <c:set var="groupname" value="project_leads_${projid}"/>
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
   
     <sql:query var="pubs">
@@ -61,7 +61,7 @@
     <hr align="left" width="45%"/>
     
     <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'AnalysisCoordinator') || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
-        <p id="pagelabel">Add or Remove Project Members </p>
+        <p id="pagelabel">Add or Remove Project Leads </p>
         
         <tg:groupMemberEditor groupname="${groupname}" returnURL="${returnURL}"/> 
         <hr align="left" width="45%"/>

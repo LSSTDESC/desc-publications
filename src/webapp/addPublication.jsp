@@ -144,16 +144,8 @@
             <c:set var="current" value="${curr.rows[0].currval}"/>
             <c:set var="group_name" value="paper_${current}"/> 
             <c:set var="leadauthgrp" value="paper_leads_${current}"/>
-            <c:set var="grpmanager" value="${leadauthgrp}"/>
+            <c:set var="grpmanager" value="lsst-desc-publication-admins"/>
             
-            <%-- insert the paper into the junction tables --%>
-+           <sql:update>
-+               insert into descpub_project_papers (paperid, project_id, swg_id) values(?,?)
-+               <sql:param value="${current}"/>
-+               <sql:param value="${param.projid}"/>
-+               <sql:param value="${param.swg_id}"/>
-+           </sql:update>
-
             <%-- insert paper into profile_group --%>
             <sql:update>
                 insert into profile_group (group_name, group_manager, experiment) values (?, ?, ?)

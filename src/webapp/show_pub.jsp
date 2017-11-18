@@ -57,7 +57,7 @@
          <p></p>
          <hr align="left" width="50%"/>
          <p></p>
-         Add or Remove Authors
+         Add or Remove Lead Authors
          <p></p>
          <tg:groupMemberEditor groupname="paper_${paperid}" returnURL="${returnURL}"/> 
          <p></p>

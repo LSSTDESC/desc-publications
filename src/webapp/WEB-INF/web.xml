@@ -101,7 +101,7 @@
         <servlet-class>org.lsstdesc.pubs.FileUploadServlet</servlet-class>
         <init-param>
             <param-name>baseDir</param-name>
-            <param-value>/nfs/farm/g/desc/u1/Pubs</param-value>
+            <param-value>/nfs/farm/g/desc/u1/Pubs</param-value>  
         </init-param>
     </servlet>
     <servlet-mapping>
