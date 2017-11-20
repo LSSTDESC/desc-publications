@@ -70,7 +70,7 @@
     <c:choose>  
         <c:when test="${param.task == 'create_proj_form'}">
              <h3>Working Group: ${param.swgname}</h3><p/>
-            <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}&swgname=${param.swgname}">
+            <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}">
                 <strong>Title</strong><p/><input type="text" name="title" size="77" required/><p/>
                 <strong>Summary<br/></strong><textarea rows="22" cols="80" name="summary" required></textarea>
                 <p/>
@@ -82,8 +82,7 @@
                 </select>
                 
                 <input type="hidden" value="${param.swgid}" name="swgid"/><p/>
-                <input type="hidden" value="${param.swgname}" name="swgname"/><p/>
-                <input type="hidden" value="created" name="state"/><p/>
+                <input type="hidden" value="Created" name="state"/><p/>
                 <input type="hidden" value="true" name="formsubmitted"/><p/>
                 <input type="hidden" value="N" name="keyprj"/>
                 <input type="submit" value="Create" name="submit">
@@ -154,7 +153,8 @@
                 ${trapError}
             </c:if> 
             <c:if test="${empty trapError}">
-               Created ${param.title}
+               Created ${param.title}<br/>
+               <a href="show_swg.jsp?swgid=${param.swgid}">return to projects</a>
             </c:if>    
         </c:when>
     </c:choose>

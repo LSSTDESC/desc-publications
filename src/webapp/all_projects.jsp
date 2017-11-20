@@ -35,7 +35,7 @@
                 </sql:query>
                 <c:if test="${wgs.rowCount>0}">
                     <c:forEach var="w" items="${wgs.rows}">  
-                          <a href="show_swg.jsp?swgid=${w.id}&swgname=${w.name}">${w.name}</a><br/>
+                          <a href="show_swg.jsp?swgid=${w.id}">${w.name}</a><br/>
                     </c:forEach>  
                 </c:if>
             </display:column>  

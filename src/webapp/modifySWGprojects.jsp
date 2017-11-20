@@ -17,10 +17,10 @@
    <c:set var="oranames" value=""/>
    <c:set var="oravals" value=""/>
    
-   <%--
+    
    <c:forEach var="x" items="${param}">
        <c:out value="${x.key} = ${x.value}"/><br/>
-   </c:forEach> --%>
+   </c:forEach>  
        
    <sql:query var="cols">
        select lower(column_name) as colname from user_tab_cols where table_name = ?
@@ -83,12 +83,14 @@
                 <sql:param value="${param.projid}"/>
             </sql:update>  
             <sql:update>
-                update descpub_project set title = ?
+                update descpub_project set title = ? where id = ?
                 <sql:param value="${newTitle}"/>
+                <sql:param value="${param.projid}"/>
             </sql:update>
             <sql:update>
-                update descpub_project set summary = ?
+                update descpub_project set summary = ? where id = ?
                 <sql:param value="${newSummary}"/>
+                <sql:param value="${param.projid}"/>
             </sql:update>
             
                 
@@ -119,7 +121,6 @@
                 </c:if>
             </c:if>  
             
-                
         </sql:transaction>
     </c:catch> 
       

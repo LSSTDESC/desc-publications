@@ -40,40 +40,36 @@
     </sql:query>    
      
     <sql:query var="leads">
-        select convener_group_name from descpub_swg where id = ?
+        select convener_group_name cgn from descpub_swg where id = ?
         <sql:param value="${swgid}"/>
     </sql:query> 
-    <c:set var="leaders" value="${leads.rows[0].convener_group_name}"/>
+    <c:set var="leaders" value="${leads.rows[0].cgn}"/>
     
-        
     <c:if test="${param.updateProj == 'done'}">
         <div style="color: #0000FF">
             Project updated
         </div>
     </c:if> 
             
-    <%-- 
-<tg:editProject experiment="${appVariables.experiment}" projid="${projid}" swgid="${swgid}" wgname="${wgname}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}&wgname=${wgname}"/>  
-    --%>
     <tg:editProject projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/> 
   
     <p/>
     <hr align="left" width="45%"/>
     
-    <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'AnalysisCoordinator') || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+    <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leads.rows[0].cgn) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
         <p id="pagelabel">Add or Remove Project Leads </p>
         
         <tg:groupMemberEditor groupname="${groupname}" returnURL="${returnURL}"/> 
         <hr align="left" width="45%"/>
     </c:if>
     
-    <p id="pagelabel">List of Publications</p>
+    <p id="pagelabel">List of Document Entries</p>
     <display:table class="datatable" id="Rows" name="${pubs.rows}" defaultsort="1">
         <display:column title="Paper ID" sortable="true" headerClass="sortable">
             <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.paperid}</a>
         </display:column>
         <display:column title="Publication Title" sortable="true" headerClass="sortable">
-            <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.title}</a>
+            <a href="show_pub.jsp?paperid=${Rows.paperid}&swgid=${swgid}">${Rows.title}</a>
         </display:column>
         <display:column property="state" title="State" sortable="true" headerClass="sortable"/>
         <display:column property="added" title="Created" sortable="true" headerClass="sortable"/> 
@@ -93,10 +89,9 @@
     
     <form action="addPublication.jsp">
         <input type="hidden" name="task" value="create_publication_form"/>
-        <input type="hidden" name="swgname" value="${wgname}"/>
         <input type="hidden" name="swgid" value="${swgid}"/>
         <input type="hidden" name="projid" value="${projid}"/>
-        <input type="submit" value="Create Document"/>
+        <input type="submit" value="Create Document Entry"/>
     </form>
     
     <%--

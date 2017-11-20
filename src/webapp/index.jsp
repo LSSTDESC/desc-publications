@@ -36,7 +36,7 @@
         <c:if test="${swgs.rowCount > 0}">
             <display:table class="datatable"  id="Row" name="${swgs.rows}">
                 <display:column title="Working Groups" sortable="true" headerClass="sortable">
-                    <a href="show_swg.jsp?swgid=${Row.id}&swgname=${Row.name}">${Row.name}</a>
+                    <a href="show_swg.jsp?swgid=${Row.id}">${Row.name}</a>
                 </display:column>
                 <display:column title="Working Group Conveners" sortable="true" headerClass="sortable">
                     <sql:query var="conveners">

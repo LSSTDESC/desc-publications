@@ -20,10 +20,10 @@
     <body>
 
     <c:set var="debugMode" value="false"/>
-    
+    <%--
     <c:forEach var="x" items="${param}">
         <c:out value="${x.key} = ${x.value}"/><br/>
-    </c:forEach>
+    </c:forEach> --%>
     
     <c:choose>
         <c:when test="${empty param.formsubmitted}">
@@ -35,8 +35,9 @@
                 </sql:query>
 
                 <sql:query var="poolOfCandidates">
-                    select m.firstname, m.lastname, m.memidnum from um_member m join um_project_members p on m.memidnum=p.memidnum
-                    where p.activestatus = 'Y' and p.project = ? and m.lastname != 'lsstdesc-user' order by m.lastname
+                    select m.firstname, m.lastname, m.memidnum, u.username from um_member m join um_project_members p on m.memidnum=p.memidnum
+                    join um_member_username u on u.memidnum=m.memidnum where p.activestatus = 'Y' and p.project = ? and m.lastname != 'lsstdesc-user' 
+                    order by lower(m.lastname)
                     <sql:param value="${appVariables.experiment}"/>
                 </sql:query>
 
@@ -50,7 +51,7 @@
 
                 <div class="intro">
                     <p id="pagelabel">Document Details</p>
-                    <strong>Project id [ ${projInfo.rows[0].id} ] ${projInfo.rows[0].title}. <br/> Working group: ${projInfo.rows[0].name}</strong>
+                    <strong>Project id [ ${projInfo.rows[0].id} ] ${projInfo.rows[0].title}. <br/> Working group(s): ${projInfo.rows[0].name}</strong>
                 </div>
                 <p/>
                 <form action="addPublication.jsp" method="post">  
@@ -76,7 +77,7 @@
                     </select>  
                     
                     <p/>
-                    Select Correspondent Author(s):<br/>
+                    Select Lead Author(s):<br/>
                     <select name="authcontacts" multiple size="10" required>
                     <c:forEach var="auth" items="${poolOfCandidates.rows}">
                         <option value="${auth.memidnum}:${auth.firstname} ${auth.lastname}:${auth.username}">${auth.lastname},  ${auth.firstname} </option>
@@ -112,19 +113,18 @@
                     <input type="hidden" name="forwardTo" value="/uploadPub.jsp" />
                 </form>  
         </c:when>
-        <c:when test="${param.formsubmitted && ! debugMode}">
-           <%--
+        <c:when test="${param.formsubmitted}">
+          <%--
             <c:forEach var="x" items="${param}">
                 <c:out value="${x.key} = ${x.value}"/><br/>
                 <c:if test = "${x.key  == 'authcontacts'}">
                     <c:forEach var="y" items="${paramValues[x.key]}">
                         <c:set var="array" value="${fn:split(y,':')}"/>
-                        <c:out value="ContactAuth: ${array[0]}, ${array[1]}"/><br/>
+                        <c:out value="ContactAuth: ${array[0]}, ${array[1]}, ${array[2]}"/><br/>
                     </c:forEach>
                 </c:if>
             </c:forEach>  --%>
                         
-           
         <c:catch var="trapError"> 
             <sql:transaction>
             <sql:update >
@@ -146,19 +146,27 @@
             <c:set var="leadauthgrp" value="paper_leads_${current}"/>
             <c:set var="grpmanager" value="lsst-desc-publication-admins"/>
             
-            <%-- insert paper into profile_group --%>
+            <%-- insert paper group into profile_group, paper lead group is the managing group --%> 
             <sql:update>
-                insert into profile_group (group_name, group_manager, experiment) values (?, ?, ?)
+                insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
                 <sql:param value="${group_name}"/>
+                <sql:param value="${leadauthgrp}"/>
+                <sql:param value="${appVariables.experiment}"/>
+            </sql:update> 
+                
+            <%-- insert paper lead group into profile_group, lsst-desc-publication-admins is the managing group --%> 
+            <sql:update>
+                insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
+                <sql:param value="${leadauthgrp}"/>
                 <sql:param value="${grpmanager}"/>
                 <sql:param value="${appVariables.experiment}"/>
             </sql:update> 
-         
-            <%-- add lead authors to the paper group and lead author group --%>
+            
+            <%-- add lead authors to the paper lead group --%>
             <c:forEach var="con" items="${paramValues['authcontacts']}">
                 <c:set var="array" value="${fn:split(con,':')}"/>
                 <sql:update>
-                    insert into profile_ug (user_id, group_id, experiment, memidnum) values(?,?,?)
+                    insert into profile_ug (user_id, group_id, experiment, memidnum) values(?,?,?,?)
                     <sql:param value="${array[2]}"/>
                     <sql:param value="${leadauthgrp}"/>
                     <sql:param value="${appVariables.experiment}"/>
@@ -167,13 +175,16 @@
             </c:forEach>
             </sql:transaction>
         </c:catch>
-        
+       
         <c:if test="${trapError != null}">
             <h1>Error. Failed to create document: ${param.title}<br/>
                 ${trapError}
             </h1>
         </c:if>
-        </c:when>
+        <c:if test="${trapError == null}">
+          <c:redirect url="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}"/>   
+        </c:if>
+       </c:when>
     </c:choose>
     </body>
 </html>

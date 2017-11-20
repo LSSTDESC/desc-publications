@@ -27,10 +27,10 @@
     <c:forEach var="wg" items="${swgcurr.rows}">
        <c:choose>
            <c:when test="${empty wglist}">
-               <c:set var="wglist" value="${wg.name} "/>
+               <c:set var="wglist" value="${wg.name}"/>
            </c:when>
            <c:when test="${!empty wglist}">
-               <c:set var="wglist" value="${wglist}, ${wg.name} "/>
+               <c:set var="wglist" value="${wglist},${wg.name}"/>
            </c:when>
        </c:choose>
      </c:forEach>
@@ -56,7 +56,7 @@
     <c:set var="comm" value="${projects.rows[0].comm}"/>
     <c:set var="projectleads" value="project_leads_${projid}"/>
     
-<p id="pagelabel">Project Details [Working Groups: ${wglist}]</p>
+<p id="pagelabel">Project Details [Working Group(s): ${wglist}]</p>
 <form action="modifySWGprojects.jsp">  
     <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />
     <input type="hidden" name="projid" id="projid" value="${projid}" /> 

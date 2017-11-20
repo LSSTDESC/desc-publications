@@ -22,35 +22,24 @@
         <tg:underConstruction/>
 
         <c:set var="paperid" value="${param.paperid}"/>
-        <c:set var="projid" value="${param.projid}"/>
+      <%--  <c:set var="projid" value="${param.projid}"/> --%>
         <c:set var="swgid" value="${param.swgid}"/>
-        <c:set var="returnURL" value="show_pub.jsp?paperid=${paperid}&projid=${projid}&swgid=${swgid}"/>
+        <c:set var="wglist" value=""/>
         
         <sql:query var="info">
             select project_id from descpub_publication where paperid = ?
             <sql:param value="${paperid}"/>
         </sql:query>
-        
+        <c:set var="returnURL" value="show_pub.jsp?paperid=${paperid}&swgid=${swgid}"/>
+
         <%-- get working groups associated with this pub --%>
         <sql:query var="swglist">
-            select sg.name, sg.id, sg.convener_group_name from descpub_project pr join descpub_project_swgs wg on wg.project_id = pr.id
+            select sg.name, sg.id, sg.convener_group_name cgn from descpub_project pr join descpub_project_swgs wg on wg.project_id = pr.id
             join descpub_swg sg on sg.id=wg.swg_id
             where pr.id = ?
             <sql:param value="${info.rows[0].project_id}"/>
         </sql:query>
-        
-        <div>
-            <h3>Working Groups</h3>
-            <c:forEach var="sRow" items="${swglist.rows}" varStatus="loop">
-                <c:if test="${!loop.last}">
-                <a href="show_swg.jsp?swgid=${sRow.id}&swgname=${sRow.name}">${sRow.name}, </a>
-                </c:if>
-                <c:if test="${loop.last}">
-                <a href="show_swg.jsp?swgid=${sRow.id}&swgname=${sRow.name}">${sRow.name}</a>
-                </c:if>
-            </c:forEach>
-        </div>    
-     
+             
         <tg:editPublication paperid="${paperid}"/> 
          
          <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'AnalysisCoordinator') || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">

@@ -44,7 +44,7 @@
     Project Id: ${pubs.rows[0].project_id} &nbsp; &nbsp; Working Group Id: ${pubs.rows[0].swgid} &nbsp; &nbsp; Added: ${pubs.rows[0].added}
     <p/> 
     
-<form action="modifyPublication.jsp">  
+<form action="editPublication.jsp">  
    <input type="hidden" name="paperid" value="${paperid}"/> 
    <input type="hidden" name="swgid" value="${param.swgid}"/> 
    Title: <input type="text" value="${pubs.rows[0].title}" size="35" name="title" required/><p/>
