@@ -90,9 +90,6 @@
                  <display:column title="Project Title" sortable="true" headerClass="sortable">
                     <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">${proj.title}</a> 
                  </display:column>
-                 <display:column title="State" sortable="true" headerClass="sortable">
-                     ${proj.state}
-                 </display:column>
                  <display:column title="# of Documents" sortable="true" headerClass="sortable">
                      <sql:query var="results">
                         select count(*) tot from descpub_publication where project_id = ?

@@ -68,7 +68,7 @@
         <display:column title="Paper ID" sortable="true" headerClass="sortable">
             <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.paperid}</a>
         </display:column>
-        <display:column title="Publication Title" sortable="true" headerClass="sortable">
+        <display:column title="Document Title" sortable="true" headerClass="sortable">
             <a href="show_pub.jsp?paperid=${Rows.paperid}&swgid=${swgid}">${Rows.title}</a>
         </display:column>
         <display:column property="state" title="State" sortable="true" headerClass="sortable"/>

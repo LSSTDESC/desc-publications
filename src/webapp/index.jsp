@@ -22,6 +22,20 @@
 <body>
     
     <tg:underConstruction/>
+    
+    <%-- temp save
+     <display:column title="Working Group Conveners" sortable="true" headerClass="sortable">
+                    <sql:query var="conveners">
+                        select me.firstname, me.lastname, me.memidnum from um_member me join profile_ug ug on me.memidnum=ug.memidnum and ug.group_id=?
+                        <sql:param value="${Row.cgn}"/>
+                    </sql:query>
+                    <c:if test="${conveners.rowCount>0}">
+                        <c:forEach var="c" items="${conveners.rows}">
+                            <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${c.memidnum}&recType=INDB&verification=">${c.firstname} ${c.lastname}</a><br/>
+                        </c:forEach>
+                    </c:if>
+                </display:column>
+    --%>
 
     <p/>
      <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
@@ -38,20 +52,18 @@
                 <display:column title="Working Groups" sortable="true" headerClass="sortable">
                     <a href="show_swg.jsp?swgid=${Row.id}">${Row.name}</a>
                 </display:column>
-                <display:column title="Working Group Conveners" sortable="true" headerClass="sortable">
-                    <sql:query var="conveners">
-                        select me.firstname, me.lastname, me.memidnum from um_member me join profile_ug ug on me.memidnum=ug.memidnum and ug.group_id=?
-                        <sql:param value="${Row.cgn}"/>
-                    </sql:query>
-                    <c:if test="${conveners.rowCount>0}">
-                        <c:forEach var="c" items="${conveners.rows}">
-                            <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${c.memidnum}&recType=INDB&verification=">${c.firstname} ${c.lastname}</a><br/>
-                        </c:forEach>
-                    </c:if>
-                </display:column>
                 <display:column title="Update Working Group Members (Admins Only)">
                     <a href="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name=${Row.cgn}">${Row.cgn}</a>
                 </display:column>
+                <display:column title="Number of Projects">
+                    <sql:query var="prow">
+                    select count(project_id) tot from descpub_project_swgs where swg_id = ?
+                    <sql:param value="${Row.id}"/>
+                    </sql:query>
+                    <c:if test="${prow.rows[0].tot > 0}">
+                        ${prow.rows[0].tot}
+                    </c:if>
+                </display:column> 
             </display:table>
         </c:if>     
 

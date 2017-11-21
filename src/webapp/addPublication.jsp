@@ -165,6 +165,7 @@
             <%-- add lead authors to the paper lead group --%>
             <c:forEach var="con" items="${paramValues['authcontacts']}">
                 <c:set var="array" value="${fn:split(con,':')}"/>
+                <c:out value="${array[0]}, ${array[1]}, ${array[2]}, insert intot profile_ug (user_id, group_id, memidnum) values(${array[2]}, ${leadauthgrp}, ${array[0]})" /><br/>
                 <sql:update>
                     insert into profile_ug (user_id, group_id, experiment, memidnum) values(?,?,?,?)
                     <sql:param value="${array[2]}"/>
@@ -181,7 +182,7 @@
                 ${trapError}
             </h1>
         </c:if>
-        <c:if test="${trapError == null}">
+        <c:if test="${trapError != null}">
           <c:redirect url="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}"/>   
         </c:if>
        </c:when>
