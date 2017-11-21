@@ -32,7 +32,8 @@
     <c:set var="memberPool" value="lsst-desc-full-members"/>
     <c:set var="groupname" value="project_leads_${projid}"/>
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
-  
+
+            
     <sql:query var="pubs">
         select paperid, state, title, added, builder_eligible, keypub from descpub_publication where project_id = ? 
         order by title
@@ -57,8 +58,7 @@
     <hr align="left" width="45%"/>
     
     <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leads.rows[0].cgn) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
-        <p id="pagelabel">Add or Remove Project Leads </p>
-        
+        <p id="pagelabel">Add or Remove Project Leads</p>
         <tg:groupMemberEditor groupname="${groupname}" returnURL="${returnURL}"/> 
         <hr align="left" width="45%"/>
     </c:if>
@@ -94,6 +94,7 @@
         <input type="submit" value="Create Document Entry"/>
     </form>
     
+        
     <%--
     <a href="addDocument.jsp?projid=${projid}&swgid=${swgid}">Add Document</a>
 

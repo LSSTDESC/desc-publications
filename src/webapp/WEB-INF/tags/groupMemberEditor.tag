@@ -13,12 +13,13 @@
     <c:set var="candidategroup" value="lsst-desc-members"/>
 </c:if>
 
+<%--
 <c:forEach var="x" items="${param}">
   <c:out value="${x.key} = ${x.value}"/><br/>
 </c:forEach>
 <c:out value="candidategroup: ${candidategroup}"/> <br/>
-<c:out value="${groupname}"/>
-
+<c:out value="${groupname}"/>  
+--%>
 <sql:query var="candidates">
     with tmp_names as (
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
@@ -41,7 +42,6 @@
 <form action="modifyGroupMembers.jsp" method="post">  
     <input type="hidden" name="groupname" value="${groupname}"/> 
     <input type="hidden" name="candidategroup" value="${candidategroup}"/> 
-  <%--  <input type="hidden" name="redirectTo" value="${returnURL}"/> --%>
     <input type="hidden" name="returnURL" value="${returnURL}"/> 
     <table border="0">
         <tbody>

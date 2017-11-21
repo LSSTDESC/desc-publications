@@ -25,6 +25,9 @@
         <c:when test="${param.errmsg == '5'}">
             <h3>Only working group leaders or the analysis co-ordinator can add/remove users from groups.</h3>
         </c:when>
+        <c:when test="${param.errmsg == '6'}">
+            <h3>Removing all members from a group is not allowed. The group must have at least one member associated with it. </h3>
+        </c:when>
         </c:choose>
     </body>
 </html>

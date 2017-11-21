@@ -21,13 +21,12 @@
             <p id="pagelabel">${msg}</p> 
         </c:if>
         <c:choose>
-
             <c:when test="${empty param.paperId}">
                 <sql:query var="list">
                     select paperid, title from descpub_publication
                 </sql:query>
 
-                Choose your paper:<p/>
+                <p id="pagelabel"> Choose your paper: </p>
                 <form action="uploadPub.jsp">
                     <select name="paperId" size="8" required>
                         <c:forEach var="p" items="${list.rows}">
@@ -39,7 +38,6 @@
                 </form>
             </c:when>
             <c:otherwise>   
-
 
                 <h2>Paper <strong>DESC-${param.paperId}</strong></h2>
 
@@ -57,12 +55,14 @@
                     <display:column title="Links">
                         <a href="download?paperId=${row.paperId}&version=${row.version}">Download</a>
                     </display:column>
-                </display:table>                    
-                <h3>Upload new version</h3>
+                </display:table>
+                <p/> <hr/>
+                <p id="pagelabel">Upload new version</p>
+                <%-- upload.jsp is defined in web.xml and maps to the servlet that does the uploading --%>
                 <form action="upload.jsp" method="post" enctype="multipart/form-data">
                     <input type="file" name="fileToUpload" id="fileToUpload">
                     <p>
-                        Remarks: <input type="text" name="remarks">
+                        Remarks: <input type="text" name="remarks" required>
                     <p>
                         <input type="submit" value="Upload Document" name="submit">
                         <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperId=${param.paperId}" />

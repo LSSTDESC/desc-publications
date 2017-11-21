@@ -11,10 +11,19 @@
     </head>
     <body>
          
-    <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications'))}">
+    <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,param.groupname))}">
         <c:redirect url="noPermission.jsp?errmsg=1"/>
     </c:if>  
-               
+   <%-- groups must have at least one member --%>   
+    <sql:query var="checkcnt">
+        select count(*) tot from profile_ug where group_id = ?
+        <sql:param value="${param.groupname}"/>
+    </sql:query>
+      
+    <c:if test="${checkcnt.rows[0].tot == fn:length(paramValues.removeMember)}">
+        <c:redirect url="noPermission.jsp?errmsg=6"/> 
+    </c:if>   
+         
     <c:choose>
         <c:when test="${gm:isUserInExperiment(pageContext)}">  
             <c:choose>
@@ -58,10 +67,9 @@
                     </c:forEach>
                 </c:when>
             </c:choose> 
-           <%-- <c:redirect url="${param.redirectTo}"/> --%>
-        <c:redirect url="${param.returnURL}"/>  
+           <c:redirect url="${param.returnURL}"/>  
         </c:when>
-    </c:choose>   
+    </c:choose>
     
     </body>
 </html>
