@@ -18,11 +18,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        
+        <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-members')}">  
+            <c:redirect url="noPermission.jsp?errmsg=7"/>
+        </c:if>
         <tg:underConstruction/>
 
         <c:set var="paperid" value="${param.paperid}"/>
-      <%--  <c:set var="projid" value="${param.projid}"/> --%>
         <c:set var="swgid" value="${param.swgid}"/>
         <c:set var="wglist" value=""/>
        
@@ -39,13 +40,7 @@
         <c:set var="projid" value="${info.rows[0].project_id}"/>
         <c:set var="returnURL" value="show_pub.jsp?paperid=${paperid}&swgid=${swgid}"/>
         <c:set var="paperleads" value="paper_leads_${paperid}"/>
-        <%-- get working groups associated with this pub 
-        <sql:query var="swglist">
-            select sg.name, sg.id, sg.convener_group_name cgn from descpub_project pr join descpub_project_swgs wg on wg.project_id = pr.id
-            join descpub_swg sg on sg.id=wg.swg_id
-            where pr.id = ?
-            <sql:param value="${info.rows[0].project_id}"/>
-        </sql:query>--%>
+        <%-- get working groups associated with this pub --%>
         <sql:query var="swglist">
             select wg.id, wg.name from descpub_project_swgs jo join descpub_swg wg on jo.swg_id = wg.id where jo.project_id = ?
             <sql:param value="${info.rows[0].project_id}"/>
@@ -54,18 +49,21 @@
         <tg:editPublication paperid="${paperid}"/> 
          
          <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperleads) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
-         <p></p>
-         <hr align="left" width="50%"/>
-         <p></p>
-         Add or Remove Lead Authors
-         <p></p>
-         <tg:groupMemberEditor groupname="${paperleads}" returnURL="${returnURL}"/> 
-         <p>
-             
-         <c:if test="${countpapers.rowCount > 0}">     
-            <a href="uploadPub.jsp">upload Document</a> &nbsp;&nbsp;&nbsp;&nbsp;
-         </c:if>
-         
+             <p></p>
+             <hr align="left" width="50%"/>
+             <p></p>
+
+             <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperleads) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+                 Add or Remove Lead Authors
+                 <p></p>
+                 <tg:groupMemberEditor groupname="${paperleads}" returnURL="${returnURL}"/> 
+                 <p>
+                 <c:if test="${countpapers.rowCount > 0}">     
+                    <a href="uploadPub.jsp">upload Document</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                 </c:if>
+                 </p>
+             </c:if>
+            
          </c:if>
          <a href="requestAuthorship.jsp?paperid=${paperid}">Request Authorship</a>
       

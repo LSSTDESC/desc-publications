@@ -23,6 +23,9 @@
 
 <body>
     <%-- show_project allows edits by project leads only --%>
+    <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-members')}">  
+        <c:redirect url="noPermission.jsp?errmsg=7"/>
+    </c:if>
     
     <tg:underConstruction/>
 
@@ -32,8 +35,7 @@
     <c:set var="memberPool" value="lsst-desc-full-members"/>
     <c:set var="groupname" value="project_leads_${projid}"/>
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
-
-            
+     
     <sql:query var="pubs">
         select paperid, state, title, added, builder_eligible, keypub from descpub_publication where project_id = ? 
         order by title
@@ -82,28 +84,16 @@
     <hr align="left" width="45%"/> 
     
     <p/>
-    
-    <%--
-    <a href="addPublication.jsp?projid=${projid}&swgid=${swgid}&name=${wgname}">Add Publication</a>  
-    --%>
-    
-    <form action="addPublication.jsp">
-        <input type="hidden" name="task" value="create_publication_form"/>
-        <input type="hidden" name="swgid" value="${swgid}"/>
-        <input type="hidden" name="projid" value="${projid}"/>
-        <input type="submit" value="Create Document Entry"/>
-    </form>
-    
+ 
+    <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leaders) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+        <form action="addPublication.jsp">
+            <input type="hidden" name="task" value="create_publication_form"/>
+            <input type="hidden" name="swgid" value="${swgid}"/>
+            <input type="hidden" name="projid" value="${projid}"/>
+            <input type="submit" value="Create Document Entry"/>
+        </form>
+    </c:if>  
         
-    <%--
-    <a href="addDocument.jsp?projid=${projid}&swgid=${swgid}">Add Document</a>
-
-    
-    <tg:addPublication experiment="${appVariables.experiment}" projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/>  
-    
-    <p/>
-    <tg:addDocument swgid="${swgid}" userName="${userName}" experiment="${appVariables.experiment}" projid="${projid}" returnURL="show_project.jsp"/>  
-   --%>
 </body>
 </html>
     

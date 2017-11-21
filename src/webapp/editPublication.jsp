@@ -64,21 +64,6 @@
         <%-- tack on modify information  --%>
         <c:set var="oranames" value="${oranames}, date_modified=sysdate, modby=?"/>
         <c:set var="oravals" value="${oravals},${userName}"/>
-
-     <%-- 
-      update descpub_publication set ${oranames} where paperid = ${param.paperid} and project_id = ${projid}<br/>
-     <c:forEach var="y" items="${oravals}">
-        <c:out value="${y}"/><br/>
-     </c:forEach>
-     <c:out value="${param.paperid}, ${projid}"/><br/>
-     
-     <c:if test="${!empty newSummary}">
-        update descpub_publication set summary = ${newSummary} where paperid = ${param.paperid} and project_id = ${projid}
-     </c:if>
-     <c:if test="${!empty newTitle}">
-        update descpub_publication set title = ${newTitle} where paperid = ${param.paperid} and project_id = ${projid}
-     </c:if> 
-     --%>        
         
      <c:catch var="catchError"/>
      <sql:transaction>

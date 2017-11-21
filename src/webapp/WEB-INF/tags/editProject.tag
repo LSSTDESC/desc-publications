@@ -10,7 +10,7 @@
 <%@attribute name="returnURL" required="true" %>
  
     <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-members'))}">
-        <c:redirect url="noPermission.jsp?errmsg=1"/>
+        <c:redirect url="noPermission.jsp?errmsg=7"/>
     </c:if>  
    
     <c:set var="wglist" value=""/>
@@ -18,7 +18,7 @@
         select state from descpub_project_states order by state
     </sql:query>
     
-    <%-- project can have multiple working groups assigned so execute separate query to get all working groups --%> 
+    <%-- project can have multiple working groups assigned so execute separate query and make a list of relevant working groups --%> 
     <sql:query var="swgcurr">
          select wg.name, wg.id from descpub_swg wg join descpub_project_swgs ps on wg.id = ps.swg_id where ps.project_id = ? order by wg.name
         <sql:param value="${projid}"/>
@@ -48,7 +48,7 @@
         <sql:param value="${projid}"/>
     </sql:query>
     
-    <c:set var="project_leads" value="project_${projid}"/>
+    <c:set var="project_grp" value="project_${projid}"/>
     <c:set var="keyproj" value="${projects.rows[0].keyprj}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].state}"/>

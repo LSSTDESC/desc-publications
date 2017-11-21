@@ -28,6 +28,9 @@
         <c:when test="${param.errmsg == '6'}">
             <h3>Removing all members from a group is not allowed. The group must have at least one member associated with it. </h3>
         </c:when>
+        <c:when test="${param.errmsg == '7'}">
+            <h3>Only LSST-DESC Members have access to the publication system.  </h3>
+        </c:when>
         </c:choose>
     </body>
 </html>

@@ -19,13 +19,13 @@
         <link rel="stylesheet" href="css/pubstyles.css">
     </head>
     <body>
-    
-         <tg:underConstruction/>
-    <%--
-    <c:forEach var="x" items="${param}">
-        <c:out value="${x.key} = ${x.value}"/><br/>
-    </c:forEach>  --%>
-    
+        
+    <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-members')}">  
+        <c:redirect url="noPermission.jsp?errmsg=7"/>
+    </c:if>
+        
+    <tg:underConstruction/>
+     
     <c:choose>
         <c:when test="${!empty param.reason}">
             <sql:query var="currnum">
@@ -59,12 +59,9 @@
             <c:if test="${empty catchError}">
                 <p id="pagelabel"> Your request for authorship has been sent to:</p>
                 <display:table class="datatable" name="${recips.rows}" id="Rows"/>
-                <c:forEach var="x" items="${recips.rows}">
-                    <c:out value="${x.first_name} ${x.last_name} at ${x.email}"/><br/>
-                </c:forEach>  
            </c:if>  
            <c:if test="${!empty catchError}">
-                <p id="pagelabel"> Authorship request failed. Reaons: ${catchError}</p>   
+                <p id="pagelabel"> Authorship request failed. Reason: ${catchError}</p>   
            </c:if>  
         </c:when>
         <c:when test="${!empty param.paperid}">

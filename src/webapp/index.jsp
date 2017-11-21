@@ -21,22 +21,12 @@
 
 <body>
     
+    <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-members'))}">
+        <c:redirect url="noPermission.jsp?errmsg=7"/>
+    </c:if>  
+    
     <tg:underConstruction/>
     
-    <%-- temp save
-     <display:column title="Working Group Conveners" sortable="true" headerClass="sortable">
-                    <sql:query var="conveners">
-                        select me.firstname, me.lastname, me.memidnum from um_member me join profile_ug ug on me.memidnum=ug.memidnum and ug.group_id=?
-                        <sql:param value="${Row.cgn}"/>
-                    </sql:query>
-                    <c:if test="${conveners.rowCount>0}">
-                        <c:forEach var="c" items="${conveners.rows}">
-                            <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${c.memidnum}&recType=INDB&verification=">${c.firstname} ${c.lastname}</a><br/>
-                        </c:forEach>
-                    </c:if>
-                </display:column>
-    --%>
-
     <p/>
      <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
         

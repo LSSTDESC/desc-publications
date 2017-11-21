@@ -33,7 +33,7 @@
        Users cannot change name of a group, that leads to inconsistencies between profile_group and profile_ug.  Users can request to delete a group. 
     --%>
     <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-members')}">  
-        <c:redirect url="noPermission.jsp?errmsg=1"/>
+        <c:redirect url="noPermission.jsp?errmsg=7"/>
     </c:if>
     
     <tg:underConstruction/>
@@ -60,19 +60,9 @@
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.id
         <sql:param value="${param.swgid}"/>
     </sql:query>    
-      
-        <%--
-     
-    <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">  
-        <c:redirect url="noPermission.jsp?errmsg=4"/>
-    </c:if> --%>
-                    
-   <%--  <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}"> --%>     
+                          
     <c:choose>  
-    <%-- <c:when test="${!empty param.swgid && gm:isUserInGroup(pageContext,pubAdmin) || gm:isUserInGroup(pageContext,projects.rows[0].pgn) }"> --%>
-       <c:when test="${!empty param.swgid && gm:isUserInGroup(pageContext,'lsst-desc-members')}">
-         <%-- Don't allow deletion of swgs per S.Digel, 18jul17.   --%>
-            
+       <c:when test="${!empty param.swgid}">   
             <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                 <form action="project_details.jsp">
                     <input type="hidden" name="task" value="create_proj_form"/>
@@ -99,13 +89,7 @@
                  </display:column>
              </display:table>
         </c:when>
-        <c:otherwise>
-            Only DESC members and members of the following groups have access:<br/> 
-            ${cgn}<br/>
-            ${pgn}  
-        </c:otherwise>
     </c:choose>    
-  <%--  </c:if> --%>
             
 </body>
 </html>
