@@ -22,9 +22,10 @@
     </head>
     <body>
         <tg:underConstruction/>
-            
+         
+        
         <sql:query var="pjs" >
-             select id, title, active, state, keyprj, lastmodified from descpub_project order by id
+             select id, title, state, keyprj, lastmodified from descpub_project order by id
         </sql:query>   
          
         <display:table class="datatable" id="Row" name="${pjs.rows}">
@@ -61,6 +62,7 @@
                 <a href="show_project.jsp?projid=${Row.id}">${Row.id}</a>
             </display:column>
         </display:table>
+        
     </body>
     
 </html>
