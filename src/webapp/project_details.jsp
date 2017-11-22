@@ -69,7 +69,7 @@
         
     <c:choose>  
         <c:when test="${param.task == 'create_proj_form'}">
-             <h3>Working Group: ${param.swgname}</h3><p/>
+             <h3>Working Group: ${swgs.rows[0].name}</h3><p/>
             <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}">
                 <strong>Title</strong><p/><input type="text" name="title" size="77" required/><p/>
                 <strong>Summary<br/></strong><textarea rows="22" cols="80" name="summary" required></textarea>
