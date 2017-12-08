@@ -24,16 +24,40 @@
     <body>
         <tg:underConstruction/>
         
+        <%--
         <sql:query var="pubs" >
-            select paperid, added, state, keypub, title, project_id, pubtype from descpub_publication order by paperid
+            select paperid, to_char(added,'yyyy-Mon-dd') added, state, keypub, title, project_id, pubtype, to_char(date_modified,'yyyy-Mon-dd') moddate from descpub_publication order by paperid
+        </sql:query> --%>
+            
+        <sql:query var="vers" >
+            select p.title, p.paperid, to_char(v.tstamp,'yyyy-Mon-dd'), version, location from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
+            order by v.paperid
         </sql:query>
           
-        <display:table class="datatable" id="Row" name="${pubs.rows}">
-            <display:column title="Paper ID">
-                <a href="show_pub.jsp?paperid=${Row.paperid}&projid=${Row.project_id}&swgid=${Row.swgid}">${Row.paperid}</a>
+        <c:if test="${vers.rowCount>0}">    
+        <display:table class="datatable" id="record" name="${vers.rows}">
+            <display:column title="DESC ID" group="1">
+                 DESC-${record.paperid}
             </display:column>
-            <display:column title="Title">
-                <a href="show_pub.jsp?paperid=${Row.paperid}&projid=${Row.project_id}&swgid=${Row.swgid}">${Row.title}</a>
+            <display:column title="Title" style="text-align:left;" group="2">
+                ${record.title}
+            </display:column>
+                 
+            <display:column title="Links" style="text-align:left;">
+                <c:if test="${!empty record.version}">
+                <a href="download?paperId=${record.paperid}&version=${record.version}">Download version ${record.version}</a>
+                </c:if>
+            </display:column>
+        </display:table>
+        </c:if>
+          
+                <%--
+        <display:table class="datatable" id="Row" name="${pubs.rows}">
+            <display:column title="DESC ID">
+                <a href="show_pub.jsp?paperid=${Row.paperid}&projid=${Row.project_id}">DESC-${Row.paperid}</a>
+            </display:column>
+            <display:column title="Title" style="text-align:left;">
+                <a href="show_pub.jsp?paperid=${Row.paperid}&projid=${Row.project_id}">${Row.title}</a>
             </display:column>
             <display:column title="Key Publication">
                 ${Row.keypub}
@@ -44,32 +68,10 @@
             <display:column title="Created">
                 ${Row.added}
             </display:column>  
-            <display:column title="Working Group(s)">
-               <sql:query var="wgs">
-                        select s.id, s.name from descpub_swg s join descpub_project_swgs j on s.id = j.swg_id and j.project_id = ?
-                        <sql:param value="${Row.project_id}"/>
-                </sql:query>
-                <c:if test="${wgs.rowCount>0}">
-                    <c:forEach var="wg" items="${wgs.rows}">
-                         <a href="show_swg.jsp?swgid=${wg.id}">${wg.name}</a><br/>
-                    </c:forEach>
-                </c:if>
-            </display:column>
-                         
-            <display:column title="Lead Authors">
-                <sql:query var="leads">
-                    select distinct ug.memidnum, vi.first_name, vi.last_name, vi.email from profile_ug ug join profile_user vi on vi.memidnum = ug.memidnum 
-                    where ug.experiment = ? and ug.group_id = ?
-                    <sql:param value="${appVariables.experiment}"/>
-                    <sql:param value="paper_${Row.paperid}"/>
-                </sql:query>
-                <c:if test="${leads.rowCount > 0}">
-                    <c:forEach var="a" items="${leads.rows}">
-                        <a href="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/user.jsp?memidnum=${a.memidnum}&recType=INDB&verification=A">${a.first_name} ${a.last_name}</a><br/>
-                    </c:forEach>        
-                </c:if>    
-            </display:column>
-        </display:table>
+            <display:column title="Last Modified">
+                ${Row.moddate}
+            </display:column> 
+        </display:table> --%>
             
     </body>
 </html>

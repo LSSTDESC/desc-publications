@@ -25,7 +25,7 @@
          
         
         <sql:query var="pjs" >
-             select id, title, state, keyprj, lastmodified from descpub_project order by id
+             select id, title, state, lastmodified from descpub_project order by id
         </sql:query>   
          
         <display:table class="datatable" id="Row" name="${pjs.rows}">
@@ -48,16 +48,9 @@
                     ${Row.active}
                 </display:column>
             </c:if>
-                
             <display:column title="State" sortable="true" headerClass="sortable">
                 ${Row.state}
             </display:column>
-            
-            <display:column title="Key Project" sortable="true" headerClass="sortable">
-                ${Row.keyprj}
-            </display:column>
-            
-           
             <display:column title="Project ID" sortable="true" headerClass="sortable">
                 <a href="show_project.jsp?projid=${Row.id}">${Row.id}</a>
             </display:column>

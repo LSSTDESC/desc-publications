@@ -93,7 +93,6 @@
                 <sql:param value="${param.projid}"/>
             </sql:update>
             
-                
             <c:if test="${!empty paramValues.addprojswg}">
               <c:forEach var="pv" items="${paramValues.addprojswg}">
                 <sql:update>

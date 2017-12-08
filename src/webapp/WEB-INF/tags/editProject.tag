@@ -44,12 +44,11 @@
     </sql:query>
    
     <sql:query var="projects">
-        select id, title, summary, state, to_char(created,'yyyy-Mon-dd') crdate, keyprj, to_char(lastmodified,'yyyy-Mon-dd') moddate from descpub_project where id = ?  
+        select id, title, summary, state, to_char(created,'yyyy-Mon-dd') crdate, to_char(lastmodified,'yyyy-Mon-dd') moddate from descpub_project where id = ?  
         <sql:param value="${projid}"/>
     </sql:query>
     
     <c:set var="project_grp" value="project_${projid}"/>
-    <c:set var="keyproj" value="${projects.rows[0].keyprj}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].state}"/>
     <c:set var="summary" value="${projects.rows[0].summary}"/>
@@ -86,13 +85,6 @@
             </td>
         </tr>
     </table>
-    <p/>
-    
-    Key Project:<br/>
-    <select name="keyprj" id="keyprj" required>
-        <option value="Y" <c:if test="${projects.rows[0].keyprj == 'Y'}"> selected</c:if> > Y</option>
-        <option value="N" <c:if test="${projects.rows[0].keyprj == 'N'}"> selected</c:if> > N</option>
-    </select> 
     <p/>
     
     State:<br/>  

@@ -15,12 +15,10 @@ and open the template in the editor.
     font-size: 12px;
 }
 
-h2 {
-    
-}
-
 hr.style1 {
     border-top: 1px dotted #8c8b8b;
     border-bottom: 1px dotted #fff;
     width: 50%;
 }
+
+ 

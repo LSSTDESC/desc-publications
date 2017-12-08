@@ -21,7 +21,7 @@
       <script src="js/jquery-1.11.1.min.js"></script>
       <script src="js/jquery.validate.min.js"></script>
       <link rel="stylesheet" href="css/site-demos.css">
-     
+      <link rel="stylesheet" href="css/pubstyles.css">
       <title>SWG Page</title>
 </head>
 
@@ -46,21 +46,42 @@
         select id, name, email, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id = ? order by id
         <sql:param value="${param.swgid}"/>
     </sql:query>
-     
+        
     <c:set var="pgn" value="${swgs.rows[0].pgn}"/>   
     <c:set var="cgn" value="${swgs.rows[0].cgn}"/>   
     <c:set var="swgid" value="${param.swgid}"/> 
     <c:set var="swgname" value="${swgs.rows[0].name}"/>
+    <c:set var="convenerList" value=""/>
+    <c:set var="convenerList2" value=""/>
     
-    <h2>Working Group(s): ${swgname}</h2>
-
     <sql:query var="projects">
-        select p.id, p.keyprj, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.profile_group_name pgn, wg.convener_group_name cgn, p.summary 
+        select p.id, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.profile_group_name pgn, wg.convener_group_name cgn, p.summary 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.id
         <sql:param value="${param.swgid}"/>
     </sql:query>    
-                          
+   
+    <sql:query var="conveners">
+        select u.first_name, u.last_name, u.email, ug.group_id, u.memidnum from profile_user u join profile_ug ug on u.memidnum=ug.memidnum 
+        where u.active='Y' and ug.group_id = ? and u.experiment = ?
+        <sql:param value="${cgn}"/>
+        <sql:param value="${appVariables.experiment}"/>
+    </sql:query>
+        
+    <c:forEach var="c" items="${conveners.rows}">
+        <c:choose>
+        <c:when test="${empty convenerList}">
+            <c:set var="convenerList" value="${c.first_name} ${c.last_name}"/>
+        </c:when>
+        <c:when test="${!empty convenerList}">
+            <c:set var="convenerList" value="${convenerList}, ${c.first_name} ${c.last_name}"/>
+        </c:when>
+        </c:choose>
+    </c:forEach>
+             
+    <h2>Working Group(s): ${swgname}</h2>
+    <p id="pagelabel">Conveners: ${convenerList}</p>
+     
     <c:choose>  
        <c:when test="${!empty param.swgid}">   
             <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">

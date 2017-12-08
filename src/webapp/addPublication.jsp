@@ -42,7 +42,7 @@
                 </sql:query>
 
                 <sql:query var="pubtypes">
-                    select pubtype from descpub_pubtypes order by pubtype
+                    select pubtype from descpub_publication_types order by pubtype
                 </sql:query>
 
                 <sql:query var="pubstates">
@@ -58,10 +58,12 @@
                     <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
                     <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
                     <input type="hidden" name="wgname" id="wgname" value="${param.name}"/> 
+                    <input type="hidden" name="pubstate" id="pubstate" value="Created"/>
                     <input type="hidden" name="formsubmitted" value="true"/>
                     Title: <br/> <input type="text" name="title" id="title" size="80" required/>  
                     <p/>
-                     
+                    Short Title: <br/> <input type="text" name="short_title" id="title" size="80"/>  
+                    <p/>
                     Builder Eligible:<br/>
                     <select name="builder" required>
                        <option value=""></option>
@@ -75,7 +77,6 @@
                        <option value="N">No</option>
                        <option value="Y">Yes</option>
                     </select>  
-                    
                     <p/>
                     Select Lead Author(s):<br/>
                     <select name="authcontacts" multiple size="10" required>
@@ -91,26 +92,7 @@
                     </c:forEach>
                     </select> 
                     <p/>
-
-                    State:<br/> 
-                    <select name="pubstate">
-                    <c:forEach var="stype" items="${pubstates.rows}">
-                        <option value="${stype.state}">${stype.state}</option>
-                    </c:forEach>
-                    </select> 
-                    <p/>
                     <input type="submit" value="Create Document Entry" name="addPub" />  
-                </form>
-                <p/>
-                <hr align="left" width="50%"/>
-                <p/>
-                <p id="pagelabel">Upload Document</p>
-
-                <form action="uploadPub.jsp" method="post" enctype="multipart/form-data">
-                    <input type="file" name="fileToUpload" id="fileToUpload">
-                    <input type="submit" value="Upload Document" name="submit">
-                  <%--  <input type="hidden" name="forwardTo" value="/uploadTest.jsp" /> --%>
-                    <input type="hidden" name="forwardTo" value="/uploadPub.jsp" />
                 </form>  
         </c:when>
         <c:when test="${param.formsubmitted}">
@@ -128,13 +110,14 @@
         <c:catch var="trapError"> 
             <sql:transaction>
             <sql:update >
-                insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?)
+                insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype,short_title) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?,?)
                 <sql:param value="${param.title}"/>
                 <sql:param value="${param.pubstate}"/>
                 <sql:param value="${param.builder}"/>
                 <sql:param value="${param.keypaper}"/>
                 <sql:param value="${param.projid}"/>
                 <sql:param value="${param.pubtyp}"/>
+                <sql:param value="${param.short_title}"/>
             </sql:update>  
 
             <sql:query var="curr">
@@ -144,6 +127,7 @@
             <c:set var="current" value="${curr.rows[0].currval}"/>
             <c:set var="group_name" value="paper_${current}"/> 
             <c:set var="leadauthgrp" value="paper_leads_${current}"/>
+            <c:set var="reviewergrp" value="paper_reviewers_${current}"/>
             <c:set var="grpmanager" value="lsst-desc-publication-admins"/>
             
             <%-- insert paper group into profile_group, paper lead group is the managing group --%> 
@@ -161,7 +145,15 @@
                 <sql:param value="${grpmanager}"/>
                 <sql:param value="${appVariables.experiment}"/>
             </sql:update> 
-            
+                      
+            <%-- insert paper reviewer group into profile_group, lsst-desc-publication-admins is the managing group --%> 
+            <sql:update>
+                insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
+                <sql:param value="${reviewergrp}"/>
+                <sql:param value="${grpmanager}"/>
+                <sql:param value="${appVariables.experiment}"/>
+            </sql:update> 
+                           
             <%-- add lead authors to the paper lead group --%>
             <c:forEach var="con" items="${paramValues['authcontacts']}">
                 <c:set var="array" value="${fn:split(con,':')}"/>
@@ -173,6 +165,18 @@
                     <sql:param value="${array[0]}"/>
                 </sql:update> 
             </c:forEach>
+                    
+            <%-- add reviewers group  --%>
+            <c:forEach var="rev" items="${paramValues['reviewers']}">
+                <c:set var="revarray" value="${fn:split(rev,':')}"/>
+                <sql:update>
+                    insert into profile_ug (user_id, group_id, experiment, memidnum) values(?,?,?,?)
+                    <sql:param value="${revarray[2]}"/>
+                    <sql:param value="${reviewergrp}"/>
+                    <sql:param value="${appVariables.experiment}"/>
+                    <sql:param value="${revarray[0]}"/>
+                </sql:update> 
+            </c:forEach>
             </sql:transaction>
         </c:catch>
        
@@ -181,8 +185,8 @@
                 ${trapError}
             </h1>
         </c:if>
-        <c:if test="${trapError != null}">
-          <c:redirect url="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}"/>   
+        <c:if test="${trapError == null}">
+          <c:redirect url="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}"/>    
         </c:if>
        </c:when>
     </c:choose>

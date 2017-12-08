@@ -37,11 +37,15 @@
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
      
     <sql:query var="pubs">
-        select paperid, state, title, added, builder_eligible, keypub from descpub_publication where project_id = ? 
-        order by title
+        select paperid, state, title, added, builder_eligible, keypub, pubtype from descpub_publication where project_id = ? 
+        order by added
         <sql:param value="${projid}"/>
     </sql:query>    
-     
+    
+    <sql:query var="pubvers">
+        select count
+    </sql:query>
+        
     <sql:query var="leads">
         select convener_group_name cgn from descpub_swg where id = ?
         <sql:param value="${swgid}"/>
@@ -66,21 +70,20 @@
     </c:if>
     
     <p id="pagelabel">List of Document Entries</p>
-    <display:table class="datatable" id="Rows" name="${pubs.rows}" defaultsort="1">
-        <display:column title="Paper ID" sortable="true" headerClass="sortable">
-            <a href="show_pub.jsp?paperid=${Rows.paperid}&projid=${projid}&swgid=${swgid}">${Rows.paperid}</a>
+    <display:table class="datatable" id="Rows" name="${pubs.rows}" defaultsort="1" >
+        <display:column title="Document ID" sortable="true" headerClass="sortable">
+          DESC-${Rows.paperid}
         </display:column>
-        <display:column title="Document Title" sortable="true" headerClass="sortable">
+        <display:column title="Document Title" sortable="true" headerClass="sortable" style="text-align:left;">
             <a href="show_pub.jsp?paperid=${Rows.paperid}&swgid=${swgid}">${Rows.title}</a>
         </display:column>
+        <display:column property="pubtype" title="Type" sortable="true" headerClass="sortable" style="text-align:left;"/>
         <display:column property="state" title="State" sortable="true" headerClass="sortable"/>
         <display:column property="added" title="Created" sortable="true" headerClass="sortable"/> 
         <display:column property="builder_eligible" title="Builder" sortable="true" headerClass="sortable"/>        
-        <display:column property="keypub" title="Key Pub" sortable="true" headerClass="sortable"/>        
+        <display:column property="keypub" title="Key Pub" sortable="true" headerClass="sortable"/> 
     </display:table>  
-   
     <p/> 
-     
     <hr align="left" width="45%"/> 
     
     <p/>

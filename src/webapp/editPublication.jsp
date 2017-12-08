@@ -22,7 +22,7 @@
         <c:set var="oravals" value=""/>
         <c:set var="newTitle" value=""/>
         <c:set var="newSummary" value=""/>
-
+        
         <sql:query var="cols">
           select lower(column_name) as colname from user_tab_cols where table_name = ?
           <sql:param value="DESCPUB_PUBLICATION"/>
@@ -33,9 +33,8 @@
             <sql:param value="${param.paperid}"/>
         </sql:query>
         <c:set var="projid" value="${getprj.rows[0].project_id}"/> 
-        
+            
         <%-- handle the summary and title separately so we don't have to worry if they contain commas, interferring when building oranames and oravalues --%> 
-        
         <c:forEach var="x" items="${cols.rows}" varStatus="loop">
            <c:if test="${!fn:contains(x['colname'],'paperid')}">
            <c:forEach var="p" items="${param}">
@@ -98,7 +97,8 @@
              </h3>  
          </c:when>
          <c:otherwise>
-            <c:redirect url="show_pub.jsp?paperid=${paperid}&projid=${projid}&swgid=${swgid}"/>    
+           <c:redirect url="show_pub.jsp?paperid=${param.paperid}&swgid=${param.swgid}"/>    
+         <%--  <c:redirect url="show_pub.jsp?paperid=${paperid}&projid=${projid}&swgid=${swgid}"/>    --%>
         </c:otherwise>
     </c:choose>
             

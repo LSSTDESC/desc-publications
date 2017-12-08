@@ -45,23 +45,23 @@
     </sql:query>
     
     <sql:query var="swgs">
-        select id, name, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id != ?
+        select id, name, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id = ?
         <sql:param value="${param.swgid}"/>
     </sql:query>
         
     <sql:query var="swgproj">
-        select p.id, p.keyprj, p.title, p.state, wg.name from descpub_project p join descpub_project_swgs ps on p.id=ps.project_id
+        select p.id, p.title, p.state, wg.name from descpub_project p join descpub_project_swgs ps on p.id=ps.project_id
         join descpub_swg wg on ps.swg_id=wg.id where p.id=? order by p.id
         <sql:param value="${param.id}"/>
     </sql:query>
         
     <sql:query var="detail">
-        select id,title,summary,state,created,keyprj from descpub_project where id=? 
+        select id,title,summary,state,created from descpub_project where id=? 
         <sql:param value="${param.id}"/>
     </sql:query>
     
     <sql:query var="details">    
-        select dp.title, dp.summary, dp.state, dp.keyprj, wg.name, wg.profile_group_name as pgn from 
+        select dp.title, dp.summary, dp.state, wg.name, wg.profile_group_name as pgn from 
         descpub_project dp join descpub_project_swgs sg on dp.id = sg.project_id join descpub_swg wg on wg.id = sg.swg_id
         where dp.id = ?
         <sql:param value="${param.id}"/>
@@ -84,7 +84,6 @@
                 <input type="hidden" value="${param.swgid}" name="swgid"/><p/>
                 <input type="hidden" value="Created" name="state"/><p/>
                 <input type="hidden" value="true" name="formsubmitted"/><p/>
-                <input type="hidden" value="N" name="keyprj"/>
                 <input type="submit" value="Create" name="submit">
             </form>
         </c:when>
@@ -100,11 +99,10 @@
             <c:catch var="trapError">
                 <sql:transaction>
                     <sql:update >
-                    insert into descpub_project (id,title,summary,state,created,keyprj) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate,?)
+                    insert into descpub_project (id,title,summary,state,created) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate)
                     <sql:param value="${param.title}"/>
                     <sql:param value="${param.summary}"/>
                     <sql:param value="${param.state}"/>
-                    <sql:param value="${param.keyprj}"/>
                     </sql:update>
 
                     <sql:query var="projNum">
