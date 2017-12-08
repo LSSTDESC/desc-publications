@@ -20,11 +20,7 @@
     <body>
 
     <c:set var="debugMode" value="false"/>
-    <%--
-    <c:forEach var="x" items="${param}">
-        <c:out value="${x.key} = ${x.value}"/><br/>
-    </c:forEach> --%>
-    
+     
     <c:choose>
         <c:when test="${empty param.formsubmitted}">
                 <sql:query var="projInfo">
@@ -58,7 +54,7 @@
                     <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
                     <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
                     <input type="hidden" name="wgname" id="wgname" value="${param.name}"/> 
-                    <input type="hidden" name="pubstate" id="pubstate" value="Created"/>
+                    <input type="hidden" name="pubstate" id="pubstate" value="created"/>
                     <input type="hidden" name="formsubmitted" value="true"/>
                     Title: <br/> <input type="text" name="title" id="title" size="80" required/>  
                     <p/>
@@ -95,7 +91,17 @@
                     <input type="submit" value="Create Document Entry" name="addPub" />  
                 </form>  
         </c:when>
-        <c:when test="${param.formsubmitted}">
+        <c:when test="${debugMode}">
+             <c:forEach var="x" items="${param}">
+                <c:out value="${x.key} = ${x.value}"/><br/>
+             </c:forEach>  
+                
+             insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype, short_title) 
+             values(DESCPUB_PUB_SEQ.nextval,${param.title}, ${param.pubstate}, sysdate, ${param.builder}, ${param.keypaper}, ${param.projid}, ${param.pubtyp}, ${param.short_title})
+             <p/>
+              
+        </c:when>
+        <c:when test="${param.formsubmitted && !debugMode}">
           <%--
             <c:forEach var="x" items="${param}">
                 <c:out value="${x.key} = ${x.value}"/><br/>
@@ -110,14 +116,13 @@
         <c:catch var="trapError"> 
             <sql:transaction>
             <sql:update >
-                insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype,short_title) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?,?)
+                insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?)
                 <sql:param value="${param.title}"/>
                 <sql:param value="${param.pubstate}"/>
                 <sql:param value="${param.builder}"/>
                 <sql:param value="${param.keypaper}"/>
                 <sql:param value="${param.projid}"/>
                 <sql:param value="${param.pubtyp}"/>
-                <sql:param value="${param.short_title}"/>
             </sql:update>  
 
             <sql:query var="curr">
@@ -182,6 +187,7 @@
        
         <c:if test="${trapError != null}">
             <h1>Error. Failed to create document: ${param.title}<br/>
+                Parent key should be ${param.projid}
                 ${trapError}
             </h1>
         </c:if>
