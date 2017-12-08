@@ -118,6 +118,12 @@
         <url-pattern>/download</url-pattern>
     </servlet-mapping>
             
+    <listener>  
+        <listener-class>
+            org.lsstdesc.pubs.BackgroundJobManager
+        </listener-class>
+    </listener>  
+            
     <welcome-file-list>
         <welcome-file>
             index.jsp
