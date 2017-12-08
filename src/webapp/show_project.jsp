@@ -63,23 +63,24 @@
         <hr align="left" width="45%"/>
     </c:if>
     
-    <p id="pagelabel">List of Document Entries</p>
-    <display:table class="datatable" id="Rows" name="${pubs.rows}" defaultsort="1" >
-        <display:column title="Document ID" sortable="true" headerClass="sortable">
-          DESC-${Rows.paperid}
-        </display:column>
-        <display:column title="Document Title" sortable="true" headerClass="sortable" style="text-align:left;">
-            <a href="show_pub.jsp?paperid=${Rows.paperid}&swgid=${swgid}">${Rows.title}</a>
-        </display:column>
-        <display:column property="pubtype" title="Type" sortable="true" headerClass="sortable" style="text-align:left;"/>
-        <display:column property="state" title="State" sortable="true" headerClass="sortable"/>
-        <display:column property="added" title="Created" sortable="true" headerClass="sortable"/> 
-        <display:column property="builder_eligible" title="Builder" sortable="true" headerClass="sortable"/>        
-        <display:column property="keypub" title="Key Pub" sortable="true" headerClass="sortable"/> 
-    </display:table>  
-    <p/> 
-    <hr align="left" width="45%"/> 
-    
+    <c:if test="${pubs.rowCount > 0}">
+        <p id="pagelabel">List of Document Entries (Total: ${pubs.rowCount})</p>
+        <display:table class="datatable" id="Rows" name="${pubs.rows}" defaultsort="1" >
+            <display:column title="Document ID" sortable="true" headerClass="sortable">
+              DESC-${Rows.paperid}
+            </display:column>
+            <display:column title="Document Title" sortable="true" headerClass="sortable" style="text-align:left;">
+                <a href="show_pub.jsp?paperid=${Rows.paperid}&swgid=${swgid}">${Rows.title}</a>
+            </display:column>
+            <display:column property="pubtype" title="Type" sortable="true" headerClass="sortable" style="text-align:left;"/>
+            <display:column property="state" title="State" sortable="true" headerClass="sortable"/>
+            <display:column property="added" title="Created" sortable="true" headerClass="sortable"/> 
+            <display:column property="builder_eligible" title="Builder" sortable="true" headerClass="sortable"/>        
+            <display:column property="keypub" title="Key Pub" sortable="true" headerClass="sortable"/> 
+        </display:table>  
+        <p/> 
+        <hr align="left" width="45%"/> 
+    </c:if>
     <p/>
  
     <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leaders) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
