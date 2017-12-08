@@ -31,20 +31,14 @@
 
     <c:set var="projid" value="${param.projid}"/>
     <c:set var="swgid" value="${param.swgid}"/>
-    <c:set var="wgname" value="${param.name}"/>
     <c:set var="memberPool" value="lsst-desc-full-members"/>
     <c:set var="groupname" value="project_leads_${projid}"/>
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
      
     <sql:query var="pubs">
-        select paperid, state, title, added, builder_eligible, keypub, pubtype from descpub_publication where project_id = ? 
-        order by added
+        select paperid, state, title, added, builder_eligible, keypub, pubtype from descpub_publication where project_id = ? order by added
         <sql:param value="${projid}"/>
     </sql:query>    
-    
-    <sql:query var="pubvers">
-        select count
-    </sql:query>
         
     <sql:query var="leads">
         select convener_group_name cgn from descpub_swg where id = ?
