@@ -88,8 +88,8 @@
             <sql:param value="${param.paperid}"/>
             <sql:param value="${projid}"/>
          </sql:update>
-     </sql:transaction> 
-     
+     </sql:transaction>    
+    
      <c:choose>
          <c:when test="${!empty catchError}">
              <h3>
@@ -97,8 +97,7 @@
              </h3>  
          </c:when>
          <c:otherwise>
-           <c:redirect url="show_pub.jsp?paperid=${param.paperid}&swgid=${param.swgid}"/>    
-         <%--  <c:redirect url="show_pub.jsp?paperid=${paperid}&projid=${projid}&swgid=${swgid}"/>    --%>
+          <c:redirect url="show_pub.jsp?paperid=${param.paperid}"/> 
         </c:otherwise>
     </c:choose>
             
