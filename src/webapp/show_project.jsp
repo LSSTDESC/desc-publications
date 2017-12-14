@@ -75,7 +75,13 @@
             <display:column property="pubtype" title="Type" sortable="true" headerClass="sortable" style="text-align:left;"/>
             <display:column property="state" title="State" sortable="true" headerClass="sortable"/>
             <display:column property="added" title="Created" sortable="true" headerClass="sortable"/> 
-            <display:column property="builder_eligible" title="Builder" sortable="true" headerClass="sortable"/>        
+            <display:column title="Number of Versions" sortable="true" headerClass="sortable">
+                <sql:query var="vers">
+                    select count(*) tot from descpub_publication_versions where paperid = ?
+                    <sql:param value="${Rows.paperid}"/>
+                </sql:query>
+                ${vers.rows[0].tot}
+            </display:column>
             <display:column property="keypub" title="Key Pub" sortable="true" headerClass="sortable"/> 
         </display:table>  
         <p/> 
