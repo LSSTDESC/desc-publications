@@ -116,13 +116,14 @@
         <c:catch var="trapError"> 
             <sql:transaction>
             <sql:update >
-                insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?)
+                insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype, short_title) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?,?)
                 <sql:param value="${param.title}"/>
                 <sql:param value="${param.pubstate}"/>
                 <sql:param value="${param.builder}"/>
                 <sql:param value="${param.keypaper}"/>
                 <sql:param value="${param.projid}"/>
                 <sql:param value="${param.pubtyp}"/>
+                <sql:param value="${param.short_title}"/>
             </sql:update>  
 
             <sql:query var="curr">
