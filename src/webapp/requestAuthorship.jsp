@@ -29,10 +29,12 @@
     <c:choose>
         <c:when test="${!empty param.reason}">
             <sql:query var="currnum">
-                select (max(b.id) + 1) newnum from descpub_mail_recipient a join descpub_mailbody b on a.id=b.id and a.groupname = ?
+                select (max(msgid) + 1) newnum from descpub_mail_recipient where groupname_or_emailaddr = ?
                 <sql:param value="paper_leads_${param.paperid}"/>
             </sql:query>
             
+            <c:set var="nextmsgId" value="${empty currnum.rows[0].newnum ? 1 : currnum.rows[0].newnum}"/>
+                
             <sql:transaction>
                 <sql:query var="recips">
                    select p.first_name, p.last_name, p.email from profile_user p join profile_ug ug on p.memidnum = ug.memidnum and p.experiment=ug.experiment
@@ -40,24 +42,24 @@
                    <sql:param value="paper_leads_${param.paperid}"/>
                    <sql:param value="${appVariables.experiment}"/>
                 </sql:query>
-          
+                     
                 <sql:update>
-                     insert into descpub_mail_recipient (id, groupname) values(?,?)
-                     <sql:param value="${newnum}"/>
-                     <sql:param value="paper_leads_${param.paperid}"/>
-                </sql:update>
-                      
-                 <sql:update>
-                     insert into descpub_mailbody (id, subject, body, requestor, askdate) values(?, ?, ?, ?,sysdate)
-                     <sql:param value="${newnum}"/>
+                     insert into descpub_mailbody (msgid, subject, body, mail_originator, askdate) values(?, ?, ?, ?,sysdate)
+                     <sql:param value="${nextmsgId}"/>
                      <sql:param value="DESCPUB Authorship Request For Document ${param.paperid}"/>
                      <sql:param value="${param.reason}"/>
                      <sql:param value="${userName}"/>
-                 </sql:update>
+                 </sql:update>  
+                     
+                 <sql:update>
+                     insert into descpub_mail_recipient (msgid, groupname_or_emailaddr) values(?,?)
+                     <sql:param value="${nextmsgId}"/>
+                     <sql:param value="paper_leads_${param.paperid}"/>
+                </sql:update>
             </sql:transaction>  
             
             <c:if test="${empty catchError}">
-                <p id="pagelabel"> Your request for authorship has been sent to:</p>
+                <p id="pagelabel"> Mail is not yet enabled. If it were your request for authorship would been sent to:</p>
                 <display:table class="datatable" name="${recips.rows}" id="Rows"/>
            </c:if>  
            <c:if test="${!empty catchError}">
