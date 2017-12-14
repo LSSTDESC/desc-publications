@@ -26,11 +26,11 @@ public class DBUtilities {
         this.conn = conn;
     }
 
-    void insertPaperVersion(int paperId, int version, String remarks, String origname, String location) throws SQLException {
+    void insertPaperVersion(int paperid, int version, String remarks, String origname, String location) throws SQLException {
 
         String insStr = "insert into descpub_publication_versions (paperid, tstamp, version, remarks, origname, location) values (?, sysdate, ?, ?, ?, ?)";
         try (PreparedStatement insertStatement = conn.prepareStatement(insStr)) {
-            insertStatement.setInt(1, paperId);
+            insertStatement.setInt(1, paperid);
             insertStatement.setInt(2, version);
             insertStatement.setString(3, remarks);
             insertStatement.setString(4, origname);
@@ -40,10 +40,10 @@ public class DBUtilities {
 
     }
 
-    int getMaxExistingVersion(int paperId) throws SQLException {
+    int getMaxExistingVersion(int paperid) throws SQLException {
         String maxVer = "select max(version) version from DESCPUB_PUBLICATION_VERSIONS where paperid = ?";
         try (PreparedStatement maxVersionStatement = conn.prepareStatement(maxVer)) {
-            maxVersionStatement.setInt(1, paperId);
+            maxVersionStatement.setInt(1, paperid);
             try (ResultSet rs = maxVersionStatement.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -59,30 +59,30 @@ public class DBUtilities {
         conn.commit();
     }
 
-    File getFile(int paperId, int version) throws SQLException {
+    File getFile(int paperid, int version) throws SQLException {
         String sql = "select location from DESCPUB_PUBLICATION_VERSIONS where version=? and paperid=?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, version);
-            stmt.setInt(2, paperId);
+            stmt.setInt(2, paperid);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return new File(rs.getString(1));
                 } else {
-                    throw new SQLException("Invalid file paperId=" + paperId + " version=" + version);
+                    throw new SQLException("Invalid file paperid=" + paperid + " version=" + version);
                 }
             }
         }
     }
 
-    int getProjectForPaper(int paperId) throws SQLException {
+    int getProjectForPaper(int paperid) throws SQLException {
         String sql = "select project_id from descpub_publication where paperid=?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, paperId);
+            stmt.setInt(1, paperid);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
                 } else {
-                    throw new SQLException("Invalid file paperId=" + paperId);
+                    throw new SQLException("Invalid file paperid=" + paperid);
                 }
             }
         }

@@ -29,13 +29,13 @@ public class FileDownloadServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int paperId = Integer.parseInt(request.getParameter("paperId"));
+        int paperid = Integer.parseInt(request.getParameter("paperid"));
         int version = Integer.parseInt(request.getParameter("version"));
         try {
             File serverFile;
             try (Connection conn = ConnectionManager.getConnection(request)) {
                 DBUtilities dbUtil = new DBUtilities(conn);
-                serverFile = dbUtil.getFile(paperId, version);
+                serverFile = dbUtil.getFile(paperid, version);
             }
             response.setContentType("application/pdf");
             response.setHeader( "Content-Disposition", "attachment;filename=" + serverFile.getName());

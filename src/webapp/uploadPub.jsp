@@ -58,7 +58,7 @@
                         ${papertitle}
                     </display:column>
                     <display:column title="Links" sortable="true" headerClass="sortable">
-                        <a href="download?paperId=${row.paperid}&version=${row.version}">Download version ${row.version}</a>
+                        <a href="download?paperid=${row.paperid}&version=${row.version}">Download version ${row.version}</a>
                     </display:column>
                     <display:column title="Remarks" property="remarks"/>
                     <display:column title="Uploaded (UTC)">
@@ -78,8 +78,8 @@
                         Remarks: <input type="text" name="remarks" required>
                     <p>
                         <input type="submit" value="Upload Document" name="submit">
-                        <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperId=${param.paperid}" />
-                        <input type="hidden" name="paperId" value="${param.paperid}"/>
+                        <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperid=${param.paperid}" />
+                        <input type="hidden" name="paperid" value="${param.paperid}"/>
                 </form>  
             </c:otherwise>
         </c:choose>

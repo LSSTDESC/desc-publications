@@ -52,7 +52,7 @@ public class FileUploadServlet extends HttpServlet {
             ServletFileUpload uploadPub = new ServletFileUpload(factory);
 
             String forwardTo = null;
-            int paperId = 0;
+            int paperid = 0;
             String remarks = null;
             FileItem file = null;
 
@@ -65,14 +65,14 @@ public class FileUploadServlet extends HttpServlet {
                         file = item;
                     } else if ("forwardTo".equals(item.getFieldName())) {
                         forwardTo = item.getString();
-                    } else if ("paperId".equals(item.getFieldName())) {
-                        paperId = Integer.parseInt(item.getString());
+                    } else if ("paperid".equals(item.getFieldName())) {
+                        paperid = Integer.parseInt(item.getString());
                     } else if ("remarks".equals(item.getFieldName())) {
                         remarks = item.getString();
                     }
                 }
 
-                if (paperId == 0) {
+                if (paperid == 0) {
                     throw new ServletException("Missing paper id");
                 }
                 if (file == null) {
@@ -84,12 +84,12 @@ public class FileUploadServlet extends HttpServlet {
 
                 try (Connection conn = ConnectionManager.getConnection(request)) {
                     DBUtilities dbUtil = new DBUtilities(conn);
-                    int nextVersion = dbUtil.getMaxExistingVersion(paperId) + 1;
-                    int projId = dbUtil.getProjectForPaper(paperId);
+                    int nextVersion = dbUtil.getMaxExistingVersion(paperid) + 1;
+                    int projId = dbUtil.getProjectForPaper(paperid);
                     checkIfPDF(file);
-                    File saveFile = getPathForFile(paperId, projId, nextVersion);
+                    File saveFile = getPathForFile(paperid, projId, nextVersion);
                     file.write(saveFile);
-                    dbUtil.insertPaperVersion(paperId, nextVersion, remarks, file.getName(), saveFile.getPath());
+                    dbUtil.insertPaperVersion(paperid, nextVersion, remarks, file.getName(), saveFile.getPath());
                     dbUtil.commit();
                     request.setAttribute("msg", "File saved as " + saveFile.getName());
                 } catch (Exception ex) {
@@ -113,8 +113,8 @@ public class FileUploadServlet extends HttpServlet {
         }
     }
 
-    private File getPathForFile(int paperId, int projId, int version) {
-        File result = new File(baseDir, String.format("Project-%d/Paper-%d/DESC-%d_v%d.pdf", projId, paperId, paperId, version));
+    private File getPathForFile(int paperid, int projId, int version) {
+        File result = new File(baseDir, String.format("Project-%d/Paper-%d/DESC-%d_v%d.pdf", projId, paperid, paperid, version));
         result.getParentFile().mkdirs();
         return result;
     }

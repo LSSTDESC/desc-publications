@@ -45,7 +45,7 @@
                  
             <display:column title="Links" style="text-align:left;">
                 <c:if test="${!empty record.version}">
-                <a href="download?paperId=${record.paperid}&version=${record.version}">Download version ${record.version}</a>
+                <a href="download?paperid=${record.paperid}&version=${record.version}">Download version ${record.version}</a>
                 </c:if>
             </display:column>
         </display:table>
