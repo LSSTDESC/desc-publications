@@ -136,6 +136,8 @@ public class DBUtilities {
 
     private void addMailRecipients(int messageId, Message message) throws SQLException, MessagingException {
         String sql = "select groupname_or_emailaddr from descpub_mail_recipient where msgid=?";
+        String sqlgrp = "select v.email as email from profile_user v join profile_ug u on v.memidnum=u.memidnum and v.experiment=u.experiment join descpub_mail_recipient r on r.groupname_or_emailaddr=u.group_id where u.experiment=? and r.msgid=?";
+        String exp = "LSST-DESC";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, messageId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -143,8 +145,17 @@ public class DBUtilities {
                     String groupOrEmail = rs.getString(1);
                     if (groupOrEmail.contains("@")) {
                         message.addRecipient(Message.RecipientType.TO, new InternetAddress(groupOrEmail));
-                    } else {
+                    } else if (! groupOrEmail.contains("@")) {
                         // TOOD: Deal with groups
+                        try(PreparedStatement stmt2 = conn.prepareStatement(sqlgrp)){
+                            stmt2.setString(1,exp);
+                            stmt2.setInt(2, messageId);
+                            ResultSet addrs = stmt2.executeQuery();
+                            while(addrs.next()){
+                                String emailAddr = addrs.getString(1);
+                                message.addRecipient(Message.RecipientType.TO,new InternetAddress(addrs.getNString(emailAddr)));
+                            }
+                        }
                     }
                 } 
             }
