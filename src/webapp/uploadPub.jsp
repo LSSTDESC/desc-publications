@@ -20,15 +20,16 @@
         <c:if test="${!empty msg}">
             <p id="pagelabel">${msg}</p> 
         </c:if>
+            
         <c:choose>
-            <c:when test="${empty param.paperId}">
+            <c:when test="${empty param.paperid}">
                 <sql:query var="list">
                     select paperid, title from descpub_publication
                 </sql:query>
 
                 <p id="pagelabel"> Choose your paper: </p>
                 <form action="uploadPub.jsp">
-                    <select name="paperId" size="8" required>
+                    <select name="paperid" size="8" required>
                         <c:forEach var="p" items="${list.rows}">
                             <option value="${p.paperid}">${p.title}</option>
                         </c:forEach>
@@ -39,25 +40,37 @@
             </c:when>
             <c:otherwise>   
 
-                <h2>Paper <strong>DESC-${param.paperId}</strong></h2>
-
+                <h2>Paper <strong>DESC-${param.paperid}</strong></h2>
+                <sql:query var="papertitle">
+                    select title from descpub_publication where paperid = ?
+                    <sql:param value="${param.paperid}"/>
+                </sql:query>
+                    
+                <c:set var="papertitle" value="${papertitle.rows[0].title}"/>
+                    
                 <sql:query var="list">
-                    select paperid, version, tstamp, remarks from descpub_publication_versions where paperId=? order by version
-                    <sql:param value="${param.paperId}"/>
+                    select paperid, version, tstamp, to_char(tstamp,'Mon-dd-yyyy') pst, remarks from descpub_publication_versions where paperid=? order by version
+                    <sql:param value="${param.paperid}"/>
                 </sql:query>
 
                 <display:table class="datatable" id="row" name="${list.rows}">
-                    <display:column title="Version" sortable="true" headerClass="sortable" property="version"/>
+                    <display:column title="Title" group="1">
+                        ${papertitle}
+                    </display:column>
+                    <display:column title="Links" sortable="true" headerClass="sortable">
+                        <a href="download?paperId=${row.paperid}&version=${row.version}">Download version ${row.version}</a>
+                    </display:column>
                     <display:column title="Remarks" property="remarks"/>
                     <display:column title="Uploaded (UTC)">
                        <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/>
                     </display:column>
-                    <display:column title="Links">
-                        <a href="download?paperId=${row.paperId}&version=${row.version}">Download</a>
+                    <display:column title="Uploaded (PDT/PST)">
+                        ${row.pst}
                     </display:column>
                 </display:table>
-                <p/> <hr/>
-                <p id="pagelabel">Upload new version</p>
+                <p/> 
+                    <hr align="left" width="40%"/>   	
+                <p id="pagelabel">Upload new version of DESC-${param.paperid}</p>
                 <%-- upload.jsp is defined in web.xml and maps to the servlet that does the uploading --%>
                 <form action="upload.jsp" method="post" enctype="multipart/form-data">
                     <input type="file" name="fileToUpload" id="fileToUpload">
@@ -65,8 +78,8 @@
                         Remarks: <input type="text" name="remarks" required>
                     <p>
                         <input type="submit" value="Upload Document" name="submit">
-                        <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperId=${param.paperId}" />
-                        <input type="hidden" name="paperId" value="${param.paperId}"/>
+                        <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperId=${param.paperid}" />
+                        <input type="hidden" name="paperid" value="${param.paperid}"/>
                 </form>  
             </c:otherwise>
         </c:choose>
