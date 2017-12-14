@@ -13,7 +13,6 @@
     </head>
     <body>
       
-   <c:set var="updateProj" value=""/>
    <c:set var="oranames" value=""/>
    <c:set var="oravals" value=""/>
    
@@ -22,6 +21,7 @@
        <c:out value="${x.key} = ${x.value}"/><br/>
    </c:forEach>  
        
+   <%-- get column names and build query string --%>    
    <sql:query var="cols">
        select lower(column_name) as colname from user_tab_cols where table_name = ?
        <sql:param value="DESCPUB_PROJECT"/>
@@ -55,14 +55,6 @@
    <c:set var="oranames" value="${oranames},lastmodby=?"/>
    <c:set var="oravals" value="${oravals},${userName}"/>
   
-   <%--
-   <h1>catchError = ${catchError}<br/>
-    update descpub_project set ${oranames} where id = ${param.projid}
-    <c:forEach var="y" items="${oravals}">
-        ${y}<br/>
-    </c:forEach>
-    </h1> --%>
-   
    <sql:query var="swgcount">
       select count(*) tot from descpub_project_swgs where project_id = ?
       <sql:param value="${param.projid}"/>
@@ -101,7 +93,6 @@
                 <sql:param value="${pv}"/>
                 </sql:update>   
               </c:forEach>
-              <c:set var="updateProj" value="done"/>      
             </c:if>
              
             <c:if test="${!empty paramValues.removeprojswg}">
@@ -113,7 +104,6 @@
                            <sql:param value="${pv}"/>
                        </sql:update> 
                    </c:forEach>
-                   <c:set var="updateProj" value="done"/>      
                 </c:if>
                 <c:if test="${fn:length(paramValues.removeprojswg) == swgcount.rows[0].tot}"> project must have at least one wg assigned to it  
                    <c:redirect url="noPermission.jsp?errmsg=2"/>
@@ -128,7 +118,7 @@
             <h3>Error: ${catchError}</h3>
         </c:when>
         <c:otherwise>
-            <c:redirect url="${param.redirectURL}&updateProj=${updateProj}"/>  
+            <c:redirect url="${param.redirectURL}"/>  
         </c:otherwise>
     </c:choose>
     
