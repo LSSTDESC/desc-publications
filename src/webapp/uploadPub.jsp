@@ -79,7 +79,7 @@
                     <p>
                         <input type="submit" value="Upload Document" name="submit">
                         <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperId=${param.paperid}" />
-                        <input type="hidden" name="paperid" value="${param.paperid}"/>
+                        <input type="hidden" name="paperId" value="${param.paperid}"/>
                 </form>  
             </c:otherwise>
         </c:choose>
