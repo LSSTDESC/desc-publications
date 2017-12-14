@@ -80,7 +80,7 @@
                     select count(*) tot from descpub_publication_versions where paperid = ?
                     <sql:param value="${Rows.paperid}"/>
                 </sql:query>
-                ${vers.rows[0].tot}
+                <a href="uploadPub.jsp?paperid=${Rows.paperid}">${vers.rows[0].tot}</a>
             </display:column>
             <display:column property="keypub" title="Key Pub" sortable="true" headerClass="sortable"/> 
         </display:table>  
