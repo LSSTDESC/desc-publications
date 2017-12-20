@@ -44,30 +44,38 @@
                 </sql:query>
                      
                 <sql:update>
-                     insert into descpub_mailbody (msgid, subject, body, mail_originator, askdate) values(?, ?, ?, ?,sysdate)
-                     <sql:param value="${nextmsgId}"/>
+                     insert into descpub_mailbody (msgid, subject, body, mail_originator, askdate) values(DESCPUB_MAIL_SEQ.nextval, ?, ?, ?,sysdate)
                      <sql:param value="DESCPUB Authorship Request For Document ${param.paperid}"/>
                      <sql:param value="${param.reason}"/>
                      <sql:param value="${userName}"/>
                  </sql:update>  
                      
                  <sql:update>
-                     insert into descpub_mail_recipient (msgid, groupname_or_emailaddr) values(?,?)
-                     <sql:param value="${nextmsgId}"/>
+                     insert into descpub_mail_recipient (msgid, groupname_or_emailaddr) values(DESCPUB_MAIL_SEQ.currval,?)
                      <sql:param value="paper_leads_${param.paperid}"/>
                 </sql:update>
             </sql:transaction>  
             
             <c:if test="${empty catchError}">
-                <p id="pagelabel"> Mail is not yet enabled. If it were your request for authorship would been sent to:</p>
-                <display:table class="datatable" name="${recips.rows}" id="Rows"/>
+                <p id="pagelabel"> Thank you. Your request for authorship has been sent to:</p>
+                <display:table class="datatable" name="${recips.rows}" id="Rows">
+                    <display:column title="FirstName">
+                        ${Rows.first_name}
+                    </display:column>
+                    <display:column title="LastName">
+                        ${Rows.last_name}
+                    </display:column>
+                    <display:column title="LastName">
+                        ${Rows.email}
+                    </display:column>
+                </display:table>
            </c:if>  
            <c:if test="${!empty catchError}">
                 <p id="pagelabel"> Authorship request failed. Reason: ${catchError}</p>   
            </c:if>  
         </c:when>
         <c:when test="${!empty param.paperid}">
-            <p id="pagelabel">Request Authorship for document ${param.paperid}</p>
+            <p id="pagelabel">Request Authorship for DESC-${param.paperid}</p>
             <form action="requestAuthorship.jsp?paperid=${param.paperid}">
                 <input type="hidden" value="${param.paperid}" name="paperid"/><br/>
                 <p id="pagelabel">Reason</p>
