@@ -28,15 +28,13 @@
     <p/>
      <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
         
-        <c:set var="memberPool" value="lsst-desc-full-members"/>
-
         <sql:query var="swgs">
             select id, name, profile_group_name as pgn, convener_group_name as cgn from descpub_swg 
             order by name
         </sql:query>
             
         <sql:query var="papers">
-            select paperid, title, to_char(added,'yyyy-Mon-dd') added, to_char(date_modified,'yyyy-Mon-dd') moddate from descpub_publication where added is not null or added > sysdate - 7  order by added desc
+            select paperid, title, to_char(added,'yyyy-Mon-dd') added, to_char(date_modified,'yyyy-Mon-dd') moddate from descpub_publication where added is not null or added > sysdate - 7  order by added asc
         </sql:query>
 
              
@@ -56,7 +54,9 @@
                 </display:column> 
             </display:table>
         </c:if>  
-                    <p></p>
+        <p></p>
+        <p id="pagelabel">Most-recent Documents</p>
+
         <c:if test="${papers.rowCount > 0}">
             <display:table class="datatable" id="Line" name="${papers.rows}">
                 <display:column property="paperid" title="Paper" sortable="true" headerClass="sortable"/>
@@ -70,7 +70,7 @@
                     <a href="show_pub.jsp?paperid=${Line.paperid}">${Line.title}</a>
                 </display:column>
             </display:table>
-        </c:if>             
+        </c:if>        
                     
     </body>
 
