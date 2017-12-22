@@ -24,7 +24,7 @@
         <c:choose>
             <c:when test="${empty param.paperid}">
                 <sql:query var="list">
-                    select paperid, title from descpub_publication
+                    select paperid, title from descpub_publication order by paperid
                 </sql:query>
 
                 <p id="pagelabel"> Choose your paper: </p>
@@ -36,10 +36,9 @@
                     </select>
                     <br>
                     <input type="submit" value="Go" name="submit">
-                </form>
+                </form>            
             </c:when>
             <c:otherwise>   
-
                 <h2>Paper <strong>DESC-${param.paperid}</strong></h2>
                 <sql:query var="papertitle">
                     select title from descpub_publication where paperid = ?
@@ -71,16 +70,20 @@
                 <p/> 
                     <hr align="left" width="40%"/>   	
                 <p id="pagelabel">Upload new version of DESC-${param.paperid}</p>
-                <%-- upload.jsp is defined in web.xml and maps to the servlet that does the uploading --%>
+                
                 <form action="upload.jsp" method="post" enctype="multipart/form-data">
-                    <input type="file" name="fileToUpload" id="fileToUpload">
-                    <p>
-                        Remarks: <input type="text" name="remarks" required>
-                    <p>
-                        <input type="submit" value="Upload Document" name="submit">
-                        <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperid=${param.paperid}" />
-                        <input type="hidden" name="paperid" value="${param.paperid}"/>
-                </form>  
+                <div>
+                  <fieldset class="fieldset-auto-width">  
+                      <legend><strong>Upload</strong></legend><p/>
+                      Upload new version of DESC-${param.paperid}<p/>
+                      <input type="file" name="fileToUpload" id="fileToUpload"><p/>
+                      Remarks: <input type="text" name="remarks" required><p/>
+                      <input type="submit" value="Upload Document" name="submit">
+                      <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperid=${param.paperid}" />
+                      <input type="hidden" name="paperid" value="${param.paperid}"/>
+                  </fieldset>
+                </div>
+              </form>
             </c:otherwise>
         </c:choose>
     </body>
