@@ -52,7 +52,7 @@
         </sql:query>
         
         <sql:query var="vers">
-            select paperid, version, tstamp, to_char(tstamp,'Mon-dd-yyyy') pst, remarks from descpub_publication_versions where paperid=? order by version
+            select paperid, version, tstamp, to_char(tstamp,'Mon-dd-yyyy') pst, remarks from descpub_publication_versions where paperid=? order by version desc
             <sql:param value="${param.paperid}"/>
         </sql:query>
         <h2>Paper <strong>DESC-${param.paperid}</strong></h2>
