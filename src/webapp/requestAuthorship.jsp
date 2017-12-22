@@ -25,16 +25,33 @@
     </c:if>
         
     <tg:underConstruction/>
-     
+    
+    Link to  <a href="https://github.com/LSSTDESC/Author_Guide/raw/compiled/Author_Guide.pdf">Authorship Guide</a> [pdf]<br/>  
+    
+    <sql:query var="contribs">
+        select initcap(role) role from descpub_contributor_roles order by role
+    </sql:query>
+    
     <c:choose>
         <c:when test="${!empty param.reason}">
-            <sql:query var="currnum">
-                select (max(msgid) + 1) newnum from descpub_mail_recipient where groupname_or_emailaddr = ?
-                <sql:param value="paper_leads_${param.paperid}"/>
-            </sql:query>
+            <%-- add chosen contributions to mail msg --%>
+            <c:set var="contributions" value=""/>
+            <c:forEach var="x" items="${param}" varStatus="loop">
+                <c:if test="${x.key == 'role'}">
+                    <c:forEach var="pv" items="${paramValues[x.key]}">
+                        <c:choose>
+                        <c:when test="${empty contributions}">
+                            <c:set var="contributions" value="${pv}"/>
+                        </c:when>
+                        <c:when test="${!empty contributions}">
+                            <c:set var="contributions" value="${contributions}, ${pv}"/> 
+                        </c:when>
+                        </c:choose>
+                    </c:forEach>
+                </c:if>
+            </c:forEach>
             
-            <c:set var="nextmsgId" value="${empty currnum.rows[0].newnum ? 1 : currnum.rows[0].newnum}"/>
-                
+            <c:set var="msgbody" value="REASON: ${param.reason}  SELECTED CONTRIBUTIONS: ${contributions}"/>
             <sql:transaction>
                 <sql:query var="recips">
                    select p.first_name, p.last_name, p.email from profile_user p join profile_ug ug on p.memidnum = ug.memidnum and p.experiment=ug.experiment
@@ -45,8 +62,8 @@
                      
                 <sql:update>
                      insert into descpub_mailbody (msgid, subject, body, mail_originator, askdate) values(DESCPUB_MAIL_SEQ.nextval, ?, ?, ?,sysdate)
-                     <sql:param value="DESCPUB Authorship Request For Document ${param.paperid}"/>
-                     <sql:param value="${param.reason}"/>
+                     <sql:param value="DESCPUB Authorship Request For DESC-${param.paperid}"/>
+                     <sql:param value="${msgbody}"/>
                      <sql:param value="${userName}"/>
                  </sql:update>  
                      
@@ -72,14 +89,21 @@
            </c:if>  
            <c:if test="${!empty catchError}">
                 <p id="pagelabel"> Authorship request failed. Reason: ${catchError}</p>   
-           </c:if>  
+           </c:if>   
         </c:when>
         <c:when test="${!empty param.paperid}">
-            <p id="pagelabel">Request Authorship for DESC-${param.paperid}</p>
+            <p id="pagelabel">Request Authorship for DESC-${param.paperid}. <br/>Please enter your reason for authorship</p>
             <form action="requestAuthorship.jsp?paperid=${param.paperid}">
                 <input type="hidden" value="${param.paperid}" name="paperid"/><br/>
-                <p id="pagelabel">Reason</p>
+              <%--  <p id="pagelabel">Reason for authorship</p> --%>
                 <textarea name="reason" rows="5" cols="150" required></textarea><p/>
+                <p id="pagelabel">Contribution(s) - check all that apply<br/>
+                    Refer to authorship guide, section 3, for more detailed explanation
+                </p>
+                <c:forEach var="c" items="${contribs.rows}">
+                 ${c['role']}  <input type="checkbox" name="role" value="${c['role']}"/><br/>
+                </c:forEach>
+                <p></p>
                 <input type="submit" value="Send_Request" name="submit"/>    
             </form>
         </c:when>
