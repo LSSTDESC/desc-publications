@@ -12,14 +12,7 @@
 <c:if test="${empty candidategroup}">
     <c:set var="candidategroup" value="lsst-desc-members"/>
 </c:if>
-
-<%--
-<c:forEach var="x" items="${param}">
-  <c:out value="${x.key} = ${x.value}"/><br/>
-</c:forEach>
-<c:out value="candidategroup: ${candidategroup}"/> <br/>
-<c:out value="${groupname}"/>  
---%>
+ 
 <sql:query var="candidates">
     with tmp_names as (
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
