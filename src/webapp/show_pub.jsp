@@ -114,9 +114,6 @@
                 <display:column title="Uploaded (UTC)">
                    <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/>
                 </display:column>
-                <display:column title="Uploaded (PDT/PST)">
-                    ${row.pst}
-                </display:column>
             </display:table>
             <p/> 
         </c:if>
@@ -136,18 +133,6 @@
     </div>
 </form>
             
-           <%-- upload.jsp is defined in web.xml and maps to the servlet that does the uploading  
- 
-        <p id="pagelabel">Upload new version of DESC-${param.paperid}</p>
-        <form action="upload.jsp" method="post" enctype="multipart/form-data">
-            <input type="file" name="fileToUpload" id="fileToUpload">
-            <p>
-                Remarks: <input type="text" name="remarks" required>
-            <p>
-            <input type="submit" value="Upload Document" name="submit">
-            <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperid=${param.paperid}" />
-            <input type="hidden" name="paperid" value="${param.paperid}"/>
-        </form>   --%>
             
     </body>
 </html>
