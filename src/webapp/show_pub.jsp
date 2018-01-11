@@ -4,6 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
 <%@taglib uri="http://displaytag.sf.net" prefix="display" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib uri="http://srs.slac.stanford.edu/displaytag" prefix="displayutils" %>
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
@@ -16,6 +17,8 @@
         <link rel="stylesheet" href="css/pubstyles.css">
     </head>
     <body>
+        
+        <tg:underConstruction/>
         
         <fmt:setTimeZone value="UTC"/>  
         <c:if test="${!empty msg}">
@@ -91,17 +94,21 @@
             <display:column title="Key publication">
                         ${Row.keypub}
             </display:column>
-            <display:column title="Passed internal review">
-                        ${Row.pb_reader_approved}
-            </display:column>
+            <c:if test="${!fn:contains(Row.pubtype,'External') }">
+                <display:column title="Passed internal review">
+                            ${Row.pb_reader_approved}
+                </display:column>
+            </c:if>
             <c:if test="${(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,mgrgrp))}">
                 <display:column title="Action">
                     <a href="editLink.jsp?&paperid=${Row.paperid}">Edit</a>
                 </display:column>
             </c:if>
-            <display:column title="Authorship">
-                <a href="requestAuthorship.jsp?&paperid=${Row.paperid}">Request Authorship</a>
-            </display:column>
+            <c:if test="${!fn:contains(Row.pubtype,'External') }">
+                <display:column title="Authorship">
+                    <a href="requestAuthorship.jsp?&paperid=${Row.paperid}">Request Authorship</a>
+                </display:column>
+            </c:if>
         </display:table>
         <p/>  
         
