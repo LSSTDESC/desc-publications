@@ -26,7 +26,7 @@
         
     <tg:underConstruction/>
     
-    Link to <a href="https://github.com/LSSTDESC/Author_Guide/blob/compiled/Author_Guide.pdf">Authorship Guide</a> [pdf]<br/>  
+    Link to <a href="">Authorship Guide</a> [pdf]<br/>  
     
     <sql:query var="contribs">
         select initcap(name) name from descpub_contributions order by name
