@@ -85,11 +85,11 @@
             <display:column property="keypub" title="Key Pub" sortable="true" headerClass="sortable"/> 
         </display:table>  
         <p/> 
-        <hr align="left" width="45%"/> 
     </c:if>
     <p/>
  
     <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leaders) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+                <hr align="left" width="45%"/> 
         <form action="addPublication.jsp">
             <input type="hidden" name="task" value="create_publication_form"/>
             <input type="hidden" name="swgid" value="${swgid}"/>

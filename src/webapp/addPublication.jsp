@@ -15,14 +15,43 @@
         <script src="../js/jquery-1.11.1.min.js"></script>
         <script src="../js/jquery.validate.min.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pubstyles.css">
-        <title>Add Document Page</title>
+        <title>Add Document</title>
     </head>
     <body>
 
     <c:set var="debugMode" value="false"/>
-     
+    <sql:query var="ptypes">
+        select pubtype from descpub_publication_types order by pubtype
+    </sql:query>
+    
+        <%--
+        <c:forEach var="x" items="${param}">
+            <c:out value="${x.key}=${x.value}"/><br/>
+        </c:forEach> --%>
+    
     <c:choose>
-        <c:when test="${empty param.formsubmitted}">
+        <c:when test="${empty param.pubtypes && param.submit != 'Continue'}">
+            <form action="addPublication.jsp" id="getPubtype" name="getPubtype" method="post">  
+                 Select type of publication:<br/>
+                    <select name="pubtype" required>
+                       <option value=""></option>
+                       <c:forEach var="ptype" items="${ptypes.rows}">
+                           <option value="${ptype.pubtype}">${ptype.pubtype}</option>
+                       </c:forEach>
+                    </select>
+                 <input type="hidden" name="ptype_selected" value="true"/>
+                 <input type="hidden" name="projid" value="${param.projid}"/>
+                 <input type="hidden" name="swgid" value="${param.swgid}"/>
+                 <input type="submit" value="Continue" name="submit" /> 
+            </form>
+        </c:when>
+        <c:when test="${param.ptype_selected == 'true'}">
+                <sql:query var="fields">
+                   select me.metaid, me.data, me.datatype, me.numrows, me.numcols, pb.fieldexplanation from descpub_metadata me join descpub_pubtype_metadata pb on me.metaid = pb.metaid where
+                   pb.pubtype = ? order by formposition
+                   <sql:param value="${param.pubtype}"/>
+                </sql:query>
+                   
                 <sql:query var="projInfo">
                    select p.id, p.title, s.name from descpub_project p join descpub_project_swgs j on p.id=j.project_id
                    join descpub_swg s on s.id=j.swg_id  where p.id = ? and s.id = ?
@@ -44,13 +73,42 @@
                 <sql:query var="pubstates">
                     select state_id, state from descpub_publication_states order by state
                 </sql:query>
-
+                    
                 <div class="intro">
                     <p id="pagelabel">Document Details</p>
-                    <strong>Project id [ ${projInfo.rows[0].id} ] ${projInfo.rows[0].title}. <br/> Working group(s): ${projInfo.rows[0].name}</strong>
+                    <strong>Project id [ <a href="show_project.jsp?projid=${projInfo.rows[0].id}">${projInfo.rows[0].id}</a> ] ${projInfo.rows[0].title}. <br/> Working group(s): ${projInfo.rows[0].name}</strong>
                 </div>
                 <p/>
-                <form action="addPublication.jsp" method="post">  
+                
+                <form action="addPublication.jsp" method="post" id="addPublication" name="addPublication">
+                    <c:forEach var="x" items="${fields.rows}">
+                        <c:if test="${!empty x.fieldexplanation}">
+                            <p>  <c:out value="${x.fieldexplanation}"/></p>
+                        </c:if>
+                        <c:if test="${x.datatype == 'string'}">
+                           ${x.data}: <input type ="text" name="${x.data}"/><br/>
+                        </c:if>
+                        <c:if test="${x.datatype == 'textarea'}">
+                            ${x.data}:<br/>  <textarea></textarea><br/>
+                        </c:if>
+                        <c:if test="${x.datatype == 'checkbox'}">
+                            <sql:query var="enums">
+                                select * from descpub_metadata_enum where metaid = ?
+                                <sql:param value="${x.metaid}"/>
+                            </sql:query>
+                            <c:forEach var="chkbx" items="${enums.rows}">
+                              ${chkbx.metavalue}   <input type="checkbox" name="${x.data}" value="${chkbx.metavalue}"/><br/>
+                            </c:forEach>
+                        </c:if>   
+                    </c:forEach>
+                     <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
+                     <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
+                     <input type="hidden" name="pubstate" id="pubstate" value="created"/>
+                     <input type="submit" value="Create Document Entry" name="addPub" />  
+                </form>
+                
+                <%--
+                <form action="addPublication.jsp" id="addPublication" name="addPublication" method="post">  
                     <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
                     <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
                     <input type="hidden" name="wgname" id="wgname" value="${param.name}"/> 
@@ -82,16 +140,17 @@
                     </select>
                     <p/>
                     Type:<br/> 
-                    <select name="pubtyp">
+                    <select name="pubtyp" id="pubtyp">
                     <c:forEach var="ptype" items="${pubtypes.rows}">
                         <option value="${ptype.pubtype}">${ptype.pubtype}</option>
                     </c:forEach>
                     </select> 
                     <p/>
                     <input type="submit" value="Create Document Entry" name="addPub" />  
-                </form>  
+                </form> 
+                --%>
         </c:when>
-        <c:when test="${debugMode}">
+        <c:when test="${fn:startsWith(param.submit,'Create Document')}">
              <c:forEach var="x" items="${param}">
                 <c:out value="${x.key} = ${x.value}"/><br/>
              </c:forEach>  

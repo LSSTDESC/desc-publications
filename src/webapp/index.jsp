@@ -36,7 +36,7 @@
         <sql:query var="papers">
             select paperid, title, to_char(added,'yyyy-Mon-dd') added, to_char(date_modified,'yyyy-Mon-dd') moddate from descpub_publication where added is not null or added > sysdate - 7  order by added asc
         </sql:query>
-
+             
              
         <c:if test="${swgs.rowCount > 0}">
             <display:table class="datatable"  id="Row" name="${swgs.rows}">

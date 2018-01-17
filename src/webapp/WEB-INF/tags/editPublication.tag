@@ -34,7 +34,7 @@
 <sql:query var="states">
     select state from descpub_publication_states order by state
 </sql:query>
-    
+      
     <%--
 <sql:query var="wgs" >
     select wg.name, wg.id, wg.convener_group_name, wg.profile_group_name from descpub_project_swgs jo join descpub_swg wg on jo.swg_id = wg.id
@@ -50,13 +50,13 @@
         [ Placeholder for link to internal review ]
     <p/> 
     
-   <form action="editPublication.jsp">  
+   <form action="editPublication.jsp" method="post">  
    <input type="hidden" name="paperid" value="${paperid}"/> 
    <input type="hidden" name="swgid" value="${swgid}"/> 
    Title: <br/> <input type="text" value="${pubs.rows[0].title}" size="35" name="title" required/>
               
    <p/>
-   Short Title: <br/> <input type="text" value="${pubs.rows[0].short_title}" size="35" name="short_title"/>
+   Short Title: <br/> <input type="text" value="${pubs.rows[0].short_title}" size="35" name="short_title" required/>
    
    <p/>
    Brief Summary: <br/>
@@ -75,12 +75,12 @@
    </select>
   
    <p/>
-   Pubtype: 
+   Pubtype: <br/>
    <select name="pubtype" id="pubtype">
         <c:forEach var="ptype" items="${pubtypes.rows}">
             <option value="${ptype.pubtype}" <c:if test="${pubs.rows[0].pubtype == ptype.pubtype}">selected</c:if>  >${ptype.pubtype}</option>
         </c:forEach>
-    </select>
+    </select> 
   
    <p/>
     Builder Eligible: 

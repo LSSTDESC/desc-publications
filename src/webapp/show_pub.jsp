@@ -42,7 +42,7 @@
           pb_reader_approved, arxiv, published_reference, project_id, short_title from descpub_publication where paperid = ?
             <sql:param value="${paperid}"/>
         </sql:query>
-        
+          
         <sql:query var="countpapers">
             select count(*) from descpub_publication where project_id = ?
             <sql:param value="${projid}"/>
@@ -58,7 +58,7 @@
             select paperid, version, tstamp, to_char(tstamp,'Mon-dd-yyyy') pst, remarks from descpub_publication_versions where paperid=? order by version desc
             <sql:param value="${param.paperid}"/>
         </sql:query>
-        <h2>Paper <strong>DESC-${param.paperid}</strong></h2>
+        <h2>Paper <strong>DESC-${param.paperid}</strong></h2> 
   
         <display:table class="datatable" id="Row" name="${pubs.rows}">
             <display:column title="Project">

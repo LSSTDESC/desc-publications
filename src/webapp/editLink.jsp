@@ -39,6 +39,8 @@
           
         <tg:editPublication paperid="${param.paperid}" swgid="${param.swgid}"/> 
         
+        <hr align="left" width="50%"/>
+        
         <c:set var="paperleads" value="paper_leads_${param.paperid}"/>
         <c:set var="paperreviewers" value="paper_reviewers_${param.paperid}"/>
         

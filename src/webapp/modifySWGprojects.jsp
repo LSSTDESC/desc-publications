@@ -4,7 +4,8 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://srs.slac.stanford.edu/GroupManager" prefix="gm" %>
- 
+<%@taglib tagdir="/WEB-INF/tags" prefix="tg"%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,10 +17,23 @@
    <c:set var="oranames" value=""/>
    <c:set var="oravals" value=""/>
    
-    
-   <c:forEach var="x" items="${param}">
-       <c:out value="${x.key} = ${x.value}"/><br/>
-   </c:forEach>  
+   <sql:query var="projects">
+        select id, title, summary, state, created, lastmodified, lastmodby, leadgroup_name, projectgroup_name, membergroup_name from descpub_project 
+        where id = ?
+        <sql:param value="${param.projid}"/>
+   </sql:query> 
+           
+   <c:forEach var="x" items="${param}" varStatus="loop">
+       <c:if test="${x.key == 'summary'}">
+           summary found<br/>
+       </c:if>
+        <c:forEach var="a" items="${projects.rows}">
+            <c:if test="${!empty a[x.key]}">
+              <c:out value="Param: ${x.key} = ${x.value}"/><br/>
+              <c:out value="DB: ${a[x.key]}"/><p/>
+            </c:if>
+        </c:forEach>
+    </c:forEach>
        
    <%-- get column names and build query string --%>    
    <sql:query var="cols">
@@ -106,7 +120,7 @@
                    </c:forEach>
                 </c:if>
                 <c:if test="${fn:length(paramValues.removeprojswg) == swgcount.rows[0].tot}"> project must have at least one wg assigned to it  
-                   <c:redirect url="noPermission.jsp?errmsg=2"/>
+                   <c:redirect url="noPermission.jsp?errmsg=2"/>  
                 </c:if>
             </c:if>  
             
@@ -118,7 +132,43 @@
             <h3>Error: ${catchError}</h3>
         </c:when>
         <c:otherwise>
-            <c:redirect url="${param.redirectURL}"/>  
+            <%--
+            <sql:query var="num">
+                select descpub_gen_seq.nextval as audit_id from dual
+            </sql:query> 
+                
+            <c:set var="numid" value="${num.rows[0].audit_id}"/> --%>
+            
+    
+         <%--   
+          <sql:update> 
+            <c:forEach var="new" items="${param}" varStatus="loop">
+                <c:if test="${new.key != 'summary'}">
+                    <c:forEach var="curr" items="${projects.rows}">
+                        insert into descpub_audit (identifier, entrydate, changedby, fieldchgd, oldfieldval, newfieldval)
+                        values (?,sysdate,?,?,?,?)
+                        ${numid}, ${userName}, ${new.key}, ${curr[new.key]}, ${new.value}
+                       <sql:param value="${numid}"/>
+                        <sql:param value="${userName}"/>
+                        <sql:param value="${new.key}"/>
+                        <sql:param value="${curr[new.key]}"/>
+                        <sql:param value="${new.value}"/>  
+                    </c:forEach>
+                </c:if> 
+                <c:if test="${new.key == 'summary'} && ${!empty new.value}">
+                    insert into descpub_audit (identifier, entrydate, changedby, fieldchgd, oldtextarea, newtextarea)
+                    values (?,sysdate,?,?,?,?)
+                     ${numid}, ${userName}, ${new.key}, ${curr[new.key]}, ${new.value}
+                   <sql:param value="${numid}"/>
+                    <sql:param value="${userName}"/>
+                    <sql:param value="${new.key}"/>
+                    <sql:param value="${curr[new.key]}"/>
+                    <sql:param value="${new.key}"/>  
+                </c:if>
+            </c:forEach>
+                    
+          </sql:update> --%> 
+         <%--  <c:redirect url="${param.redirectURL}"/>   --%>
         </c:otherwise>
     </c:choose>
     
