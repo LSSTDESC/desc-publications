@@ -26,10 +26,10 @@
         
     <tg:underConstruction/>
     
-    Link to  <a href="https://github.com/LSSTDESC/Author_Guide/raw/compiled/Author_Guide.pdf">Authorship Guide</a> [pdf]<br/>  
+    Link to <a href="https://github.com/LSSTDESC/Author_Guide/blob/compiled/Author_Guide.pdf">Authorship Guide</a> [pdf]<br/>  
     
     <sql:query var="contribs">
-        select initcap(role) role from descpub_contributor_roles order by role
+        select initcap(name) name from descpub_contributions order by name
     </sql:query>
     
     <c:choose>
@@ -37,7 +37,7 @@
             <%-- add chosen contributions to mail msg --%>
             <c:set var="contributions" value=""/>
             <c:forEach var="x" items="${param}" varStatus="loop">
-                <c:if test="${x.key == 'role'}">
+                <c:if test="${x.key == 'name'}">
                     <c:forEach var="pv" items="${paramValues[x.key]}">
                         <c:choose>
                         <c:when test="${empty contributions}">
@@ -101,7 +101,7 @@
                     Refer to authorship guide, section 3, for more detailed explanation
                 </p>
                 <c:forEach var="c" items="${contribs.rows}">
-                 ${c['role']}  <input type="checkbox" name="role" value="${c['role']}"/><br/>
+                 ${c['name']}  <input type="checkbox" name="name" value="${c['name']}"/><br/>
                 </c:forEach>
                 <p></p>
                 <input type="submit" value="Send_Request" name="submit"/>    
