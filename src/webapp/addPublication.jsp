@@ -19,20 +19,26 @@
     </head>
     <body>
 
+        <%--
+        state = the current state of the paper as it goes from create to review to published.
+        status = paper is either internal to the collaboration or public
+        DOI = digital object identifier
+        ADS = astrophysics data system
+        --%>
     <c:set var="debugMode" value="false"/>
     <sql:query var="ptypes">
         select pubtype from descpub_publication_types order by pubtype
     </sql:query>
-    
+        
         <%--
         <c:forEach var="x" items="${param}">
             <c:out value="${x.key}=${x.value}"/><br/>
         </c:forEach> --%>
-    
+        
     <c:choose>
-        <c:when test="${empty param.pubtypes && param.submit != 'Continue'}">
-            <form action="addPublication.jsp" id="getPubtype" name="getPubtype" method="post">  
-                 Select type of publication:<br/>
+        <c:when test="${param.task == 'create_publication_form'}">
+            <form action="addPublication.jsp" method="post">  
+                 <p id="pagelabel">Select publication type:</p>
                     <select name="pubtype" required>
                        <option value=""></option>
                        <c:forEach var="ptype" items="${ptypes.rows}">
@@ -45,10 +51,11 @@
                  <input type="submit" value="Continue" name="submit" /> 
             </form>
         </c:when>
-        <c:when test="${param.ptype_selected == 'true'}">
+        <c:when test="${param.ptype_selected == 'true' && param.formsubmitted != 'true'}">
                 <sql:query var="fields">
-                   select me.metaid, me.data, me.datatype, me.numrows, me.numcols, pb.fieldexplanation from descpub_metadata me join descpub_pubtype_metadata pb on me.metaid = pb.metaid where
-                   pb.pubtype = ? order by formposition
+                   select me.metaid, me.label, me.data, me.datatype, me.numrows, me.numcols, pb.fieldexplanation, pb.required, pb.sqlstr from 
+                   descpub_metadata me join descpub_pubtype_formfields pb on me.metaid = pb.metaid where pb.pubtype = ? 
+                   order by formposition
                    <sql:param value="${param.pubtype}"/>
                 </sql:query>
                    
@@ -65,14 +72,6 @@
                     order by lower(m.lastname)
                     <sql:param value="${appVariables.experiment}"/>
                 </sql:query>
-
-                <sql:query var="pubtypes">
-                    select pubtype from descpub_publication_types order by pubtype
-                </sql:query>
-
-                <sql:query var="pubstates">
-                    select state_id, state from descpub_publication_states order by state
-                </sql:query>
                     
                 <div class="intro">
                     <p id="pagelabel">Document Details</p>
@@ -82,83 +81,126 @@
                 
                 <form action="addPublication.jsp" method="post" id="addPublication" name="addPublication">
                     <c:forEach var="x" items="${fields.rows}">
+                        <c:set var="required" value="${!empty x.required ? 'required' : ''}"/>
                         <c:if test="${!empty x.fieldexplanation}">
-                            <p>  <c:out value="${x.fieldexplanation}"/></p>
+                            <p id="pagelabel">  <c:out value="${x.fieldexplanation}"/></p>
                         </c:if>
+                            
                         <c:if test="${x.datatype == 'string'}">
-                           ${x.data}: <input type ="text" name="${x.data}"/><br/>
+                           ${x.label}: <input type ="text" name="${x.data}"  ${required}/> 
+                           <p></p>
                         </c:if>
+                           
+                        <c:if test="${x.datatype == 'dropbox'}">
+                           <sql:query var="results">
+                                select metavalue, defaultvalue from descpub_metadata_enum where metaid = ?
+                                <sql:param value="${x.metaid}"/>
+                           </sql:query>
+                           ${x.label}:  
+                           <select name="${x.data}" ${required}>
+                                <c:forEach var="erow" items="${results.rows}">
+                                    <c:if test="${erow.defaultvalue == 'Y'}">
+                                        <option value="${erow.metavalue}" selected>${erow.metavalue} </option>
+                                    </c:if>
+                                    <c:if test="${erow.defaultvalue != 'Y'}">
+                                        <option value="${erow.metavalue}">${erow.metavalue} </option>
+                                    </c:if>
+                                </c:forEach>
+                            </select> 
+                                <p></p>
+                        </c:if>
+                               
+                        <c:if test="${x.datatype == 'list'}">
+                            <p></p>
+                            ${x.label}:  
+                            <sql:query var="results">
+                                ${x.sqlstr}
+                            </sql:query>
+                            
+                            <c:if test="${fn:contains(x.data,'institution')}">
+                                 <select name="${x.data}" ${required}>
+                                      <option value="${x.data}">${irow['institution']}</option>
+                                 </select>
+                            </c:if>
+                            
+                            <c:if test="${x.data == 'state'}">
+                                <c:set var="selected" value=""/>
+                                 <select name="${x.data}" ${required}>
+                                     <c:forEach var="st" items="${results.rows}">
+                                      <option value="${st['state']}" ${!fn:contains(st['state'],'created') ? '' : 'selected'}>${st['state']} </option>
+                                     </c:forEach>
+                                 </select>
+                            </c:if>
+                            
+                            <p></p>
+                        </c:if>
+                           
                         <c:if test="${x.datatype == 'textarea'}">
-                            ${x.data}:<br/>  <textarea></textarea><br/>
+                             <p></p>
+                            ${x.label}:<br/>  <textarea name="${x.data}" ${required}></textarea><br/>
+                             <p></p>
                         </c:if>
+                            
                         <c:if test="${x.datatype == 'checkbox'}">
+                             <p></p>
                             <sql:query var="enums">
                                 select * from descpub_metadata_enum where metaid = ?
                                 <sql:param value="${x.metaid}"/>
                             </sql:query>
                             <c:forEach var="chkbx" items="${enums.rows}">
-                              ${chkbx.metavalue}   <input type="checkbox" name="${x.data}" value="${chkbx.metavalue}"/><br/>
+                              ${chkbx.metavalue}   <input type="checkbox" name="${x.data}" value="${chkbx.metavalue}" ${required}/><br/>
                             </c:forEach>
+                               <p></p>
                         </c:if>   
                     </c:forEach>
-                     <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
-                     <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
-                     <input type="hidden" name="pubstate" id="pubstate" value="created"/>
-                     <input type="submit" value="Create Document Entry" name="addPub" />  
-                </form>
-                
-                <%--
-                <form action="addPublication.jsp" id="addPublication" name="addPublication" method="post">  
-                    <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
-                    <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
-                    <input type="hidden" name="wgname" id="wgname" value="${param.name}"/> 
-                    <input type="hidden" name="pubstate" id="pubstate" value="created"/>
-                    <input type="hidden" name="formsubmitted" value="true"/>
-                    Title: <br/> <input type="text" name="title" id="title" size="80" required/>  
-                    <p/>
-                    Short Title: <br/> <input type="text" name="short_title" id="title" size="80"/>  
-                    <p/>
-                    Builder Eligible:<br/>
-                    <select name="builder" required>
-                       <option value=""></option>
-                       <option value="N">No</option>
-                       <option value="Y">Yes</option>
-                    </select>
-                    <p/>
-                    Key Paper:<br/>
-                    <select name="keypaper" required>
-                       <option value=""></option>
-                       <option value="N">No</option>
-                       <option value="Y">Yes</option>
-                    </select>  
-                    <p/>
-                    Select Lead Author(s):<br/>
+                              
+                    <p id="pagelabel">
+                    Select Lead Author(s):</p>
                     <select name="authcontacts" multiple size="10" required>
                     <c:forEach var="auth" items="${poolOfCandidates.rows}">
                         <option value="${auth.memidnum}:${auth.firstname} ${auth.lastname}:${auth.username}">${auth.lastname},  ${auth.firstname} </option>
                     </c:forEach>
                     </select>
-                    <p/>
-                    Type:<br/> 
-                    <select name="pubtyp" id="pubtyp">
-                    <c:forEach var="ptype" items="${pubtypes.rows}">
-                        <option value="${ptype.pubtype}">${ptype.pubtype}</option>
-                    </c:forEach>
-                    </select> 
-                    <p/>
-                    <input type="submit" value="Create Document Entry" name="addPub" />  
-                </form> 
-                --%>
-        </c:when>
-        <c:when test="${fn:startsWith(param.submit,'Create Document')}">
-             <c:forEach var="x" items="${param}">
-                <c:out value="${x.key} = ${x.value}"/><br/>
-             </c:forEach>  
-                
-             insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype, short_title) 
-             values(DESCPUB_PUB_SEQ.nextval,${param.title}, ${param.pubstate}, sysdate, ${param.builder}, ${param.keypaper}, ${param.projid}, ${param.pubtyp}, ${param.short_title})
-             <p/>
+                    
+                   <br/> 
+                     <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
+                     <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
+                     <input type="hidden" name="pubtype" value="${param.pubtype}"/>
+                     <input type="hidden" name="formsubmitted" value="true"/>
+                     <p></p>
+                     <input type="submit" value="Create Document Entry" name="submit" />  
+                </form>
               
+        </c:when>
+        <c:when test="${param.formsubmitted == 'true' && debugMode}">
+            <sql:query var="res">
+                select pb.metaid, me.data, me.label, pb.multiplevalues, pb.pid from descpub_pubtype_formfields pb join descpub_metadata me on pb.metaid = me.metaid
+                where pb.pubtype = ?
+                <sql:param value="${param.pubtype}"/>
+            </sql:query>
+              
+             <c:set var="current" value="99999"/>
+             <br>
+            <c:set var="fieldstr" value="paperid, project_id, pubtype, status, createdate"/>
+            <c:set var="valuestr" value="${param.projid},${param.pubtype}"/>
+            <c:set var="qmarks" value="DESCPUB_PUB_SEQ.nextval,?,?,'internal',sysdate"/>
+
+             <c:forEach var="fi" items="${res.rows}">
+                 <c:out value="FIELD=${fi.data}"/><br/>
+                 <c:forEach var="par" items="${param}">
+                     <c:if test="${(fi.data == par.key) && !empty par.value }">
+                         <c:set var="fieldstr" value="${fieldstr},${par.key}"/>
+                         <c:set var="valuestr" value="${valuestr},${par.value}"/>
+                         <c:set var="qmarks" value="${qmarks}, ?"/>
+                     </c:if>
+                 </c:forEach>
+             </c:forEach>
+
+             <c:out value="insert into descpub_publication (${fieldstr}) values (${qmarks})" /><br/>
+             <c:forEach var="input" items="${valuestr}">
+                 <c:out value="<sql:param value=${input}/>"/><br/>
+             </c:forEach>
+                        
         </c:when>
         <c:when test="${param.formsubmitted && !debugMode}">
           <%--
@@ -171,25 +213,43 @@
                     </c:forEach>
                 </c:if>
             </c:forEach>  --%>
-                        
+          
+        <c:set var="fieldstr" value="paperid, project_id, pubtype, createdate"/>
+        <c:set var="valuestr" value="${param.projid},${param.pubtype}"/>
+        <c:set var="qmarks" value="DESCPUB_PUB_SEQ.nextval,?,?,sysdate"/>
+        
+        <%-- get fields for this pubtype --%>    
+        <sql:query var="res">
+            select pb.metaid, me.data, me.label, pb.multiplevalues, pb.pid from descpub_pubtype_formfields pb join descpub_metadata me on pb.metaid = me.metaid
+            where pb.pubtype = ?
+            <sql:param value="${param.pubtype}"/>
+        </sql:query>
+    
+        <c:forEach var="fi" items="${res.rows}">
+            <c:forEach var="par" items="${param}">
+               <c:if test="${(fi.data == par.key) && !empty par.value }">
+                   <c:set var="fieldstr" value="${fieldstr},${par.key}"/>
+                   <c:set var="valuestr" value="${valuestr},${par.value}"/>
+                   <c:set var="qmarks" value="${qmarks}, ?"/>
+               </c:if>
+            </c:forEach>
+         </c:forEach>
+            
         <c:catch var="trapError"> 
-            <sql:transaction>
+            <sql:transaction>    
             <sql:update >
-                insert into descpub_publication (paperid, title, state, added, builder_eligible, keypub, project_id, pubtype, short_title) values(DESCPUB_PUB_SEQ.nextval,?,?,sysdate,?,?,?,?,?)
-                <sql:param value="${param.title}"/>
-                <sql:param value="${param.pubstate}"/>
-                <sql:param value="${param.builder}"/>
-                <sql:param value="${param.keypaper}"/>
-                <sql:param value="${param.projid}"/>
-                <sql:param value="${param.pubtyp}"/>
-                <sql:param value="${param.short_title}"/>
+                insert into descpub_publication (${fieldstr}) values(${qmarks})
+                <c:forEach var="in" items="${valuestr}">
+                    <sql:param value="${in}"/>
+                </c:forEach>
             </sql:update>  
 
+            <%-- get the paperid and create the associated groups for the paper --%>
             <sql:query var="curr">
                 select DESCPUB_PUB_SEQ.currval as currval from dual
             </sql:query>
-                  
             <c:set var="current" value="${curr.rows[0].currval}"/>
+                        
             <c:set var="group_name" value="paper_${current}"/> 
             <c:set var="leadauthgrp" value="paper_leads_${current}"/>
             <c:set var="reviewergrp" value="paper_reviewers_${current}"/>
@@ -247,12 +307,16 @@
        
         <c:if test="${trapError != null}">
             <h1>Error. Failed to create document: ${param.title}<br/>
-                Parent key should be ${param.projid}
+                Parent key is ${param.projid}<br/>
+                CurrSequence: ${current}<br/>
+                <c:forEach var="x" items="${valuestr}">
+                    <c:out value="${x}"/><br/>
+                </c:forEach>
                 ${trapError}
             </h1>
         </c:if>
         <c:if test="${trapError == null}">
-          <c:redirect url="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}"/>    
+       <c:redirect url="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}"/>  
         </c:if>
        </c:when>
     </c:choose>
