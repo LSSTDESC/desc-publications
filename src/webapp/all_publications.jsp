@@ -25,24 +25,20 @@
         <tg:underConstruction/>
            
         <sql:query var="vers" >
-            select p.title, p.paperid, to_char(v.tstamp,'yyyy-Mon-dd'), version, location from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
+            select p.title, p.paperid, p.state, p.status, to_char(v.tstamp,'yyyy-Mon-dd'), version, location from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
             order by v.paperid
         </sql:query>
-          
+            
         <c:if test="${vers.rowCount>0}">    
             <display:table class="datatable" id="record" name="${vers.rows}">
                 <display:column title="DESC ID" group="1">
-                     DESC-${record.paperid}
+                    <a href="show_pub.jsp?paperid=${record.paperid}">DESC-${record.paperid}</a>
                 </display:column>
                 <display:column title="Title" style="text-align:left;" group="2">
                     ${record.title}
                 </display:column>
-                 
-                <display:column title="Links" style="text-align:left;">
-                    <c:if test="${!empty record.version}">
-                    <a href="download?paperid=${record.paperid}&version=${record.version}">Download version ${record.version}</a>
-                    </c:if>
-                </display:column>
+                <display:column title="State" property="state"></display:column> 
+                <display:column title="Status" property="status"></display:column> 
             </display:table>
         </c:if>
             
