@@ -132,43 +132,8 @@
             <h3>Error: ${catchError}</h3>
         </c:when>
         <c:otherwise>
-            <%--
-            <sql:query var="num">
-                select descpub_gen_seq.nextval as audit_id from dual
-            </sql:query> 
-                
-            <c:set var="numid" value="${num.rows[0].audit_id}"/> --%>
             
-    
-         <%--   
-          <sql:update> 
-            <c:forEach var="new" items="${param}" varStatus="loop">
-                <c:if test="${new.key != 'summary'}">
-                    <c:forEach var="curr" items="${projects.rows}">
-                        insert into descpub_audit (identifier, entrydate, changedby, fieldchgd, oldfieldval, newfieldval)
-                        values (?,sysdate,?,?,?,?)
-                        ${numid}, ${userName}, ${new.key}, ${curr[new.key]}, ${new.value}
-                       <sql:param value="${numid}"/>
-                        <sql:param value="${userName}"/>
-                        <sql:param value="${new.key}"/>
-                        <sql:param value="${curr[new.key]}"/>
-                        <sql:param value="${new.value}"/>  
-                    </c:forEach>
-                </c:if> 
-                <c:if test="${new.key == 'summary'} && ${!empty new.value}">
-                    insert into descpub_audit (identifier, entrydate, changedby, fieldchgd, oldtextarea, newtextarea)
-                    values (?,sysdate,?,?,?,?)
-                     ${numid}, ${userName}, ${new.key}, ${curr[new.key]}, ${new.value}
-                   <sql:param value="${numid}"/>
-                    <sql:param value="${userName}"/>
-                    <sql:param value="${new.key}"/>
-                    <sql:param value="${curr[new.key]}"/>
-                    <sql:param value="${new.key}"/>  
-                </c:if>
-            </c:forEach>
-                    
-          </sql:update> --%> 
-         <%--  <c:redirect url="${param.redirectURL}"/>   --%>
+           <c:redirect url="${param.redirectURL}"/>   
         </c:otherwise>
     </c:choose>
     
