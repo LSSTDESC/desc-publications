@@ -35,10 +35,10 @@
         <sql:query var="countpapers">
             select count(*) from descpub_publication where project_id = ?
             <sql:param value="${getproj.rows[0].project_id}"/>
-        </sql:query>   
-          
-        <tg:editPublication paperid="${param.paperid}" swgid="${param.swgid}"/> 
-        
+        </sql:query>    
+
+        <tg:editPublication paperid="${param.paperid}"/> 
+
         <hr align="left" width="50%"/>
         
         <c:set var="paperleads" value="paper_leads_${param.paperid}"/>
