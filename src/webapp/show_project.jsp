@@ -109,19 +109,15 @@
                     </c:when>
                 </c:choose>
             </display:column>
-                     
-        <display:column title="Edit" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
-                      
-
+            <display:column title="Edit" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
         </display:table>
-        
         <p/> 
     </c:if>
     <p/>
  
     <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leaders) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
-                <hr align="left" width="45%"/> 
-                <form action="addPublication.jsp" method="post">
+        <hr align="left" width="45%"/> 
+        <form action="addPublication.jsp" method="post">
             <input type="hidden" name="task" value="create_publication_form"/>
             <input type="hidden" name="swgid" value="${swgid}"/>
             <input type="hidden" name="projid" value="${projid}"/>
