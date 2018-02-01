@@ -25,7 +25,7 @@
          
         
         <sql:query var="pjs" >
-             select id, title, state, lastmodified from descpub_project order by id
+             select id, title, created, lastmodified from descpub_project order by id
         </sql:query>   
          
         <display:table class="datatable" id="Row" name="${pjs.rows}">
@@ -40,6 +40,9 @@
                     </c:forEach>  
                 </c:if>
             </display:column>  
+            <display:column title="Project ID" sortable="true" headerClass="sortable">
+                ${Row.id}
+            </display:column>
             <display:column title="Project Title" sortable="true" headerClass="sortable">
                 <a href="show_project.jsp?projid=${Row.id}">${Row.title}</a>
             </display:column>
@@ -48,11 +51,12 @@
                     ${Row.active}
                 </display:column>
             </c:if>
-            <display:column title="State" sortable="true" headerClass="sortable">
-                ${Row.state}
+            
+            <display:column title="Created" sortable="true" headerClass="sortable">
+                ${Row.created}
             </display:column>
-            <display:column title="Project ID" sortable="true" headerClass="sortable">
-                <a href="show_project.jsp?projid=${Row.id}">${Row.id}</a>
+            <display:column title="Last Modified" sortable="true" headerClass="sortable">
+                ${Row.lastmodified}
             </display:column>
         </display:table>
         
