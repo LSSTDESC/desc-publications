@@ -19,7 +19,7 @@
     </head>
     <body>
 
-        <%--
+        <%-- Notes:
         state = the current state of the paper as it goes from create to review to published.
         status = paper is either internal to the collaboration or public
         DOI = digital object identifier
@@ -29,11 +29,6 @@
     <sql:query var="ptypes">
         select pubtype from descpub_publication_types order by pubtype
     </sql:query>
-        
-        <%--
-        <c:forEach var="x" items="${param}">
-            <c:out value="${x.key}=${x.value}"/><br/>
-        </c:forEach> --%>
         
     <c:choose>
         <c:when test="${param.task == 'create_publication_form'}">
@@ -54,7 +49,7 @@
         <c:when test="${param.ptype_selected == 'true' && param.formsubmitted != 'true'}">
                 <sql:query var="fields">
                    select me.metaid, me.label, me.data, me.datatype, me.numrows, me.numcols, pb.fieldexplanation, pb.required, pb.sqlstr from 
-                   descpub_metadata me join descpub_pubtype_formfields pb on me.metaid = pb.metaid where pb.pubtype = ? 
+                   descpub_metadata me join descpub_pubtype_fields pb on me.metaid = pb.metaid where pb.pubtype = ? 
                    order by formposition
                    <sql:param value="${param.pubtype}"/>
                 </sql:query>
@@ -75,7 +70,9 @@
                     
                 <div class="intro">
                     <p id="pagelabel">Document Details</p>
-                    <strong>Project id [ <a href="show_project.jsp?projid=${projInfo.rows[0].id}">${projInfo.rows[0].id}</a> ] ${projInfo.rows[0].title}. <br/> Working group(s): ${projInfo.rows[0].name}</strong>
+                    <strong>Pubtype ${param.pubtype}<br/>
+                        Project id [ <a href="show_project.jsp?projid=${projInfo.rows[0].id}">${projInfo.rows[0].id}</a> ] ${projInfo.rows[0].title}. <br/> 
+                        Working group(s): ${projInfo.rows[0].name}</strong>
                 </div>
                 <p/>
                 
@@ -116,10 +113,13 @@
                             <sql:query var="results">
                                 ${x.sqlstr}
                             </sql:query>
-                            
+                             
                             <c:if test="${fn:contains(x.data,'institution')}">
                                  <select name="${x.data}" ${required}>
-                                      <option value="${x.data}">${irow['institution']}</option>
+                                     <c:forEach var="in" items="${results.rows}">
+                                      <option value="${in['institution']}">${in['institution']}</option>
+                                     </c:forEach>
+                                      <option value="${x.data}">${irow['current_institution']}</option>
                                  </select>
                             </c:if>
                             
@@ -174,134 +174,151 @@
         </c:when>
         <c:when test="${param.formsubmitted == 'true' && debugMode}">
             <sql:query var="res">
-                select pb.metaid, me.data, me.label, pb.multiplevalues, pb.pid from descpub_pubtype_formfields pb join descpub_metadata me on pb.metaid = me.metaid
+                select me.metaid, me.data, me.label, pb.multiplevalues from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
                 where pb.pubtype = ?
                 <sql:param value="${param.pubtype}"/>
             </sql:query>
               
-             <c:set var="current" value="99999"/>
+            <c:set var="current" value="99999"/>
              <br>
-            <c:set var="fieldstr" value="paperid, project_id, pubtype, status, createdate"/>
-            <c:set var="valuestr" value="${param.projid},${param.pubtype}"/>
-            <c:set var="qmarks" value="DESCPUB_PUB_SEQ.nextval,?,?,'internal',sysdate"/>
-
-             <c:forEach var="fi" items="${res.rows}">
-                 <c:out value="FIELD=${fi.data}"/><br/>
-                 <c:forEach var="par" items="${param}">
-                     <c:if test="${(fi.data == par.key) && !empty par.value }">
-                         <c:set var="fieldstr" value="${fieldstr},${par.key}"/>
-                         <c:set var="valuestr" value="${valuestr},${par.value}"/>
-                         <c:set var="qmarks" value="${qmarks}, ?"/>
-                     </c:if>
+             <c:forEach var="par" items="${param}">
+                 <c:forEach var="fi" items="${res.rows}" varStatus="loop">
+                     
+                     <c:choose>
+                         <c:when test="${fi.data == par.key && empty fieldstr && !empty par.value}">
+                             <c:set var="fieldstr" value="${fi.data}"/>
+                             <c:set var="valuestr" value="${par.value}"/>
+                             <c:set var="qmarks" value="?"/>
+                         </c:when>
+                         <c:when test="${fi.data == par.key && !empty fieldstr && !empty par.value}">
+                             <c:set var="fieldstr" value="${fieldstr},${fi.data}"/>
+                             <c:set var="valuestr" value="${valuestr},${par.value}"/>
+                             <c:set var="qmarks" value="${qmarks},?"/>
+                         </c:when>
+                     </c:choose>
+                     
                  </c:forEach>
              </c:forEach>
-
-             <c:out value="insert into descpub_publication (${fieldstr}) values (${qmarks})" /><br/>
-             <c:forEach var="input" items="${valuestr}">
-                 <c:out value="<sql:param value=${input}/>"/><br/>
-             </c:forEach>
-                        
+             
+             <c:set var="fieldstr" value="${fieldstr},paperid,project_id,createdate,pubtype"/>
+             <c:set var="valuestr" value="${valuestr},${param.projid},${param.pubtype}"/>
+             <c:set var="qmarks" value="${qmarks},DESCPUB_PUB_SEQ.nextval,?,sysdate,?"/>
+             
+             <sql:update>
+             insert into descpub_publication (${fieldstr}) values (${qmarks}) 
+                 <c:forEach var="x" items="${valuestr}">
+                     <sql:param value="${x}"/>
+                 </c:forEach>
+             </sql:update>
+                 
+             <p></p>
         </c:when>
+             
         <c:when test="${param.formsubmitted && !debugMode}">
-          <%--
-            <c:forEach var="x" items="${param}">
-                <c:out value="${x.key} = ${x.value}"/><br/>
-                <c:if test = "${x.key  == 'authcontacts'}">
-                    <c:forEach var="y" items="${paramValues[x.key]}">
-                        <c:set var="array" value="${fn:split(y,':')}"/>
-                        <c:out value="ContactAuth: ${array[0]}, ${array[1]}, ${array[2]}"/><br/>
-                    </c:forEach>
-                </c:if>
-            </c:forEach>  --%>
-          
-        <c:set var="fieldstr" value="paperid, project_id, pubtype, createdate"/>
-        <c:set var="valuestr" value="${param.projid},${param.pubtype}"/>
-        <c:set var="qmarks" value="DESCPUB_PUB_SEQ.nextval,?,?,sysdate"/>
-        
         <%-- get fields for this pubtype --%>    
         <sql:query var="res">
-            select pb.metaid, me.data, me.label, pb.multiplevalues, pb.pid from descpub_pubtype_formfields pb join descpub_metadata me on pb.metaid = me.metaid
-            where pb.pubtype = ?
+            select pb.metaid, me.data, me.label, pb.multiplevalues from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
+            where pb.pubtype = ? order by pb.formposition
             <sql:param value="${param.pubtype}"/>
         </sql:query>
-    
-        <c:forEach var="fi" items="${res.rows}">
-            <c:forEach var="par" items="${param}">
-               <c:if test="${(fi.data == par.key) && !empty par.value }">
-                   <c:set var="fieldstr" value="${fieldstr},${par.key}"/>
-                   <c:set var="valuestr" value="${valuestr},${par.value}"/>
-                   <c:set var="qmarks" value="${qmarks}, ?"/>
-               </c:if>
-            </c:forEach>
-         </c:forEach>
-            
-        <c:catch var="trapError"> 
-            <sql:transaction>    
-            <sql:update >
-                insert into descpub_publication (${fieldstr}) values(${qmarks})
-                <c:forEach var="in" items="${valuestr}">
-                    <sql:param value="${in}"/>
-                </c:forEach>
-            </sql:update>  
+          
+        <c:set var="fieldstr" value=""/>
+        <c:set var="valuestr" value=""/>
+        <c:set var="qmarks" value=""/>
+        
+         <c:forEach var="par" items="${param}">
+             <c:forEach var="fi" items="${res.rows}" varStatus="loop">
 
-            <%-- get the paperid and create the associated groups for the paper --%>
-            <sql:query var="curr">
-                select DESCPUB_PUB_SEQ.currval as currval from dual
-            </sql:query>
-            <c:set var="current" value="${curr.rows[0].currval}"/>
-                        
-            <c:set var="group_name" value="paper_${current}"/> 
-            <c:set var="leadauthgrp" value="paper_leads_${current}"/>
-            <c:set var="reviewergrp" value="paper_reviewers_${current}"/>
-            <c:set var="grpmanager" value="lsst-desc-publication-admins"/>
-            
-            <%-- insert paper group into profile_group, paper lead group is the managing group --%> 
-            <sql:update>
-                insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
-                <sql:param value="${group_name}"/>
-                <sql:param value="${leadauthgrp}"/>
-                <sql:param value="${appVariables.experiment}"/>
-            </sql:update> 
+                 <c:choose>
+                     <c:when test="${fi.data == par.key && empty fieldstr && !empty par.value}">
+                         <c:set var="fieldstr" value="${fi.data}"/>
+                         <c:set var="valuestr" value="${par.value}"/>
+                         <c:set var="qmarks" value="?"/>
+                     </c:when>
+                     <c:when test="${fi.data == par.key && !empty fieldstr && !empty par.value}">
+                         <c:set var="fieldstr" value="${fieldstr},${fi.data}"/>
+                         <c:set var="valuestr" value="${valuestr},${par.value}"/>
+                         <c:set var="qmarks" value="${qmarks},?"/>
+                     </c:when>
+                 </c:choose>
+
+             </c:forEach>
+         </c:forEach>
+       
+        <%-- tack on a few document details that are not in the metadata table --%>
+        <c:set var="fieldstr" value="${fieldstr},paperid,project_id,createdate,pubtype"/>
+        <c:set var="valuestr" value="${valuestr},${param.projid},${param.pubtype}"/>
+        <c:set var="qmarks" value="${qmarks},DESCPUB_PUB_SEQ.nextval,?,sysdate,?"/>
+       
+        <c:catch var="trapError"> 
+            <sql:transaction>   
                 
-            <%-- insert paper lead group into profile_group, lsst-desc-publication-admins is the managing group --%> 
-            <sql:update>
-                insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
-                <sql:param value="${leadauthgrp}"/>
-                <sql:param value="${grpmanager}"/>
-                <sql:param value="${appVariables.experiment}"/>
-            </sql:update> 
-                      
-            <%-- insert paper reviewer group into profile_group, lsst-desc-publication-admins is the managing group --%> 
-            <sql:update>
-                insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
-                <sql:param value="${reviewergrp}"/>
-                <sql:param value="${grpmanager}"/>
-                <sql:param value="${appVariables.experiment}"/>
-            </sql:update> 
-                           
-            <%-- add lead authors to the paper lead group --%>
-            <c:forEach var="con" items="${paramValues['authcontacts']}">
-                <c:set var="array" value="${fn:split(con,':')}"/>
+               <sql:update>
+                 insert into descpub_publication (${fieldstr}) values (${qmarks}) 
+                 <c:forEach var="x" items="${valuestr}">
+                     <sql:param value="${x}"/>
+                 </c:forEach>
+               </sql:update>
+             
+                <%-- get the paperid, add it to the insert fields and create the associated groups for the paper --%>
+                <sql:query var="curr">
+                    select DESCPUB_PUB_SEQ.currval as currval from dual
+                </sql:query>
+
+                <c:set var="current" value="${curr.rows[0].currval}"/>
+                        
+                <c:set var="group_name" value="paper_${current}"/> 
+                <c:set var="leadauthgrp" value="paper_leads_${current}"/>
+                <c:set var="reviewergrp" value="paper_reviewers_${current}"/>
+                <c:set var="grpmanager" value="lsst-desc-publication-admins"/>
+            
+                <%-- insert paper group into profile_group, paper lead group is the managing group --%> 
                 <sql:update>
-                    insert into profile_ug (user_id, group_id, experiment, memidnum) values(?,?,?,?)
-                    <sql:param value="${array[2]}"/>
+                    insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
+                    <sql:param value="${group_name}"/>
                     <sql:param value="${leadauthgrp}"/>
                     <sql:param value="${appVariables.experiment}"/>
-                    <sql:param value="${array[0]}"/>
                 </sql:update> 
-            </c:forEach>
-                    
-            <%-- add reviewers group  --%>
-            <c:forEach var="rev" items="${paramValues['reviewers']}">
-                <c:set var="revarray" value="${fn:split(rev,':')}"/>
+
+                <%-- insert paper lead group into profile_group, lsst-desc-publication-admins is the managing group --%> 
                 <sql:update>
-                    insert into profile_ug (user_id, group_id, experiment, memidnum) values(?,?,?,?)
-                    <sql:param value="${revarray[2]}"/>
-                    <sql:param value="${reviewergrp}"/>
+                    insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
+                    <sql:param value="${leadauthgrp}"/>
+                    <sql:param value="${grpmanager}"/>
                     <sql:param value="${appVariables.experiment}"/>
-                    <sql:param value="${revarray[0]}"/>
                 </sql:update> 
-            </c:forEach>
+
+                <%-- insert paper reviewer group into profile_group, lsst-desc-publication-admins is the managing group --%> 
+                <sql:update>
+                    insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
+                    <sql:param value="${reviewergrp}"/>
+                    <sql:param value="${grpmanager}"/>
+                    <sql:param value="${appVariables.experiment}"/>
+                </sql:update> 
+
+                <%-- add lead authors to the paper lead group --%>
+                <c:forEach var="con" items="${paramValues['authcontacts']}">
+                    <c:set var="array" value="${fn:split(con,':')}"/>
+                    <sql:update>
+                        insert into profile_ug (user_id, group_id, experiment, memidnum) values(?,?,?,?)
+                        <sql:param value="${array[2]}"/>
+                        <sql:param value="${leadauthgrp}"/>
+                        <sql:param value="${appVariables.experiment}"/>
+                        <sql:param value="${array[0]}"/>
+                    </sql:update> 
+                </c:forEach>
+                    
+                <%-- add reviewers group  --%>
+                <c:forEach var="rev" items="${paramValues['reviewers']}">
+                    <c:set var="revarray" value="${fn:split(rev,':')}"/>
+                    <sql:update>
+                        insert into profile_ug (user_id, group_id, experiment, memidnum) values(?,?,?,?)
+                        <sql:param value="${revarray[2]}"/>
+                        <sql:param value="${reviewergrp}"/>
+                        <sql:param value="${appVariables.experiment}"/>
+                        <sql:param value="${revarray[0]}"/>
+                    </sql:update> 
+                </c:forEach>
             </sql:transaction>
         </c:catch>
        
@@ -309,10 +326,11 @@
             <h1>Error. Failed to create document: ${param.title}<br/>
                 Parent key is ${param.projid}<br/>
                 CurrSequence: ${current}<br/>
-                <c:forEach var="x" items="${valuestr}">
-                    <c:out value="${x}"/><br/>
+                
+                ${trapError}<br/>
+                <c:forEach var="par" items="${param}">
+                <c:out value="PARAM=${par.key}=${par.value}"/><br/>
                 </c:forEach>
-                ${trapError}
             </h1>
         </c:if>
         <c:if test="${trapError == null}">
