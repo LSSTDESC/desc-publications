@@ -23,7 +23,11 @@
     </head>
     <body>
         <tg:underConstruction/>
-           
+        
+        <sql:query var="pubs">
+            select paperid, title from descpub_publication order by paperid
+        </sql:query>
+        
         <sql:query var="vers" >
             select p.title, p.paperid, p.state, p.status, to_char(v.tstamp,'yyyy-Mon-dd'), version, location from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
             order by v.paperid
@@ -42,5 +46,13 @@
             </display:table>
         </c:if>
             
+        <p id="pagelabel">Request Authorship on a Document</p>
+                    
+        <c:if test="${pubs.rowCount > 0}">
+            <display:table class="datatable" id="doc" name="${pubs.rows}">
+                <display:column property="paperid" title="Request Form" href="requestAuthorship.jsp" paramId="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
+                <display:column property="title" title="Title" ></display:column>
+            </display:table>
+        </c:if>            
     </body>
 </html>
