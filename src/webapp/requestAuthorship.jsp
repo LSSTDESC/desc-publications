@@ -29,7 +29,7 @@
     Link to <a href="">Authorship Guide</a> [pdf]<br/>  
     
     <sql:query var="contribs">
-        select initcap(name) name from descpub_contributions order by name
+        select initcap(label) label from descpub_contributions order by label
     </sql:query>
     
     <c:choose>
@@ -37,7 +37,7 @@
             <%-- add chosen contributions to mail msg --%>
             <c:set var="contributions" value=""/>
             <c:forEach var="x" items="${param}" varStatus="loop">
-                <c:if test="${x.key == 'name'}">
+                <c:if test="${x.key == 'label'}">
                     <c:forEach var="pv" items="${paramValues[x.key]}">
                         <c:choose>
                         <c:when test="${empty contributions}">
