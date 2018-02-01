@@ -35,9 +35,8 @@
         </sql:query>
             
         <sql:query var="papers">
-            select pb.paperid, pb.createdate, pb.modifydate, me.data, pe.metavalue title from
-            descpub_publication pb join descpub_publication_metadata pe on pb.paperid = pe.paperid
-            join descpub_metadata me on me.metaid = pe.metaid and  pe.metaid = 1
+            select paperid, createdate, modifydate, title from descpub_publication where createdate < sysdate - 1
+            order by paperid desc
         </sql:query>
              
         <c:if test="${swgs.rowCount > 0}">
