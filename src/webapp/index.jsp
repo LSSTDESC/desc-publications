@@ -3,6 +3,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
 <%@taglib uri="http://srs.slac.stanford.edu/GroupManager" prefix="gm"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib uri="http://displaytag.sf.net" prefix="display"%>
 <%@taglib uri="http://srs.slac.stanford.edu/displaytag" prefix="displayutils"%>
 <%@taglib tagdir="/WEB-INF/tags/" prefix="tg"%>
@@ -34,15 +35,14 @@
         </sql:query>
             
         <sql:query var="papers">
-            select paperid, title, to_char(added,'yyyy-Mon-dd') added, to_char(date_modified,'yyyy-Mon-dd') moddate from descpub_publication where added is not null or added > sysdate - 7  order by added asc
+            select pb.paperid, pb.createdate, pb.modifydate, me.data, pe.metavalue title from
+            descpub_publication pb join descpub_publication_metadata pe on pb.paperid = pe.paperid
+            join descpub_metadata me on me.metaid = pe.metaid and  pe.metaid = 1
         </sql:query>
-             
              
         <c:if test="${swgs.rowCount > 0}">
             <display:table class="datatable"  id="Row" name="${swgs.rows}">
-                <display:column title="Working Groups (WGs)" sortable="true" headerClass="sortable" style="text-align:left;">
-                    <a href="show_swg.jsp?swgid=${Row.id}">${Row.name}</a>
-                </display:column>
+                <display:column title="Working Groups (WGs)" href="show_swg.jsp" paramId="swgid" property="name" paramProperty="id" sortable="true" headerClass="sortable" style="text-align:left;"/>
                 <display:column title="Number of Projects (can be in multiple WGs)">
                     <sql:query var="prow">
                     select count(project_id) tot from descpub_project_swgs where swg_id = ?
@@ -55,22 +55,29 @@
             </display:table>
         </c:if>  
         <p></p>
-        <p id="pagelabel">Most-recent Documents</p>
+        <p id="pagelabel">Most recent Documents</p>
 
         <c:if test="${papers.rowCount > 0}">
             <display:table class="datatable" id="Line" name="${papers.rows}">
-                <display:column property="paperid" title="Paper" sortable="true" headerClass="sortable"/>
-                 <display:column property="added" title="Created" sortable="true" headerClass="sortable">
+                <display:column title="ID" sortable="true" headerClass="sortable" >
+                    DESC-${Line.paperid} 
+                </display:column>
+                <display:column title="Title" style="text-align:left;" sortable="true" headerClass="sortable">
+                    <a href="show_pub.jsp?paperid=${Line.paperid}">${Line.title}</a>
+                </display:column>
+                <display:column property="createdate" title="Created" sortable="true" headerClass="sortable">
                     ${Line.added}
                 </display:column>
                 <display:column property="moddate" title="Last Modified">
                     ${Line.moddate}
                 </display:column>
-                <display:column title="Recent Papers" style="text-align:left;" sortable="true" headerClass="sortable">
-                    <a href="show_pub.jsp?paperid=${Line.paperid}">${Line.title}</a>
-                </display:column>
+                
             </display:table>
         </c:if>        
+    
+        <c:if test="${pubs.rowCount > 0}">
+           <display:table class="datatable" id="irow" name="${pubs.rows}"/>
+        </c:if>
                     
     </body>
 
