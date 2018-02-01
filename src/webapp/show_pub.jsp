@@ -31,14 +31,6 @@
         
         <c:set var="paperid" value="${param.paperid}"/>
         <c:set var="mgrgrp" value="paper_${param.paperid}"/>
-        
-        <%--
-        <sql:query var="info">
-            select project_id, pubtype from descpub_publication where paperid = ?
-            <sql:param value="${paperid}"/>
-        </sql:query>
-        <c:set var="pubtype" value="${info.rows[0].pubtype}"/>
-             --%>
              
         <sql:query var="pubs">
             select * from descpub_publication where paperid = ?
@@ -71,6 +63,7 @@
              <c:forEach var="x" items="${fi.rows}">
                  <display:column title="${x.label}"  property="${x.data}" />
             </c:forEach>
+            <display:column title="Edit" href="editLink.jsp" property="paperid" paramId="paperid" paramProperty="paperid"  sortable="true" headerClass="sortable"/>
         </display:table>
         <p/>  
         
