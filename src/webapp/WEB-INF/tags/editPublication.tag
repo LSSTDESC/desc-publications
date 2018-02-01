@@ -15,10 +15,12 @@
 <script src="js/jquery.validate.min.js"></script>
 
 <%@attribute name="paperid" required="true"%>
-<%@attribute name="swgid" required="true"%>
+
+<%--
+<%@attribute name="swgid" required="false"%>
 
 <c:set var="paperid" value="${param.paperid}"/>
-<c:set var="swgid" value="${param.swgid}"/>
+<c:set var="swgid" value="${param.swgid}"/> --%>
 
 <c:set var="paperleads" value="paper_leads_${paperid}"/> 
  <sql:query var="pubtypes">
@@ -26,21 +28,30 @@
  </sql:query>
 
  <sql:query var="pubs">
-  select paperid, state, title, short_title, journal, pubtype, summary, to_char(added,'yyyy-mon-dd') added, to_char(date_modified,'yyyy-mon-dd') moddate, builder_eligible, keypub,
-  pb_reader_approved, arxiv, published_reference, project_id, short_title from descpub_publication where paperid = ?
+  select paperid, state, title, short_title, pubtype, summary, to_char(createdate,'yyyy-mon-dd') added, to_char(modifydate,'yyyy-mon-dd') moddate, builder_eligible, key_paper,
+  passed_internal_review, arxiv, published_reference, project_id, short_title from descpub_publication where paperid = ?
     <sql:param value="${paperid}"/>
  </sql:query>
+ 
+ <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/>
     
 <sql:query var="states">
     select state from descpub_publication_states order by state
 </sql:query>
-      
-    <%--
-<sql:query var="wgs" >
-    select wg.name, wg.id, wg.convener_group_name, wg.profile_group_name from descpub_project_swgs jo join descpub_swg wg on jo.swg_id = wg.id
-    where jo.project_id = ?
-    <sql:param value="${pubs.rows[0].project_id}"/>
-</sql:query> --%>
+     
+<sql:query var="fi">
+    select pb.metaid, me.data, me.label, me.datatype, pb.sqlstr, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
+    where pb.pubtype = ? order by pb.formposition
+    <sql:param value="${pubtype}"/>
+</sql:query>
+    
+    
+ <h1>pubtype ${pubtype}</h1>
+<sql:query var="results">
+    select * from descpub_publication where paperid = ?
+    <sql:param value="${param.paperid}"/>
+</sql:query>
+    
     
 <h3>DESC-${param.paperid} Title: ${pubs.rows[0].title} </h3>
     Project Id: <a href="show_project.jsp?projid=${pubs.rows[0].project_id}">${pubs.rows[0].project_id}</a> &nbsp; &nbsp; Added: ${pubs.rows[0].added}
@@ -50,76 +61,72 @@
         [ Placeholder for link to internal review ]
     <p/> 
     
-   <form action="editPublication.jsp" method="post">  
-   <input type="hidden" name="paperid" value="${paperid}"/> 
-   <input type="hidden" name="swgid" value="${swgid}"/> 
-   Title: <br/> <input type="text" value="${pubs.rows[0].title}" size="35" name="title" required/>
-              
-   <p/>
-   Short Title: <br/> <input type="text" value="${pubs.rows[0].short_title}" size="35" name="short_title" required/>
-   
-   <p/>
-   Brief Summary: <br/>
-   <textarea name="summary" rows="10" cols="60" required>${pubs.rows[0].SUMMARY}</textarea><br/>
-   <p/>
-   State: 
-   <select name="state" id="state">
-       <c:forEach var="sta" items="${states.rows}">
-           <c:if test="${fn:startsWith(pubs.rows[0].state,sta.state)}">
-               <option value="${sta.state}" selected>${sta.state}</option>
-           </c:if>
-           <c:if test="${!fn:startsWith(pubs.rows[0].state,sta.state)}">
-               <option value="${sta.state}">${sta.state}</option>
-           </c:if>
-       </c:forEach>
-   </select>
-  
-   <p/>
-   Pubtype: <br/>
-   <select name="pubtype" id="pubtype">
-        <c:forEach var="ptype" items="${pubtypes.rows}">
-            <option value="${ptype.pubtype}" <c:if test="${pubs.rows[0].pubtype == ptype.pubtype}">selected</c:if>  >${ptype.pubtype}</option>
+    <form action="editPublication.jsp?paperid=${param.paperid}" method="post">
+        <c:forEach var="x" items="${fi.rows}">
+            <c:if test="${!empty x.fieldexplanation}">
+                <p id="pagelabel">  <c:out value="${x.fieldexplanation}"/></p>
+            </c:if>
+            <c:if test="${x.datatype == 'string'}">
+                 ${x.label}  <input type="text" value="${results.rows[0][x.data]}" name="${x.data}"/>
+                 <p></p>
+            </c:if>
+            <c:if test="${x.datatype == 'dropbox'}">
+                <sql:query var="res">
+                    select metavalue, defaultvalue from descpub_metadata_enum where metaid = ?
+                    <sql:param value="${x.metaid}"/>
+               </sql:query>
+               ${x.label}:  
+               <select name="${x.data}" ${required}>
+                    <c:forEach var="erow" items="${res.rows}">
+                        <option value="${erow.metavalue}" <c:if test="${results.rows[0][x.data] == erow.metavalue}">selected</c:if> > ${erow.metavalue}</option>
+                    </c:forEach>
+                </select> 
+                <p></p>
+            </c:if>
+            <c:if test="${x.datatype == 'checkbox'}">
+                <c:set var="required" value="${x.required == 'required' ? required : ''}"/>
+                <sql:query var="enums">
+                    select * from descpub_metadata_enum where metaid = ?
+                    <sql:param value="${x.metaid}"/>
+                </sql:query>
+                <c:forEach var="chkbx" items="${enums.rows}">
+                  ${chkbx.metavalue} <input type="checkbox" name="${x.data}" value="${chkbx.metavalue}" ${required}/><br/>
+                </c:forEach>
+                <p></p>
+            </c:if>       
+            <c:if test="${x.datatype == 'list'}">
+                 <c:set var="selected" value=""/>
+                 <sql:query var="res">
+                    ${x.sqlstr}
+                 </sql:query>   
+                 <c:if test="${fn:contains(x.data,'current_institution')}">
+                     <select name="${x.data}" ${required}>
+                         <c:forEach var="in" items="${res.rows}">
+                             <option value="${in['institution']}"> ${in['institution'] == results.rows[0][x.data] ? selected : ''} </option>
+                         </c:forEach>
+                     </select> 
+                </c:if>
+
+                <c:if test="${x.data == 'state'}">
+                    ${x.label}
+                     <select name="${x.data}" ${required}>
+                         <c:forEach var="st" items="${res.rows}">
+                           <option value="${st['state']}" <c:if test="${results.rows[0][x.data] == st['state']}">selected</c:if> > ${st['state']}</option>
+                         </c:forEach>
+                     </select>
+                </c:if>
+                 <p></p>
+            </c:if>
+            <c:if test="${x.datatype == 'textarea'}">
+                ${x.label}:<br/><textarea name="${x.data}" ${x.required}>${results.rows[0][x.data]}</textarea><br/>
+                 <p></p>
+            </c:if>
+            
         </c:forEach>
-    </select> 
+        <input type="submit" name="submit" value="update"/>
+    </form>
+    
+    
+    
   
-   <p/>
-    Builder Eligible: 
-   <select name="builder_eligible" id="builder_eligible" required>
-       <option value=""></option>
-       <option value="Y" <c:if test="${pubs.rows[0].builder_eligible == 'Y'}">selected</c:if> >Yes</option>
-       <option value="N" <c:if test="${pubs.rows[0].builder_eligible == 'N'}">selected</c:if> >No </option>
-   </select>
-   <p/>
-   
-   Key Paper: 
-   <select name="keypub" id="keypub" required>
-       <option value=""></option>
-       <option value="Y" <c:if test="${pubs.rows[0].keypub == 'Y'}">selected</c:if> >Yes</option>
-       <option value="N" <c:if test="${pubs.rows[0].keypub == 'N'}">selected</c:if> >No</option>
-   </select>
-    <p/>
-   
-   <c:if test="${!fn:startsWith(pubs.rows[0].pubtype,'External')}">
-       Passed internal review: 
-       <select name="pb_reader_approved" id="pb_reader_approved" required>
-           <option value=""></option>
-           <option value="Y" <c:if test="${pubs.rows[0].pb_reader_approved == 'Y'}">selected</c:if> >Yes</option>
-           <option value="N" <c:if test="${pubs.rows[0].pb_reader_approved == 'N'}">selected</c:if> >No</option>
-       </select>
-       <p/>
-
-       Journal: <input type="text" name="journal" value="${pubs.rows[0].JOURNAL}" size="25" name="journal"/>
-         <p/>
-
-       arXiv number: <input type="text" value="${pubs.rows[0].ARXIV}" size="25" name="arxiv"/>
-       <p/>
-       Published Reference: <input type="text" value="${pubs.rows[0].PUBLISHED_REFERENCE}" size="25" name="published_reference"/>
-   </c:if>
-   <p/>
-   <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,paperleads)}">
-   <input type="submit" value="UpdatePub" name="action" />
-   <input type="hidden" value="formSubmitted" name="formSubmitted"/>
-   </c:if>
-</form>  
- 
  
