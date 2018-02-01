@@ -43,16 +43,8 @@
                 </display:column>
                 <display:column title="State" property="state"></display:column> 
                 <display:column title="Status" property="status"></display:column> 
+                <display:column property="paperid" title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
             </display:table>
         </c:if>
-            
-        <p id="pagelabel">Request Authorship on a Document</p>
-                    
-        <c:if test="${pubs.rowCount > 0}">
-            <display:table class="datatable" id="doc" name="${pubs.rows}">
-                <display:column property="paperid" title="Request Form" href="requestAuthorship.jsp" paramId="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
-                <display:column property="title" title="Title" ></display:column>
-            </display:table>
-        </c:if>            
     </body>
 </html>
