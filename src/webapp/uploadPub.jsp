@@ -24,7 +24,9 @@
         <c:choose>
             <c:when test="${empty param.paperid}">
                 <sql:query var="list">
-                    select paperid, title from descpub_publication order by paperid
+                    select db.paperid, pe.metavalue title from descpub_publication db join descpub_publication_metadata pe on db.paperid = pe.paperid
+                    join descpub_metadata me on me.metaid = pe.metaid and me.metaid = 1
+                    order by db.paperid
                 </sql:query>
 
                 <p id="pagelabel"> Choose your paper: </p>
@@ -41,7 +43,9 @@
             <c:otherwise>   
                 <h2>Paper <strong>DESC-${param.paperid}</strong></h2>
                 <sql:query var="papertitle">
-                    select title from descpub_publication where paperid = ?
+                    select db.paperid, pe.metavalue title from descpub_publication db join descpub_publication_metadata pe on db.paperid = pe.paperid
+                    join descpub_metadata me on me.metaid = pe.metaid and me.metaid = 1 
+                    where db.paperid = ?
                     <sql:param value="${param.paperid}"/>
                 </sql:query>
                     
