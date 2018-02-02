@@ -31,7 +31,7 @@
     <sql:query var="contribs">
         select initcap(label) label from descpub_contributions order by label
     </sql:query>
-    
+        
     <c:choose>
         <c:when test="${!empty param.reason}">
             <%-- add chosen contributions to mail msg --%>
@@ -101,7 +101,7 @@
                     Refer to authorship guide, section 3, for more detailed explanation
                 </p>
                 <c:forEach var="c" items="${contribs.rows}">
-                 ${c['name']}  <input type="checkbox" name="name" value="${c['name']}"/><br/>
+                 ${c['label']}  <input type="checkbox" name="name" value="${c['label']}"/><br/>
                 </c:forEach>
                 <p></p>
                 <input type="submit" value="Send_Request" name="submit"/>    
