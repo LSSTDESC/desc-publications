@@ -29,7 +29,7 @@
             order by v.paperid
             --%>
         <sql:query var="vers" >
-            select distinct p.paperid, p.title, p.state, p.status from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
+            select distinct p.paperid, p.title, p.state, p.status, p.pubtype from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
             order by p.paperid desc
         </sql:query>
             
@@ -41,6 +41,7 @@
                 <display:column title="Title" property="title" style="text-align:left;" group="2"/>
                 <display:column title="State" property="state" group="3"></display:column> 
                 <display:column title="Status" property="status"></display:column> 
+                <display:column title="Doc type" property="pubtype"></display:column> 
                 <display:column title="Versions" style="text-align:left;">
                     <sql:query var="v">
                         select max(version) version from descpub_publication_versions where paperid = ?
