@@ -11,7 +11,7 @@
     </head>
     <body>
          
-    <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,param.groupname))}">
+    <c:if test="${!(gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin'))}">
         <c:redirect url="noPermission.jsp?errmsg=1"/>
     </c:if>  
         
