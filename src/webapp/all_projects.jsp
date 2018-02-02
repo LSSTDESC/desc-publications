@@ -29,7 +29,7 @@
         </sql:query>   
          
         <display:table class="datatable" id="Row" name="${pjs.rows}">
-             <display:column title="Working Groups" sortable="true" headerClass="sortable">
+             <display:column title="Working Groups" style="text-align:left;" sortable="true" headerClass="sortable">
                 <sql:query var="wgs">
                         select s.id, s.name from descpub_swg s join descpub_project_swgs j on s.id = j.swg_id and j.project_id = ?
                         <sql:param value="${Row.id}"/>
@@ -40,24 +40,15 @@
                     </c:forEach>  
                 </c:if>
             </display:column>  
-            <display:column title="Project ID" sortable="true" headerClass="sortable">
-                ${Row.id}
-            </display:column>
-            <display:column title="Project Title" sortable="true" headerClass="sortable">
+            <display:column title="Project ID" property="id" style="text-align:left;" sortable="true" headerClass="sortable"/>
+            <display:column title="Project Title" style="text-align:left;" sortable="true" headerClass="sortable">
                 <a href="show_project.jsp?projid=${Row.id}">${Row.title}</a>
             </display:column>
             <c:if test="${! empty Row.active}">
-                <display:column title="Active">
-                    ${Row.active}
-                </display:column>
+                <display:column title="Active" property="active" style="text-align:left;"/>
             </c:if>
-            
-            <display:column title="Created" sortable="true" headerClass="sortable">
-                ${Row.created}
-            </display:column>
-            <display:column title="Last Modified" sortable="true" headerClass="sortable">
-                ${Row.lastmodified}
-            </display:column>
+            <display:column title="Created" property="created" style="text-align:left;" sortable="true" headerClass="sortable"/>
+            <display:column title="Last Modified" property="lastmodified" style="text-align:left;" sortable="true" headerClass="sortable"/>
         </display:table>
         
     </body>
