@@ -35,8 +35,7 @@
         </sql:query>
             
         <sql:query var="papers">
-            select paperid, createdate, modifydate, title from descpub_publication where createdate < sysdate - 1
-            order by paperid desc
+            select paperid, createdate, modifydate, title from descpub_publication where createdate < sysdate - 1 order by paperid desc
         </sql:query>
              
         <c:if test="${swgs.rowCount > 0}">
@@ -64,13 +63,8 @@
                 <display:column title="Title" style="text-align:left;" sortable="true" headerClass="sortable">
                     <a href="show_pub.jsp?paperid=${Line.paperid}">${Line.title}</a>
                 </display:column>
-                <display:column property="createdate" title="Created" sortable="true" headerClass="sortable">
-                    ${Line.added}
-                </display:column>
-                <display:column property="moddate" title="Last Modified">
-                    ${Line.moddate}
-                </display:column>
-                
+                <display:column property="createdate" title="Created" sortable="true" headerClass="sortable"/>
+                <display:column property="modifydate" title="Last Modified" style="text-align:left;" sortable="true" headerClass="sortable"/>
             </display:table>
         </c:if>        
     
