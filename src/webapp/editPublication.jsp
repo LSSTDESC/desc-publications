@@ -30,12 +30,14 @@
 
     <c:forEach var="p" items="${param}">
         <c:if test="${p.key != 'submit'}">
+            <c:if test="${!empty p.value}">
             <c:out value="${p.key} = ${p.value}"/><br/>
             <c:set var="oranames" value="${oranames},${p.key}=?"/>
             <c:set var="oravals" value="${oravals},${p.value}"/>
+            </c:if>
         </c:if>
     </c:forEach>
-
+                  
     <c:catch var="catchError">
       <sql:transaction>
          <sql:update>
@@ -46,7 +48,7 @@
            <sql:param value="${param.paperid}"/>
           </sql:update>   
       </sql:transaction>
-    </c:catch>
+    </c:catch>  
 
     <c:choose>
         <c:when test="${!empty catchError}">
@@ -62,12 +64,9 @@
            </h3>  
        </c:when>
        <c:when test="${empty catchError}">
-           update successful
-      <%--   <c:redirect url="editLink.jsp?paperid=${param.paperid}&swgid=${param.swgid}"/> --%>
-      <c:redirect url="editLink.jsp?paperid=${param.paperid}"/>  
+          <c:redirect url="editLink.jsp?paperid=${param.paperid}"/>  
        </c:when>   
    </c:choose>
-     
-                 
+        
     </body>
 </html>
