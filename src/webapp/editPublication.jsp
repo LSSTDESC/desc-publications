@@ -31,9 +31,8 @@
     <c:forEach var="p" items="${param}">
         <c:if test="${p.key != 'submit'}">
             <c:if test="${!empty p.value}">
-            <c:out value="${p.key} = ${p.value}"/><br/>
-            <c:set var="oranames" value="${oranames},${p.key}=?"/>
-            <c:set var="oravals" value="${oravals},${p.value}"/>
+                <c:set var="oranames" value="${oranames},${p.key}=?"/>
+                <c:set var="oravals" value="${oravals},${p.value}"/>
             </c:if>
         </c:if>
     </c:forEach>
@@ -54,7 +53,6 @@
         <c:when test="${!empty catchError}">
            <h3>
             Error=${catchError}<br/>
-
            <c:set var="arrFields" value="${fn:split(oranames,',')}"/>
            <c:set var="arrVals" value="${fn:split(oravals,',')}"/> 
 
