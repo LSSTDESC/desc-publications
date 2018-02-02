@@ -23,14 +23,14 @@
     </head>
     <body>
         <tg:underConstruction/>
-        
-        <sql:query var="pubs">
-            select paperid, title from descpub_publication order by paperid
-        </sql:query>
-        
-        <sql:query var="vers" >
+                        
+            <%--
             select p.title, p.paperid, p.state, p.status, to_char(v.tstamp,'yyyy-Mon-dd'), version, location from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
             order by v.paperid
+            --%>
+        <sql:query var="vers" >
+            select distinct p.paperid, p.title, p.state, p.status from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
+            order by p.paperid desc
         </sql:query>
             
         <c:if test="${vers.rowCount>0}">    
@@ -38,12 +38,16 @@
                 <display:column title="DESC ID" group="1">
                     <a href="show_pub.jsp?paperid=${record.paperid}">DESC-${record.paperid}</a>
                 </display:column>
-                <display:column title="Title" style="text-align:left;" group="2">
-                    ${record.title}
-                </display:column>
-                <display:column title="State" property="state"></display:column> 
+                <display:column title="Title" property="title" style="text-align:left;" group="2"/>
+                <display:column title="State" property="state" group="3"></display:column> 
                 <display:column title="Status" property="status"></display:column> 
-                <display:column property="paperid" title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
+                <display:column title="Versions" style="text-align:left;">
+                    <sql:query var="v">
+                        select max(version) version from descpub_publication_versions where paperid = ?
+                        <sql:param value="${record.paperid}"/>
+                    </sql:query>
+                        ${v.rows[0].version}
+                </display:column>
             </display:table>
         </c:if>
     </body>
