@@ -92,7 +92,7 @@
             <display:column title="Title" paramProperty="title" sortable="true" headerClass="sortable">
                 <a href="show_pub.jsp?paperid=${rows.paperid}">${rows.title}</a>
             </display:column>
-            <display:column title="Publication Type" sortable="true" headerClass="sortable">
+            <display:column title="Document Type" sortable="true" headerClass="sortable">
                 ${rows.pubtype}
             </display:column>
             <display:column title="Number of Versions" sortable="true" headerClass="sortable">
