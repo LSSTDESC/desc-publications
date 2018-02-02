@@ -58,11 +58,9 @@
         <c:if test="${papers.rowCount > 0}">
             <display:table class="datatable" id="Line" name="${papers.rows}">
                 <display:column title="ID" sortable="true" headerClass="sortable" >
-                    DESC-${Line.paperid} 
+                   <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
                 </display:column>
-                <display:column title="Title" style="text-align:left;" sortable="true" headerClass="sortable">
-                    <a href="show_pub.jsp?paperid=${Line.paperid}">${Line.title}</a>
-                </display:column>
+                <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="createdate" title="Created" sortable="true" headerClass="sortable"/>
                 <display:column property="modifydate" title="Last Modified" style="text-align:left;" sortable="true" headerClass="sortable"/>
