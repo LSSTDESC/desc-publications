@@ -33,30 +33,25 @@
         </sql:query>
         
        <display:table class="datatable" id="Rows" name="${mems.rows}" defaultsort="1">
-           <display:column  title="First Name" sortable="true"  headerClass="sortable">
-               ${Rows.firstname}
-           </display:column>
-           <display:column  title="Last Name" sortable="true"  headerClass="sortable">
-               ${Rows.lastname}
-           </display:column>
-           <display:column  title="Profile" sortable="true"  headerClass="sortable">
+           <display:column  title="First Name" property="firstname" style="text-align:left;" sortable="true"  headerClass="sortable"/>
+           <display:column  title="Last Name" property="lastname" style="text-align:left;" sortable="true"  headerClass="sortable"/>
+                
+           <display:column  title="Profile" style="text-align:left;" sortable="true"  headerClass="sortable">
               <a href="http://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Rows.memidnum}&recType=INDB">${Rows.lastname}, ${Rows.firstname}</a>
            </display:column>     
-           <display:column  property="activestatus" title="Active" sortable="true"  headerClass="sortable"/>
+           <display:column property="activestatus" title="Active" style="text-align:left;" sortable="true"  headerClass="sortable"/>
            <display:column  title="Builder" sortable="true"  headerClass="sortable">
                TBD
            </display:column>
-           <display:column  title="Institution" sortable="true"  headerClass="sortable">
-               ${Rows.institution}
+           <display:column  title="Institution" property="institution" style="text-align:left;" sortable="true" headerClass="sortable"/>
+               
+           <display:column  title="Position" property="position" style="text-align:left;" sortable="true"  headerClass="sortable"/>
+               
+           <display:column  title="Admin" style="text-align:left;" sortable="true"  headerClass="sortable">
            </display:column>
-           <display:column  title="Position" sortable="true"  headerClass="sortable">
-               ${Rows.position}
+           <display:column  title="PB Admin" style="text-align:left;" sortable="true"  headerClass="sortable">
            </display:column>
-           <display:column  title="Admin" sortable="true"  headerClass="sortable">
-           </display:column>
-           <display:column  title="PB Admin" sortable="true"  headerClass="sortable">
-           </display:column>
-           <display:column  title="SB Admin" sortable="true"  headerClass="sortable">
+           <display:column  title="SB Admin" style="text-align:left;" sortable="true"  headerClass="sortable">
            </display:column>
        </display:table> 
     </body>
