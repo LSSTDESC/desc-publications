@@ -41,7 +41,7 @@
         <c:if test="${swgs.rowCount > 0}">
             <display:table class="datatable"  id="Row" name="${swgs.rows}">
                 <display:column title="Working Groups (WGs)" href="show_swg.jsp" paramId="swgid" property="name" paramProperty="id" sortable="true" headerClass="sortable" style="text-align:left;"/>
-                <display:column title="Number of Projects (can be in multiple WGs)">
+                <display:column title="Number of Projects (can be in multiple WGs)" style="text-align:left;">
                     <sql:query var="prow">
                     select count(project_id) tot from descpub_project_swgs where swg_id = ?
                     <sql:param value="${Row.id}"/>
@@ -57,13 +57,13 @@
 
         <c:if test="${papers.rowCount > 0}">
             <display:table class="datatable" id="Line" name="${papers.rows}">
-                <display:column title="ID" sortable="true" headerClass="sortable" >
+                <display:column title="ID" style="text-align:left;" sortable="true" headerClass="sortable" >
                    <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
                 </display:column>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
-                <display:column property="createdate" title="Created" sortable="true" headerClass="sortable"/>
-                <display:column property="modifydate" title="Last Modified" style="text-align:left;" sortable="true" headerClass="sortable"/>
+                <display:column property="createdate" style="text-align:left;" title="Created" sortable="true" headerClass="sortable"/>
+                <display:column property="modifydate" style="text-align:left;" title="Last Modified" sortable="true" headerClass="sortable"/>
             </display:table>
         </c:if>        
     

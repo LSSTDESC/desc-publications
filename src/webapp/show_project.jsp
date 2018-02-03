@@ -83,19 +83,15 @@
         <p id="pagelabel">List of Document Entries (Total: ${pubs.rowCount})</p>
         
         <display:table class="datatable"  id="rows" name="${pubs.rows}">
-            <display:column title="Document ID" sortable="true" headerClass="sortable">
+            <display:column title="Document ID" style="text-align:left;" sortable="true" headerClass="sortable">
                 DESC-${rows.paperid}
             </display:column>
-            <display:column title="Date Created" sortable="true" headerClass="sortable">
-                ${rows.createdate}
-            </display:column>
-            <display:column title="Title" paramProperty="title" sortable="true" headerClass="sortable">
+            <display:column title="Date Created" property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"/>
+            <display:column title="Title" paramProperty="title" style="text-align:left;" sortable="true" headerClass="sortable">
                 <a href="show_pub.jsp?paperid=${rows.paperid}">${rows.title}</a>
             </display:column>
-            <display:column title="Document Type" sortable="true" headerClass="sortable">
-                ${rows.pubtype}
-            </display:column>
-            <display:column title="Number of Versions" sortable="true" headerClass="sortable">
+            <display:column title="Document Type" property="pubtype" style="text-align:left;" sortable="true" headerClass="sortable"/>
+            <display:column title="Number of Versions" style="text-align:left;" sortable="true" headerClass="sortable">
                 <sql:query var="vers">
                     select count(*) tot from descpub_publication_versions where paperid = ?
                     <sql:param value="${rows.paperid}"/>

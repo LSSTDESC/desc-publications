@@ -76,15 +76,9 @@
             <c:if test="${empty catchError}">
                 <p id="pagelabel"> Thank you. Your request for authorship has been sent to:</p>
                 <display:table class="datatable" name="${recips.rows}" id="Rows">
-                    <display:column title="FirstName">
-                        ${Rows.first_name}
-                    </display:column>
-                    <display:column title="LastName">
-                        ${Rows.last_name}
-                    </display:column>
-                    <display:column title="LastName">
-                        ${Rows.email}
-                    </display:column>
+                    <display:column title="FirstName" property="first_name" style="text-align:left;"/>
+                    <display:column title="LastName" property="last_name" style="text-align:left;"/>
+                    <display:column title="LastName" property="email" style="text-align:left;"/>
                 </display:table>
            </c:if>  
            <c:if test="${!empty catchError}">

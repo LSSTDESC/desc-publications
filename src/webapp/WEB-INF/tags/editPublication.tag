@@ -16,23 +16,14 @@
 
 <%@attribute name="paperid" required="true"%>
 
-<%--
-<%@attribute name="swgid" required="false"%>
-
-<c:set var="paperid" value="${param.paperid}"/>
-<c:set var="swgid" value="${param.swgid}"/> --%>
-
 <c:set var="paperleads" value="paper_leads_${paperid}"/> 
- <sql:query var="pubtypes">
-     select pubtype from descpub_publication_types order by pubtype
- </sql:query>
-
+  
  <sql:query var="pubs">
   select paperid, state, title, short_title, pubtype, summary, to_char(createdate,'yyyy-mon-dd') added, to_char(modifydate,'yyyy-mon-dd') moddate, builder_eligible, key_paper,
   passed_internal_review, arxiv, published_reference, project_id, short_title from descpub_publication where paperid = ?
     <sql:param value="${paperid}"/>
  </sql:query>
- 
+
  <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/>
     
 <sql:query var="states">
@@ -64,7 +55,7 @@
     <form action="editPublication.jsp?paperid=${param.paperid}" method="post">
         <c:forEach var="x" items="${fi.rows}">
             <c:if test="${!empty x.fieldexplanation}">
-                <p id="pagelabel">  <c:out value="${x.fieldexplanation}"/></p>
+                <p id="pagelabel">${x.fieldexplanation}</p>
             </c:if>
             <c:if test="${x.datatype == 'string'}">
                  ${x.label}  <input type="text" value="${results.rows[0][x.data]}" name="${x.data}"/>
@@ -99,22 +90,25 @@
                  <sql:query var="res">
                     ${x.sqlstr}
                  </sql:query>   
+                 
                  <c:if test="${fn:contains(x.data,'current_institution')}">
+                     ${x.label}
                      <select name="${x.data}" ${required}>
                          <c:forEach var="in" items="${res.rows}">
-                             <option value="${in['institution']}"> ${in['institution'] == results.rows[0][x.data] ? selected : ''} </option>
+                             <option value="${in['institution']}" 
+                                 <c:if test="${in['institution'] == results.rows[0][x.data]}">selected</c:if> > ${in['institution']} 
+                             </option>
                          </c:forEach>
                      </select> 
-                </c:if>
-
-                <c:if test="${x.data == 'state'}">
+                 </c:if>
+                 <c:if test="${x.data == 'state'}">
                     ${x.label}
                      <select name="${x.data}" ${required}>
                          <c:forEach var="st" items="${res.rows}">
                            <option value="${st['state']}" <c:if test="${results.rows[0][x.data] == st['state']}">selected</c:if> > ${st['state']}</option>
                          </c:forEach>
                      </select>
-                </c:if>
+                 </c:if>
                  <p></p>
             </c:if>
             <c:if test="${x.datatype == 'textarea'}">
