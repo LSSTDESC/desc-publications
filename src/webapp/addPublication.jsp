@@ -155,8 +155,8 @@
                     </c:forEach>
                               
                     <p id="pagelabel">
-                    Select Lead Author(s):</p>
-                    <select name="authcontacts" multiple size="10" required>
+                    Select Lead Author(s):</p>  
+                    <select name="authcontacts" multiple size="20" required>
                     <c:forEach var="auth" items="${poolOfCandidates.rows}">
                         <option value="${auth.memidnum}:${auth.firstname} ${auth.lastname}:${auth.username}">${auth.lastname},  ${auth.firstname} </option>
                     </c:forEach>
