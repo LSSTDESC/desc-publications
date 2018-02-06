@@ -41,34 +41,34 @@
             <c:otherwise>   
                 <h2>Paper <strong>DESC-${param.paperid}</strong></h2>
                 <sql:query var="papertitle">
-                    select db.paperid, pe.metavalue title from descpub_publication db join descpub_publication_metadata pe on db.paperid = pe.paperid
-                    join descpub_metadata me on me.metaid = pe.metaid and me.metaid = 1 
-                    where db.paperid = ?
+                    select paperid, title from descpub_publication where paperid = ?
                     <sql:param value="${param.paperid}"/>
                 </sql:query>
                     
                 <c:set var="papertitle" value="${papertitle.rows[0].title}"/>
-                    
+                <p id="pagelabel">${papertitle}</p> 
+
                 <sql:query var="list">
                     select paperid, version, tstamp, to_char(tstamp,'Mon-dd-yyyy') pst, remarks from descpub_publication_versions where paperid=? order by version
                     <sql:param value="${param.paperid}"/>
                 </sql:query>
 
-                <display:table class="datatable" id="row" name="${list.rows}">
-                    <display:column title="Title" group="1">
-                        ${papertitle}
-                    </display:column>
-                    <display:column title="Links" sortable="true" headerClass="sortable">
-                        <a href="download?paperid=${row.paperid}&version=${row.version}">Download version ${row.version}</a>
-                    </display:column>
-                    <display:column title="Remarks" property="remarks"/>
-                    <display:column title="Uploaded (UTC)">
-                       <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/>
-                    </display:column>
-                    <display:column title="Uploaded (PDT/PST)">
-                        ${row.pst}
-                    </display:column>
-                </display:table>
+                <c:if test="${list.rowCount > 0}">
+                    <display:table class="datatable" id="row" name="${list.rows}">
+                        <display:column title="Title" property="title" group="1"/>
+                        <display:column title="Links" sortable="true" headerClass="sortable">
+                            <a href="download?paperid=${row.paperid}&version=${row.version}">Download version ${row.version}</a>
+                        </display:column>
+                        <display:column title="Remarks" property="remarks"/>
+                        <display:column title="Uploaded (UTC)">
+                           <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                        </display:column>
+                        <display:column title="Uploaded (PDT/PST)">
+                            ${row.pst}
+                        </display:column>
+                    </display:table>
+                </c:if>
+                            
                 <p/> 
                     <hr align="left" width="40%"/>   	
                 <p id="pagelabel">Upload new version of DESC-${param.paperid}</p>
