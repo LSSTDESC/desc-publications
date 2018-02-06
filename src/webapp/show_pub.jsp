@@ -61,9 +61,13 @@
         <h2>Paper <strong>DESC-${param.paperid}</strong></h2> 
         <display:table class="datatable" id="fie" name="${pubs.rows}">
              <c:forEach var="x" items="${fi.rows}">
-                 <display:column title="${x.label}"  property="${x.data}" />
+                 <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
             </c:forEach>
-            <display:column title="Edit" href="editLink.jsp" property="paperid" paramId="paperid" paramProperty="paperid"  sortable="true" headerClass="sortable"/>
+             
+            <display:column title="Edit" href="editLink.jsp">
+                   <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
+            </display:column>
+            <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:left;"/>
         </display:table>
         <p/>  
         
