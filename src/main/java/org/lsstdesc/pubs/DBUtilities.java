@@ -152,8 +152,7 @@ public class DBUtilities {
                             stmt2.setInt(2, messageId);
                             ResultSet addrs = stmt2.executeQuery();
                             while(addrs.next()){
-                                String emailAddr = addrs.getString(1);
-                                message.addRecipient(Message.RecipientType.TO,new InternetAddress(addrs.getNString(emailAddr)));
+                                message.addRecipient(Message.RecipientType.TO,new InternetAddress(addrs.getString(1)));
                             }
                         }
                     }
