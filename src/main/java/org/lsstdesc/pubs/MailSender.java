@@ -53,10 +53,10 @@ public class MailSender implements Runnable {
                     if (messageId < 0) {
                         break;
                     }
+                    System.out.println("TransportSEND " + message);
                     Transport.send(message);
                     db.purgeMessage(messageId);
                     LOG.log(Level.INFO, "Sent message {0}", messageId);
-
                 }
             }
         } catch (NamingException | SQLException | MessagingException | UnsupportedEncodingException ex) {
