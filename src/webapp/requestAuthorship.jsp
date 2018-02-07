@@ -38,7 +38,7 @@
             <%-- add chosen contributions to mail msg --%>
             <c:set var="contributions" value=""/>
             <c:forEach var="x" items="${param}" varStatus="loop">
-                <c:if test="${x.key == 'label'}">
+                <c:if test="${x.key =='name'}">
                     <c:forEach var="pv" items="${paramValues[x.key]}">
                         <c:choose>
                         <c:when test="${empty contributions}">
@@ -52,7 +52,8 @@
                 </c:if>
             </c:forEach>
             
-            <c:set var="msgbody" value="REASON: ${param.reason}  SELECTED CONTRIBUTIONS: ${contributions}"/>
+            <c:set var="msgbody" value="Reason: ${param.reason}  Selected Contributions: ${contributions}"/>
+
             <sql:transaction>
                 <sql:query var="recips">
                    select p.first_name, p.last_name, p.email from profile_user p join profile_ug ug on p.memidnum = ug.memidnum and p.experiment=ug.experiment
@@ -87,7 +88,7 @@
            </c:if>   
         </c:when>
         <c:when test="${!empty param.paperid}">
-            <p id="pagelabel">Request Authorship for DESC-${param.paperid}. <br/>Please enter your reason for authorship</p>
+            <p id="pagelabel">Request Authorship for DESC-${param.paperid}. &nbsp;&nbsp;Please state your reason for this request.</p>
             <form action="requestAuthorship.jsp?paperid=${param.paperid}" name="requestAuth" id="requestAuth" method="post">
                 <input type="hidden" value="${param.paperid}" name="paperid"/><br/>
               <%--  <p id="pagelabel">Reason for authorship</p> --%>
