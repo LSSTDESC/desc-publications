@@ -16,6 +16,7 @@
         <title>Authorship Request</title>
         <script src="js/jquery-1.11.1.min.js"></script>
         <script src="js/jquery.validate.min.js"></script>
+        <script src="js/checkAuthRequest.js"></script>
         <link rel="stylesheet" href="css/pubstyles.css">
     </head>
     <body>
@@ -26,7 +27,7 @@
         
     <tg:underConstruction/>
     
-    Link to <a href="">Authorship Guide</a> [pdf]<br/>  
+    Link to <a href="https://github.com/LSSTDESC/Author_Guide/raw/compiled/Author_Guide.pdf">Authorship Guide</a> [pdf] (requires github login)<br/>  
     
     <sql:query var="contribs">
         select initcap(label) label from descpub_contributions order by label
@@ -87,7 +88,7 @@
         </c:when>
         <c:when test="${!empty param.paperid}">
             <p id="pagelabel">Request Authorship for DESC-${param.paperid}. <br/>Please enter your reason for authorship</p>
-            <form action="requestAuthorship.jsp?paperid=${param.paperid}">
+            <form action="requestAuthorship.jsp?paperid=${param.paperid}" name="requestAuth" id="requestAuth" method="post">
                 <input type="hidden" value="${param.paperid}" name="paperid"/><br/>
               <%--  <p id="pagelabel">Reason for authorship</p> --%>
                 <textarea name="reason" rows="5" cols="150" required></textarea><p/>
@@ -95,11 +96,19 @@
                     Refer to authorship guide, section 3, for more detailed explanation
                 </p>
                 <c:forEach var="c" items="${contribs.rows}">
-                 ${c['label']}  <input type="checkbox" name="name" value="${c['label']}"/><br/>
+                    ${c['label']}  <input type="checkbox" class="checkbox" name="name" value="${c['label']}"/><br/>
                 </c:forEach>
                 <p></p>
                 <input type="submit" value="Send_Request" name="submit"/>    
             </form>
+            <script> 
+            $("#requestAuth").validate({
+                errorPlacement: function(error,element){
+                    element.val(error.text());
+                }
+                errorClass: "my-error-class"
+            }); 
+           </script>   
         </c:when>
     </c:choose>
     </body>
