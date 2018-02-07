@@ -46,8 +46,6 @@
             <sql:param value="${pubtype}"/>
         </sql:query>
                
-        <p id="pagelabel">${pubs.rows[0].title}</p>
-          
         <sql:query var="countpapers">
             select count(*) from descpub_publication where project_id = ?
             <sql:param value="${projid}"/>
@@ -67,13 +65,13 @@
             <display:column title="Edit" href="editLink.jsp">
                    <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
             </display:column>
-            <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:left;"/>
+            <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
         </display:table>
         <p/>  
         
         <c:if test="${vers.rowCount > 0}">
             <display:table class="datatable" id="row" name="${vers.rows}">
-                <display:column title="Links" sortable="true" headerClass="sortable">
+                <display:column title="Versions of DESC-${row.paperid}" sortable="true" headerClass="sortable">
                     <a href="download?paperid=${row.paperid}&version=${row.version}">Download version ${row.version}</a>
                 </display:column>
                 <display:column title="Remarks" property="remarks"/>
