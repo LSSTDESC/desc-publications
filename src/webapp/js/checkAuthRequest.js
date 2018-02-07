@@ -9,7 +9,7 @@ $(document).ready( function() {
        var checkboxes = $("input[type='checkbox']");
        
        if (!checkboxes.is(":checked")){
-           $("#requestAuth").after('<span class="error" style="color:red"> at least one contribution must be checked</span>')
+           $("#requestAuth").after('<span class="error" style="color:red"> At least one contribution must be checked</span>')
            return false;
         }
  
