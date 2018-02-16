@@ -30,15 +30,28 @@
         </c:if>
         
         <c:set var="paperid" value="${param.paperid}"/>
-        <c:set var="mgrgrp" value="paper_${param.paperid}"/>
              
         <sql:query var="pubs">
             select * from descpub_publication where paperid = ?
             <sql:param value="${paperid}"/>
-        </sql:query>   
-            
+        </sql:query> 
+              
         <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/>
         <c:set var="projid" value="${pubs.rows[0].project_id}"/>
+        <c:set var="canEdit" value="false"/>
+        
+        <sql:query var="leads">
+           select  wg.id, wg.convener_group_name from descpub_project_swgs ps join descpub_swg wg on ps.swg_id = wg.id
+           join descpub_publication dd on dd.project_id = ps.project_id where dd.paperid = ?
+           <sql:param value="${paperid}"/>
+        </sql:query>
+           
+        <%-- if user found in any of the lead groups he/she has edit access --%>   
+        <c:forEach var="x" items="${leads.rows}">
+            <c:if test="${gm:isUserInGroup(pageContext,x.convener_group_name)}">
+                <c:set var="canEdit" value="true"/>
+            </c:if>
+        </c:forEach>
 
         <sql:query var="fi">
             select pb.metaid, me.data, me.label, me.datatype, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
@@ -61,10 +74,11 @@
              <c:forEach var="x" items="${fi.rows}">
                  <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
             </c:forEach>
-             
-            <display:column title="Edit" href="editLink.jsp">
-                   <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
-            </display:column>
+            <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin' )} || ${canEdit == 'true'}">
+                <display:column title="Edit" href="editLink.jsp">
+                       <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a> canEDIT=${canEdit}
+                </display:column>
+            </c:if>
             <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
         </display:table>
         <p/>  
