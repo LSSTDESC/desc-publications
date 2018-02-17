@@ -99,6 +99,6 @@
     <p/>
     <c:if test="${gm:isUserInGroup(pageContext,projectleads) || gm:isUserInGroup(pageContext,lsst-desc-publication-admins) || gm:isUserInGroup(pageContext,'GroupManagerAdmin')}">
       <input type="submit" value="Update_Project_Details" id="action" name="action" />    
-    </c:if>
+    </c:if>  
   </form>
 <p/>
