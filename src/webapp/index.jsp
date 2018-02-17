@@ -35,7 +35,7 @@
         </sql:query>
             
         <sql:query var="papers">
-            select paperid, createdate, modifydate, pubtype, title from descpub_publication where createdate > sysdate - 7 order by paperid desc
+            select paperid, createdate, modifydate, pubtype, title from descpub_publication where createdate < sysdate - 7 order by paperid desc
         </sql:query>
              
         <c:if test="${swgs.rowCount > 0}">
