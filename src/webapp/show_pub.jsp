@@ -52,7 +52,9 @@
                 <c:set var="canEdit" value="true"/>
             </c:if>
         </c:forEach>
-
+        
+        <c:set var="papergrp" value="paper_${paperid}"/>
+        
         <sql:query var="fi">
             select pb.metaid, me.data, me.label, me.datatype, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
             where pb.pubtype = ? order by pb.formposition
@@ -74,9 +76,9 @@
              <c:forEach var="x" items="${fi.rows}">
                  <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
             </c:forEach>
-            <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin' )} || ${canEdit == 'true'}">
+            <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,papergrp) || canEdit=='true'}">
                 <display:column title="Edit" href="editLink.jsp">
-                       <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a> canEDIT=${canEdit}
+                       <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                 </display:column>
             </c:if>
             <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
