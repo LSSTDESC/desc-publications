@@ -43,11 +43,10 @@
     <c:set var="pubAdmin" value="lsst-desc-publications-admin"/>
     
     <sql:query var="swgs">
-        select id, name, email, profile_group_name as pgn, convener_group_name as cgn from descpub_swg where id = ? order by id
+        select id, name, email, convener_group_name as cgn from descpub_swg where id = ? order by id
         <sql:param value="${param.swgid}"/>
     </sql:query>
         
-    <c:set var="pgn" value="${swgs.rows[0].pgn}"/>   
     <c:set var="cgn" value="${swgs.rows[0].cgn}"/>   
     <c:set var="swgid" value="${param.swgid}"/> 
     <c:set var="swgname" value="${swgs.rows[0].name}"/>
@@ -55,12 +54,12 @@
     <c:set var="convenerList2" value=""/>
     
     <sql:query var="projects">
-        select p.id, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.profile_group_name pgn, wg.convener_group_name cgn, p.summary 
+        select p.id, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.summary 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.id
         <sql:param value="${param.swgid}"/>
-    </sql:query>    
-   
+    </sql:query>
+        
     <sql:query var="conveners">
         select u.first_name, u.last_name, u.email, ug.group_id, u.memidnum from profile_user u join profile_ug ug on u.memidnum=ug.memidnum 
         where u.active='Y' and ug.group_id = ? and u.experiment = ?
@@ -81,36 +80,47 @@
              
     <h2>Working Group(s): ${swgname}</h2>
     <p id="pagelabel">Conveners: ${convenerList}</p>
-     
-    <c:choose>  
-       <c:when test="${!empty param.swgid}">   
-            <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
-                <form action="project_details.jsp">
+    
+    <c:choose>
+       <c:when test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+            <form action="project_details.jsp">
                     <input type="hidden" name="task" value="create_proj_form"/>
                     <input type="hidden" name="swgid" value="${param.swgid}"/>
                     <input type="submit" value="Create Project"/>
-                </form>
-            </c:if>
-             
-             <p/>        
-             <strong>Projects</strong><br/>
-             <display:table class="datatable" id="proj" name="${projects.rows}">
-                 <display:column title="Id" sortable="true" headerClass="sortable">
-                    <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}&wgname=${proj.title}">${proj.id}</a> 
-                 </display:column>
-                 <display:column title="Project Title" sortable="true" headerClass="sortable">
-                    <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">${proj.title}</a> 
-                 </display:column>
-                 <display:column title="# of Documents" sortable="true" headerClass="sortable">
-                     <sql:query var="results">
-                        select count(*) tot from descpub_publication where project_id = ?
-                        <sql:param value="${proj.id}"/>
-                     </sql:query>
-                     ${results.rows[0].tot}
-                 </display:column>
-             </display:table>
+            </form>
+            <p></p>
+            <strong>Projects</strong><br/>
+            <display:table class="datatable" id="proj" name="${projects.rows}">
+               <display:column title="Id" property="id" sortable="true" headerClass="sortable"/>
+               <display:column title="Project Title" property="title" sortable="true" headerClass="sortable"/>
+               <display:column title="# of Documents" sortable="true" headerClass="sortable">
+                   <sql:query var="results">
+                      select count(*) tot from descpub_publication where project_id = ?
+                      <sql:param value="${proj.id}"/>
+                   </sql:query>
+                   ${results.rows[0].tot}
+               </display:column>
+               <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+                    <display:column title="Edit Project" sortable="true" headerClass="sortable">
+                       <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">${proj.id}</a>
+                   </display:column>
+               </c:if>
+            </display:table>
         </c:when>
-    </c:choose>    
+        <c:when test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
+            <display:table class="datatable" id="proj" name="${projects.rows}">
+               <display:column title="Id" property="id" sortable="true" headerClass="sortable"/>
+               <display:column title="Project Title" property="title" sortable="true" headerClass="sortable"/>
+               <display:column title="# of Documents" sortable="true" headerClass="sortable">
+                   <sql:query var="results">
+                      select count(*) tot from descpub_publication where project_id = ?
+                      <sql:param value="${proj.id}"/>
+                   </sql:query>   
+                   ${results.rows[0].tot}
+               </display:column>
+            </display:table>
+        </c:when>
+    </c:choose>
             
 </body>
 </html>
