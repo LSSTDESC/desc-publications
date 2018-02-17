@@ -35,31 +35,18 @@
     <c:set var="groupname" value="project_leads_${projid}"/>
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
    
-     <sql:query var="pubs">
+    <sql:query var="pubs">
         select paperid, title, createdate, pubtype from descpub_publication where project_id = ?
         <sql:param value="${projid}"/>
     </sql:query> 
-        
-    <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/> 
-    
-    <sql:query var="fi">
-        select pb.metaid, me.data, me.label, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
-        where pb.pubtype = ? order by pb.formposition
-        <sql:param value="${pubtype}"/>
-    </sql:query>
     
     <sql:query var="leads">
         select convener_group_name cgn from descpub_swg where id = ?
         <sql:param value="${swgid}"/>
     </sql:query> 
         
+    <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/> 
     <c:set var="leaders" value="${leads.rows[0].cgn}"/>
-    
-    <c:if test="${param.updateProj == 'done'}">
-        <div style="color: #0000FF">
-            Project updated
-        </div>
-    </c:if> 
             
     <tg:editProject projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/> 
   
@@ -71,14 +58,6 @@
         <tg:groupMemberEditor groupname="${groupname}" returnURL="${returnURL}"/> 
     </c:if>
     
-        <%--
-        
-        
-                    <display:column title="Title" href="show_pub.jsp" paramId="paperid" property="paperid" paramProperty="title" sortable="true" headerClass="sortable" style="text-align:left"/>
-
-        --%>
-        
-        
     <c:if test="${pubs.rowCount > 0}">
         <p id="pagelabel">List of Document Entries (Total: ${pubs.rowCount})</p>
         
