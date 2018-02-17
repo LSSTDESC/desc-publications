@@ -81,8 +81,8 @@
     <h2>Working Group(s): ${swgname}</h2>
     <p id="pagelabel">Conveners: ${convenerList}</p>
     
-    <c:choose>
-       <c:when test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+    
+       <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
             <form action="project_details.jsp">
                     <input type="hidden" name="task" value="create_proj_form"/>
                     <input type="hidden" name="swgid" value="${param.swgid}"/>
@@ -92,7 +92,9 @@
             <strong>Projects</strong><br/>
             <display:table class="datatable" id="proj" name="${projects.rows}">
                <display:column title="Id" property="id" sortable="true" headerClass="sortable"/>
-               <display:column title="Project Title" property="title" sortable="true" headerClass="sortable"/>
+               <display:column title="Project Title" sortable="true" headerClass="sortable">
+                   <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">${proj.title}</a>
+               </display:column>
                <display:column title="# of Documents" sortable="true" headerClass="sortable">
                    <sql:query var="results">
                       select count(*) tot from descpub_publication where project_id = ?
@@ -106,21 +108,8 @@
                    </display:column>
                </c:if>
             </display:table>
-        </c:when>
-        <c:when test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
-            <display:table class="datatable" id="proj" name="${projects.rows}">
-               <display:column title="Id" property="id" sortable="true" headerClass="sortable"/>
-               <display:column title="Project Title" property="title" sortable="true" headerClass="sortable"/>
-               <display:column title="# of Documents" sortable="true" headerClass="sortable">
-                   <sql:query var="results">
-                      select count(*) tot from descpub_publication where project_id = ?
-                      <sql:param value="${proj.id}"/>
-                   </sql:query>   
-                   ${results.rows[0].tot}
-               </display:column>
-            </display:table>
-        </c:when>
-    </c:choose>
+        </c:if>
+         
             
 </body>
 </html>
