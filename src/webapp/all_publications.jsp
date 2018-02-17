@@ -32,6 +32,9 @@
             select distinct p.paperid, p.title, p.state, p.status, p.pubtype, p.state, p.createdate, p.modifydate from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
             order by p.paperid desc
         </sql:query>
+
+        
+       
             
         <c:if test="${vers.rowCount>0}">    
             <display:table class="datatable" id="record" name="${vers.rows}">
@@ -39,19 +42,30 @@
                     <a href="show_pub.jsp?paperid=${record.paperid}">DESC-${record.paperid}</a>
                 </display:column>
                 <display:column title="Title" property="title" style="text-align:left;" group="2" sortable="true" headerClass="sortable"/>
-                <display:column title="Short Title" property="short_title" style="text-align:left;" group="2" sortable="true" headerClass="sortable"/>
                 <display:column title="State" property="state" style="text-align:left;" group="3" sortable="true" headerClass="sortable"></display:column> 
                 <display:column title="Collab. Status" property="status" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
                 <display:column title="Doc type" property="pubtype" style="text-align:left;" sortable="true" headerClass="sortable"></display:column>
                 <display:column title="Created" property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
                 <display:column title="Modified" property="modifydate" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
-                <display:column title="Versions" style="text-align:left;">
+                <display:column title="# Versions" style="text-align:left;">
                     <sql:query var="v">
                         select max(version) version from descpub_publication_versions where paperid = ?
                         <sql:param value="${record.paperid}"/>
                     </sql:query>
                         ${v.rows[0].version}
                 </display:column>
+                        
+                <display:column title="Lead Authors" sortable="true" headerClass="sortable" style="text-align:left;">
+                     <sql:query var="auth">
+                         select  m.firstname, m.lastname, m.memidnum from um_member m join profile_ug ug on m.memidnum = ug.memidnum and ug.experiment = ? 
+                         where ug.group_id = ? 
+                         <sql:param value="${appVariables.experiment}"/>
+                         <sql:param value="paper_leads_${record.paperid}"/>
+                     </sql:query>
+                         <c:forEach var="au" items="${auth.rows}">         
+                     <a href="https://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/user.jsp?memidnum=${au.memidnum}&recType=INDB">${au.firstname} ${au.lastname}</a> &nbsp;
+                         </c:forEach>
+                </display:column>        
             </display:table>
         </c:if>
     </body>
