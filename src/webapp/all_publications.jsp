@@ -33,10 +33,8 @@
             order by p.paperid desc
         </sql:query>
 
-        
-       
-            
-        <c:if test="${vers.rowCount>0}">    
+        <c:if test="${vers.rowCount>0}">  
+            <h2>LSST DESC Documents</h2>
             <display:table class="datatable" id="record" name="${vers.rows}">
                 <display:column title="DESC ID" style="text-align:left;" group="1" sortable="true" headerClass="sortable">
                     <a href="show_pub.jsp?paperid=${record.paperid}">DESC-${record.paperid}</a>
