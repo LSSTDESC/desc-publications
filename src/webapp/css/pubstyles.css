@@ -33,6 +33,11 @@ ul.contributor {
     list-style-type: square;
 }
 
+#pagerequire {
+    font-size: 18px;
+    color:red;
+}
+
 /*
 input[type=text], select{
     width: 100%;
