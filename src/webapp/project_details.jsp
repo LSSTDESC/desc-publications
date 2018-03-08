@@ -19,6 +19,7 @@
  <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/site-demos.css">
+    <link rel="stylesheet" href="css/pubstyles.css">
     <script src="js/jquery-1.11.1.min.js"></script>
     <script src="js/jquery.validate.min.js"></script>
     <title>LSST-DESC Create Project</title>
@@ -70,8 +71,10 @@
     <c:choose>  
         <c:when test="${param.task == 'create_proj_form'}">
              <h3>Working Group: ${swgs.rows[0].name}</h3><p/>
+             <em id="pagerequire">All form fields are required</em>
             <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}">
                 <strong>Title</strong><p/><input type="text" name="title" size="77" required/><p/>
+                <strong>Project workspace URL</strong><p/><input type="text" size="77" name="wkspaceurl" required/><p/>
                 <strong>Summary<br/></strong><textarea rows="22" cols="80" name="summary" required></textarea>
                 <p/>
                 <strong>Select project leads</strong><p/>
@@ -99,10 +102,11 @@
             <c:catch var="trapError">
                 <sql:transaction>
                     <sql:update >
-                    insert into descpub_project (id,title,summary,state,created) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,sysdate)
+                    insert into descpub_project (id,title,summary,state,wkspaceurl,created) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,sysdate)
                     <sql:param value="${param.title}"/>
                     <sql:param value="${param.summary}"/>
                     <sql:param value="${param.state}"/>
+                    <sql:param value="${param.wkspaceurl}"/>
                     </sql:update>
 
                     <sql:query var="projNum">
