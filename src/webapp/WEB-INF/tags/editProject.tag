@@ -44,7 +44,7 @@
     </sql:query>
    
     <sql:query var="projects">
-        select id, title, summary, state, to_char(created,'yyyy-Mon-dd') crdate, to_char(lastmodified,'yyyy-Mon-dd') moddate from descpub_project where id = ?  
+        select id, title, summary, state, wkspaceurl, to_char(created,'yyyy-Mon-dd') crdate, to_char(lastmodified,'yyyy-Mon-dd') moddate from descpub_project where id = ?  
         <sql:param value="${projid}"/>
     </sql:query>
     
@@ -53,6 +53,7 @@
     <c:set var="projstate" value="${projects.rows[0].state}"/>
     <c:set var="summary" value="${projects.rows[0].summary}"/>
     <c:set var="comm" value="${projects.rows[0].comm}"/>
+    <c:set var="wkspace" value="${projects.rows[0].wkspaceurl}"/>
     <c:set var="projectleads" value="project_leads_${projid}"/>
     
 <p id="pagelabel">Project Details [Working Group(s): ${wglist}]</p>
@@ -93,7 +94,9 @@
            <option value="${sta.state}" <c:if test="${fn:startsWith(sta.state,projstate)}">selected</c:if> >${sta.state}</option>
         </c:forEach>
     </select> 
-    
+    <p/>
+    Workspace URL:<br/>
+    <input type="text" name="wkspaceurl" id="wkspaceurl" value="${wkspace}" size="55"/>
     <p/>
     Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
