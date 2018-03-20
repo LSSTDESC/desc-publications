@@ -32,7 +32,7 @@
         <c:set var="paperid" value="${param.paperid}"/>
              
         <sql:query var="pubs">
-            select * from descpub_publication where paperid = ?
+            select * from descpub_publication where paperid = ? 
             <sql:param value="${paperid}"/>
         </sql:query> 
               
@@ -81,7 +81,9 @@
                        <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                 </display:column>
             </c:if>
+                <c:if test="${fie.can_request_authorship == 'Y'}">
             <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
+                </c:if>
         </display:table>
         <p/>  
         
