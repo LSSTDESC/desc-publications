@@ -71,7 +71,7 @@
             <sql:param value="${param.paperid}"/>
         </sql:query>
             
-        <h2>Paper <strong>DESC-${param.paperid}</strong></h2> 
+        <h2>Document <strong>DESC-${param.paperid}</strong></h2> 
         <display:table class="datatable" id="fie" name="${pubs.rows}">
              <c:forEach var="x" items="${fi.rows}">
                  <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
