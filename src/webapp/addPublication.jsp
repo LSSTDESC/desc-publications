@@ -126,10 +126,13 @@
                             <c:if test="${x.data == 'state'}">
                                 <c:set var="selected" value=""/>
                                  <select name="${x.data}" ${required}>
+                                     <option value="created">created</option>
+                                     <%--
                                      <c:forEach var="st" items="${results.rows}">
                                       <option value="${st['state']}" ${!fn:contains(st['state'],'created') ? '' : 'selected'}>${st['state']} </option>
-                                     </c:forEach>
-                                 </select>
+                                     </c:forEach> --%>
+                                     
+                                 </select>  
                             </c:if>
                             
                             <p></p>
