@@ -28,6 +28,8 @@
              select id, title, created, lastmodified from descpub_project order by id
         </sql:query>   
          
+        <h2>LSST DESC Projects</h2>
+             
         <display:table class="datatable" id="Row" name="${pjs.rows}">
              <display:column title="Working Groups" style="text-align:left;" sortable="true" headerClass="sortable">
                 <sql:query var="wgs">
