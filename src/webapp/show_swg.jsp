@@ -93,7 +93,7 @@
             <display:table class="datatable" id="proj" name="${projects.rows}">
                <display:column title="Id" property="id" sortable="true" headerClass="sortable"/>
                <display:column title="Project Title" sortable="true" headerClass="sortable">
-                   <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">${proj.title}</a>
+                   ${proj.title}
                </display:column>
                <display:column title="# of Documents" sortable="true" headerClass="sortable">
                    <sql:query var="results">
