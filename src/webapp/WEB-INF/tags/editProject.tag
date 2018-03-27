@@ -96,7 +96,7 @@
     </select> 
     <p/>
     Workspace URL:<br/>
-    <input type="text" name="wkspaceurl" id="wkspaceurl" value="${wkspace}" size="55"/>
+    <input type="text" name="wkspaceurl" id="wkspaceurl" value="${wkspace}" size="55" required/>
     <p/>
     Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
