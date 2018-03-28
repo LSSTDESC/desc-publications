@@ -51,7 +51,6 @@
     <c:set var="swgid" value="${param.swgid}"/> 
     <c:set var="swgname" value="${swgs.rows[0].name}"/>
     <c:set var="convenerList" value=""/>
-    <c:set var="convenerList2" value=""/>
     
     <sql:query var="projects">
         select p.id, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.summary 
@@ -60,12 +59,17 @@
         <sql:param value="${param.swgid}"/>
     </sql:query>
         
+    <%-- working groups must have conveners assigned otherwise noPermission called --%>
     <sql:query var="conveners">
         select u.first_name, u.last_name, u.email, ug.group_id, u.memidnum from profile_user u join profile_ug ug on u.memidnum=ug.memidnum 
         where u.active='Y' and ug.group_id = ? and u.experiment = ?
         <sql:param value="${cgn}"/>
         <sql:param value="${appVariables.experiment}"/>
     </sql:query>
+    
+    <c:if test="${conveners.rowCount < 1}">
+        <c:redirect url="noPermission.jsp?errmsg=8"/>
+    </c:if>
         
     <c:forEach var="c" items="${conveners.rows}">
         <c:choose>
