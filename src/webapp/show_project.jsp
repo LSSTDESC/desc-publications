@@ -46,14 +46,15 @@
     </sql:query> 
         
     <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/> 
-    <c:set var="leaders" value="${leads.rows[0].cgn}"/>
-            
+    <c:set var="leadersgrp" value="${leads.rows[0].cgn}"/>
+       
     <tg:editProject projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/> 
   
     <p/>
     <hr align="left" width="45%"/>
     
-    <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leads.rows[0].cgn) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+    <h1>Leadersgrp: ${leadersgrp}</h1>
+    <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leadersgrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
         <p id="pagelabel">Add or Remove Project Leads</p>
         <tg:groupMemberEditor groupname="${groupname}" returnURL="${returnURL}"/> 
     </c:if>
@@ -84,7 +85,7 @@
                     </c:when>
                 </c:choose>
             </display:column>
-            <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leads.rows[0].cgn) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+            <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leadersgrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
               <display:column title="Edit" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
             </c:if>
         </display:table>
@@ -92,7 +93,7 @@
     </c:if>
     <p/>
  
-    <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leaders) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+    <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leadersgrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
         <hr align="left" width="45%"/> 
         <form action="addPublication.jsp" method="post">
             <input type="hidden" name="task" value="create_publication_form"/>
