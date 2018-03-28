@@ -31,6 +31,9 @@
         <c:when test="${param.errmsg == '7'}">
             <h3>Only LSST-DESC Members have access to the publication system.  </h3>
         </c:when>
+        <c:when test="${param.errmsg == '8'}">
+            <h3>All working groups must have at least one convener. Use the LSSTDESC Group Manager to add conveners.</h3>
+        </c:when>
         </c:choose>
     </body>
 </html>
