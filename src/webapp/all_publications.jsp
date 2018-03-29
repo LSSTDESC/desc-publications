@@ -21,13 +21,11 @@
           <link rel="stylesheet" type="text/css" href="css/pubstyles.css">
       <title>DESC Documents</title>
     </head>
+    
     <body>
+        
         <tg:underConstruction/>
                         
-            <%--
-            select p.title, p.paperid, p.state, p.status, to_char(v.tstamp,'yyyy-Mon-dd'), version, location from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
-            order by v.paperid
-            --%>
         <sql:query var="vers" >
             select distinct p.paperid, p.title, p.state, p.status, p.pubtype, p.state, p.createdate, p.modifydate from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
             order by p.paperid desc
