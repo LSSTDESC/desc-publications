@@ -82,13 +82,13 @@
             <c:forEach var="x" items="${fi.rows}">
                <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
             </c:forEach>
+             <c:if test="${fie.can_request_authorship != 'N'}">
+               <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
+            </c:if>
             <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,papergrp) || canEdit=='true') && fie.state != 'inactive'}">
                 <display:column title="Edit" href="editLink.jsp">
                        <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                 </display:column>
-            </c:if>
-            <c:if test="${fie.can_request_authorship != 'N'}">
-               <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
             </c:if>
         </display:table>
         <p/>  
