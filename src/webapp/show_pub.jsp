@@ -54,7 +54,8 @@
         </c:forEach>
         
         <c:set var="papergrp" value="paper_${paperid}"/>
-        
+       
+        <%-- select the fields to display for this pubtype --%>
         <sql:query var="fi">
             select pb.metaid, me.data, me.label, me.datatype, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
             where pb.pubtype = ? order by pb.formposition
@@ -71,8 +72,11 @@
             <sql:param value="${param.paperid}"/>
         </sql:query>
             
-        <h2>Document <strong>DESC-${param.paperid}</strong></h2> 
+        <h2>Document: <strong>DESC-${param.paperid}</strong></h2>
         <display:table class="datatable" id="fie" name="${pubs.rows}">
+            <display:column title="Document type">
+                ${pubtype}
+            </display:column>
              <c:forEach var="x" items="${fi.rows}">
                  <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
             </c:forEach>
