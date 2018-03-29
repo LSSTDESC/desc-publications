@@ -115,6 +115,11 @@
                       ${proj.lastmodby}
                    </display:column>
                </c:if>
+               <c:if test="${!empty proj.wkspaceurl}">
+                   <display:column title="Workspace">
+                       <a href="${proj.wkspaceurl}">${proj.wkspaceurl}</a>
+                   </display:column>
+               </c:if>
                <display:column title="# of Documents" sortable="true" headerClass="sortable">
                    <sql:query var="results">
                       select count(*) tot from descpub_publication where project_id = ?
