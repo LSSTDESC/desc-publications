@@ -28,13 +28,14 @@
         <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-members')}">  
             <c:redirect url="noPermission.jsp?errmsg=7"/>
         </c:if>
-        
+            
+        <c:set var="paperid" value="${param.paperid}"/>
+
         <sql:query var="pubs">
             select * from descpub_publication where paperid = ? 
             <sql:param value="${paperid}"/>
         </sql:query> 
             
-        <c:set var="paperid" value="${param.paperid}"/>
         <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/>
         <c:set var="projid" value="${pubs.rows[0].project_id}"/>
         <c:set var="canEdit" value="false"/>
@@ -54,7 +55,7 @@
         </c:forEach>
         
         <c:set var="papergrp" value="paper_${paperid}"/>
-       
+        
         <%-- select the display fields appropriate for this pubtype --%>
         <sql:query var="fi">
             select pb.metaid, me.data, me.label, me.datatype, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
@@ -78,10 +79,10 @@
             <display:column title="Document type">
                 ${pubtype}
             </display:column>
-             <c:forEach var="x" items="${fi.rows}">
-                 <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
+            <c:forEach var="x" items="${fi.rows}">
+               <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
             </c:forEach>
-            <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,papergrp) || canEdit=='true'}">
+            <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,papergrp) || canEdit=='true') && fie.state != 'inactive'}">
                 <display:column title="Edit" href="editLink.jsp">
                        <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                 </display:column>
