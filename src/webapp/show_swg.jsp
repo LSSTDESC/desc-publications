@@ -53,7 +53,7 @@
     <c:set var="convenerList" value=""/>
     
     <sql:query var="projects">
-        select p.id, p.title, p.state, p.created, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.summary 
+        select p.id, p.title, p.state, p.created, p.wkspaceurl, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.summary 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.id
         <sql:param value="${param.swgid}"/>
@@ -96,9 +96,25 @@
             <strong>Projects</strong><br/>
             <display:table class="datatable" id="proj" name="${projects.rows}">
                <display:column title="Id" property="id" sortable="true" headerClass="sortable"/>
-               <display:column title="Project Title" sortable="true" headerClass="sortable">
+               <display:column title="Project Title" style="text-align:left;" sortable="true" headerClass="sortable">
                    ${proj.title}
                </display:column>
+               <display:column title="Project Summary" style="text-align:left;" sortable="true" headerClass="sortable">
+                   ${proj.summary}
+               </display:column>
+               <display:column title="Date Created" style="text-align:left;">
+                   ${proj.created}
+               </display:column>
+               <c:if test="${!empty proj.lastmodified}">
+                   <display:column title="Last Modified">
+                      ${proj.lastmodified}
+                  </display:column>
+               </c:if>
+               <c:if test="${!empty proj.lastmodby}">
+                   <display:column title="Last Modified By">
+                      ${proj.lastmodby}
+                   </display:column>
+               </c:if>
                <display:column title="# of Documents" sortable="true" headerClass="sortable">
                    <sql:query var="results">
                       select count(*) tot from descpub_publication where project_id = ?
