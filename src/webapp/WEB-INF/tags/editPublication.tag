@@ -36,8 +36,6 @@
     <sql:param value="${pubtype}"/>
 </sql:query>
     
-    
- <h1>pubtype ${pubtype}</h1>
 <sql:query var="results">
     select * from descpub_publication where paperid = ?
     <sql:param value="${param.paperid}"/>
