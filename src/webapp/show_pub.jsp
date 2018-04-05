@@ -75,17 +75,18 @@
         </sql:query>
             
         <h2>Document: <strong>DESC-${param.paperid}</strong></h2>
-        <display:table class="datatable" id="fie" name="${pubs.rows}">
+        <display:table class="datatable" id="pubs" name="${pubs.rows}">
             <display:column title="Document type">
                 ${pubtype}
             </display:column>
+            <display:column property="project_id" title="Project"/>
             <c:forEach var="x" items="${fi.rows}">
                <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
             </c:forEach>
-             <c:if test="${fie.can_request_authorship != 'N'}">
+             <c:if test="${pubs.can_request_authorship != 'N' && pubs.state != 'inactive'}">
                <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
             </c:if>
-            <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,papergrp) || canEdit=='true') && fie.state != 'inactive'}">
+            <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,papergrp) || canEdit=='true') && pubs.state != 'inactive'}">
                 <display:column title="Edit" href="editLink.jsp">
                        <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                 </display:column>
@@ -106,19 +107,19 @@
             <p/> 
         </c:if>
          
-<form action="upload.jsp" method="post" enctype="multipart/form-data">
-    <div>
-      <fieldset class="fieldset-auto-width">
-          <legend><strong>Upload</strong></legend><p/>
-          Upload new version of DESC-${param.paperid}<p/>
-          <input type="file" name="fileToUpload" id="fileToUpload"><p/>
-          Remarks: <input type="text" name="remarks" required><p/>
-          <input type="submit" value="Upload Document" name="submit">
-          <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperid=${param.paperid}" />
-          <input type="hidden" name="paperid" value="${param.paperid}"/>
-      </fieldset>
-    </div>
-</form>
+        <form action="upload.jsp" method="post" enctype="multipart/form-data">
+            <div>
+              <fieldset class="fieldset-auto-width">
+                  <legend><strong>Upload</strong></legend><p/>
+                  Upload new version of DESC-${param.paperid}<p/>
+                  <input type="file" name="fileToUpload" id="fileToUpload"><p/>
+                  Remarks: <input type="text" name="remarks" required><p/>
+                  <input type="submit" value="Upload Document" name="submit">
+                  <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperid=${param.paperid}" />
+                  <input type="hidden" name="paperid" value="${param.paperid}"/>
+              </fieldset>
+            </div>
+        </form>
             
     </body>
 </html>
