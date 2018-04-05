@@ -108,30 +108,34 @@
                     <sql:param value="${param.state}"/>
                     <sql:param value="${param.wkspaceurl}"/>
                     </sql:update>
-
+                    
+                    <%-- get the new project id --%>
                     <sql:query var="projNum">
                         select descpub_proj_seq.currval as newProjNum from dual
                     </sql:query>  
-
+                    
+                    <%-- add the project id - working group id since projects can have multiple working groups --%>
                     <sql:update var="swg_proj">
                         insert into descpub_project_swgs (id,project_id,swg_id) values(SWG_SEQ.nextval,?,?)
                         <sql:param value="${projNum.rows[0]['newProjNum']}"/>
                         <sql:param value="${param.swgid}"/>
                     </sql:update>
             
-                    <sql:update>
-                        insert into profile_group (group_name, group_manager, experiment) values (?,?,?)
-                        <sql:param value="project_${projNum.rows[0]['newProjNum']}"/>
-                        <sql:param value="lsst-desc-publications-admin"/>
-                        <sql:param value="${appVariables.experiment}"/>
-                    </sql:update>  
-                        
+                    <%-- create the leadership group first since they will control the membership group for the project --%>
                     <sql:update var="projleads">
                         insert into profile_group (group_name, group_manager, experiment) values (?,?,?)
                         <sql:param value="project_leads_${projNum.rows[0]['newProjNum']}"/>
                         <sql:param value="lsst-desc-publications-admin"/>
                         <sql:param value="${appVariables.experiment}"/>
                     </sql:update>
+                        
+                    <%-- project leaders manage the members, add the group and managing group to profile_ug --%>     
+                    <sql:update>
+                        insert into profile_group (group_name, group_manager, experiment) values (?,?,?)
+                        <sql:param value="project_${projNum.rows[0]['newProjNum']}"/>
+                        <sql:param value="project_leads_${projNum.rows[0]['newProjNum']}"/>
+                        <sql:param value="${appVariables.experiment}"/>
+                    </sql:update>  
                         
                     <c:forEach var="x" items="${param}">
                         <c:if test="${x.key == 'addLeads'}">
@@ -155,8 +159,11 @@
                 ${trapError}
             </c:if> 
             <c:if test="${empty trapError}">
+                <c:redirect url="show_project.jsp?projid=${projNum.rows[0]['newProjNum']}&swgid=${param.swgid}"/>
+                <%--
                Created ${param.title}<br/>
                <a href="show_swg.jsp?swgid=${param.swgid}">return to projects</a>
+                --%>
             </c:if>    
         </c:when>
     </c:choose>
