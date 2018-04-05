@@ -104,6 +104,9 @@
                <display:column title="Project Summary" property="summary" style="text-align:left;">
                    ${proj.summary}
                </display:column>
+               <display:column title="State" property="state" style="text-align:left;">
+                   ${proj.state}
+               </display:column>
                <display:column title="Date Created" property="created" style="text-align:left;" sortable="true" headerClass="sortable">
                    ${proj.created}
                </display:column>
@@ -115,11 +118,11 @@
                </display:column>
                <display:column property="wkspaceurl" title="Workspace">
                    <a href="${proj.wkspaceurl}">${proj.wkspaceurl}</a>
-               </display:column>        
+               </display:column>
                <display:column title="# of Documents">
                    <sql:query var="results">
-                      select count(*) tot from descpub_publication where project_id = ?
-                      <sql:param value="${proj.id}"/>
+                     select count(*) tot from descpub_publication where project_id = ?
+                     <sql:param value="${proj.id}"/>
                    </sql:query>
                    ${results.rows[0].tot}
                </display:column>
