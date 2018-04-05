@@ -18,8 +18,7 @@
    <c:set var="oravals" value=""/>
    
    <sql:query var="projects">
-        select id, title, summary, state, created, lastmodified, lastmodby, leadgroup_name, projectgroup_name, membergroup_name from descpub_project 
-        where id = ?
+        select id, title, summary, state, created, lastmodified, lastmodby from descpub_project where id = ?
         <sql:param value="${param.projid}"/>
    </sql:query> 
            
