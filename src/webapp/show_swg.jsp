@@ -15,7 +15,7 @@
 
 
 <!DOCTYPE html>
-
+<html>
  <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <script src="js/jquery-1.11.1.min.js"></script>
@@ -25,7 +25,7 @@
       <title>SWG Page</title>
 </head>
 
-<body>
+   <body>
     <%-- Notes:
        pgn = profile group name
        cgn = convener group name
@@ -98,27 +98,9 @@
             <strong>Projects</strong><br/>
             <display:table class="datatable" id="proj" name="${projects.rows}">
                <display:column title="Id" property="id" sortable="true" headerClass="sortable"/>
-               <display:column title="Project Title" property="title" style="text-align:left;" sortable="true" headerClass="sortable">
-                   ${proj.title}
-               </display:column>
-               <display:column title="Project Summary" property="summary" style="text-align:left;">
-                   ${proj.summary}
-               </display:column>
-               <display:column title="State" property="state" style="text-align:left;">
-                   ${proj.state}
-               </display:column>
-               <display:column title="Date Created" property="created" style="text-align:left;" sortable="true" headerClass="sortable">
-                   ${proj.created}
-               </display:column>
-               <display:column  property="lastmodified" title="Last Modified">
-                  ${proj.lastmodified}
-               </display:column>
-               <display:column property="lastmodby" title="Last Modified By">
-                  ${proj.lastmodby}
-               </display:column>
-               <display:column property="wkspaceurl" title="Workspace">
-                   <a href="${proj.wkspaceurl}">${proj.wkspaceurl}</a>
-               </display:column>
+               <display:column title="Project Title" style="text-align:left;" sortable="true" headerClass="sortable">
+                  <a href="projectView.jsp?projid=${proj.id}">${proj.title}</a>
+               </display:column>   
                <display:column title="# of Documents">
                    <sql:query var="results">
                      select count(*) tot from descpub_publication where project_id = ?
@@ -132,11 +114,6 @@
                    </display:column>
                </c:if>   
             </display:table>
-        </c:if>
-         
-            
-</body>
-</html>
-    
-    
+        </c:if>    
+   </body>
 </html>
