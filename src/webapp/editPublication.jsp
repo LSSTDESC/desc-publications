@@ -24,16 +24,15 @@
      
         <c:set var="oranames" value="modifydate=sysdate,modby=?"/>
         <c:set var="oravals" value="${userName}"/>
-
+       
         <c:forEach var="p" items="${param}">
-            <h1>${p.key} = ${p.value}</h1>
             <c:if test="${p.key != 'submit'}">
                 <c:if test="${!empty p.value}">
                     <c:set var="oranames" value="${oranames},${p.key}=?"/>
                     <c:set var="oravals" value="${oravals},${p.value}"/>
                 </c:if>
             </c:if>
-        </c:forEach>
+        </c:forEach> 
 
         <c:catch var="catchError">
           <sql:transaction>
