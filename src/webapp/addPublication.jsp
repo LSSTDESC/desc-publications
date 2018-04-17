@@ -266,7 +266,7 @@
                     <c:set var="group_name" value="paper_${current}"/> 
                     <c:set var="leadauthgrp" value="paper_leads_${current}"/>
                     <c:set var="reviewergrp" value="paper_reviewers_${current}"/>
-                    <c:set var="grpmanager" value="lsst-desc-publication-admins"/>
+                    <c:set var="grpmanager" value="lsst-desc-publications-admin"/>
 
                     <%-- insert paper group into profile_group, paper lead group is the managing group --%> 
                     <sql:update>
@@ -276,7 +276,7 @@
                         <sql:param value="${appVariables.experiment}"/>
                     </sql:update> 
 
-                    <%-- insert paper lead group into profile_group, lsst-desc-publication-admins is the managing group --%> 
+                    <%-- insert paper lead group into profile_group, lsst-desc-publications-admin is the managing group --%> 
                     <sql:update>
                         insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
                         <sql:param value="${leadauthgrp}"/>
@@ -284,7 +284,7 @@
                         <sql:param value="${appVariables.experiment}"/>
                     </sql:update> 
 
-                    <%-- insert paper reviewer group into profile_group, lsst-desc-publication-admins is the managing group --%> 
+                    <%-- insert paper reviewer group into profile_group, lsst-desc-publications-admin is the managing group --%> 
                     <sql:update>
                         insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
                         <sql:param value="${reviewergrp}"/>
