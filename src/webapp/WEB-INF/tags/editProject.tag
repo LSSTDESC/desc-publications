@@ -100,7 +100,7 @@
     <p/>
     Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
-    <c:if test="${gm:isUserInGroup(pageContext,projectleads) || gm:isUserInGroup(pageContext,lsst-desc-publications-admin) || gm:isUserInGroup(pageContext,'GroupManagerAdmin')}">
+    <c:if test="${gm:isUserInGroup(pageContext,projectleads) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin')}">
       <input type="submit" value="Update_Project_Details" id="action" name="action" />    
     </c:if>  
   </form>
