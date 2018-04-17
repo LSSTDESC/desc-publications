@@ -102,11 +102,12 @@
             <c:catch var="trapError">
                 <sql:transaction>
                     <sql:update >
-                    insert into descpub_project (id,title,summary,state,wkspaceurl,created) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,sysdate)
+                    insert into descpub_project (id,title,summary,state,wkspaceurl,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,sysdate,?)
                     <sql:param value="${param.title}"/>
                     <sql:param value="${param.summary}"/>
                     <sql:param value="${param.state}"/>
                     <sql:param value="${param.wkspaceurl}"/>
+                    <sql:param value="${userName}"/>
                     </sql:update>
                     
                     <%-- get the new project id --%>
