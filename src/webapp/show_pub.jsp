@@ -7,6 +7,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib uri="http://srs.slac.stanford.edu/displaytag" prefix="displayutils" %>
+<%@taglib uri="http://srs.slac.stanford.edu/utils" prefix="utils"%>
 <%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 <%@taglib tagdir="/WEB-INF/tags" prefix="tg"%>
 
@@ -29,11 +30,23 @@
             <c:redirect url="noPermission.jsp?errmsg=7"/>
         </c:if>
             
-        <c:set var="paperid" value="${param.paperid}"/>
-
+        <c:set var="paperGroup" value="paper_${param.paperid}"/>
+        <%-- when testing against dev the tag gm:isUserInGroup won't work because it always checks against the prod db so test separately if user can edit paper.
+        canEdit checks if conveners can edit, userCanEdit checks if user can edit
+        --%>
+        <c:set var="userCanEdit" value="false"/>
+        <sql:query var="can">
+          select count(*) tot from profile_ug where group_id=? and user_id=?
+          <sql:param value="${paperGroup}"/>
+          <sql:param value="${userName}"/>
+        </sql:query>
+        <c:if test="${can.rowCount > 0}">
+          <c:set var="userCanEdit" value="true"/>
+        </c:if>
+        
         <sql:query var="pubs">
             select * from descpub_publication where paperid = ? 
-            <sql:param value="${paperid}"/>
+            <sql:param value="${param.paperid}"/>
         </sql:query> 
             
         <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/>
@@ -44,7 +57,7 @@
         <sql:query var="leads">
            select  wg.id, wg.convener_group_name from descpub_project_swgs ps join descpub_swg wg on ps.swg_id = wg.id
            join descpub_publication dd on dd.project_id = ps.project_id where dd.paperid = ?
-           <sql:param value="${paperid}"/>
+           <sql:param value="${param.paperid}"/>
         </sql:query>
            
         <%-- check if current user has r/w access --%>   
@@ -53,8 +66,6 @@
                 <c:set var="canEdit" value="true"/>
             </c:if>
         </c:forEach>
-        
-        <c:set var="papergrp" value="paper_${paperid}"/>
         
         <%-- select the display fields appropriate for this pubtype --%>
         <sql:query var="fi">
@@ -86,7 +97,7 @@
              <c:if test="${pubs.can_request_authorship != 'N' && pubs.state != 'inactive'}">
                <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
             </c:if>
-            <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,papergrp) || canEdit=='true') && pubs.state != 'inactive'}">
+            <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,paperGroup) || canEdit=='true' || userCanEdit=='true') && pubs.state != 'inactive'}">
                 <display:column title="Edit" href="editLink.jsp">
                        <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                 </display:column>
