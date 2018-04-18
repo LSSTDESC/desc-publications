@@ -29,6 +29,13 @@
     
 <tg:underConstruction/>
 
+<%-- get the papers for this project --%>
+ <sql:query var="docs">
+    select paperid, title, createdate, pubtype from descpub_publication where project_id = ?
+    <sql:param value="${param.projid}"/>
+</sql:query> 
+    
+    
 <%-- find the project leads --%>
 <c:set var="projectLeaders" value=""/>
 
@@ -56,20 +63,58 @@
     <sql:param value="${param.projid}"/>
 </sql:query>
 
+<%-- row holds the query results in an array --%>
 <c:set var="row" value="${projects.rows[0]}"/>
-
-<%-- Must set the first row "reset=true" in order for the rows to alternate colors. If all rows have "reset=true" then the table will not have any color--%>
+   
+<%-- Must set the first row "reset=true" in order for the rows to alternate colors. If all rows have "reset=true" then the table will not have any color --%>
+<p id="pagelabel">Project Details</p>
 <table class="datatable">
     <utils:trEvenOdd reset="true"><th>Title</th><td>${row.title}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project ID</th><td>${row.id}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>State</th><td>${row.state}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Created</th><td>${row.created}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Last Modified</th><td>${row.lastmodified}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Modified By</th><td>${row.lastmodby}</td></utils:trEvenOdd>
+    <c:if test="${!empty row.lastmodified}">
+        <utils:trEvenOdd ><th>Last Modified</th><td>${row.lastmodified}</td></utils:trEvenOdd>
+    </c:if>
+    <c:if test="${!empty row.lastmodby}">
+        <utils:trEvenOdd ><th>Modified By</th><td>${row.lastmodby}</td></utils:trEvenOdd>
+    </c:if>
     <utils:trEvenOdd ><th>Workspace Url</th><td>${empty row.wkspaceurl ? 'none' : row.wkspaceurl}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Summary</th><td>${row.summary}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project leaders</th><td>${projectLeaders}</td></utils:trEvenOdd>
 </table>
  
+ <c:if test="${docs.rowCount > 0}">
+        <p id="pagelabel">List of Document Entries (Total: ${docs.rowCount})</p>
+        
+        <display:table class="datatable"  id="rows" name="${docs.rows}">
+            <display:column title="Document ID" style="text-align:left;" sortable="true" headerClass="sortable">
+                DESC-${rows.paperid}
+            </display:column>
+            <display:column title="Date Created" property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"/>
+            <display:column title="Title" paramProperty="title" style="text-align:left;" sortable="true" headerClass="sortable">
+                <a href="show_pub.jsp?paperid=${rows.paperid}">${rows.title}</a>
+            </display:column>
+            <display:column title="Document Type" property="pubtype" style="text-align:left;" sortable="true" headerClass="sortable"/>
+            <display:column title="Number of Versions" style="text-align:left;" sortable="true" headerClass="sortable">
+                <sql:query var="vers">
+                    select count(*) tot from descpub_publication_versions where paperid = ?
+                    <sql:param value="${rows.paperid}"/>
+                </sql:query>
+                <c:choose>    
+                    <c:when test="${vers.rowCount > 0}">
+                        <a href="uploadPub.jsp?paperid=${rows.paperid}">${vers.rows[0].tot}</a>
+                    </c:when>
+                    <c:when test="${vers.rowCount < 1}">
+                        ${vers.rows[0].tot}
+                    </c:when>
+                </c:choose>
+            </display:column>
+            <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leadersgrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+              <display:column title="Edit" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
+            </c:if>
+        </display:table>
+        <p/> 
+    </c:if>
 
 </html>
