@@ -2,6 +2,7 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib uri="http://displaytag.sf.net" prefix="display"%>
 
@@ -15,7 +16,11 @@
         <title>Upload </title>
     </head>
     <body>
-        <fmt:setTimeZone value="UTC"/>   
+        <fmt:setTimeZone value="UTC"/>  
+        
+        <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-members'))}">
+            <c:redirect url="noPermission.jsp?errmsg=7"/>
+        </c:if>  
 
         <c:if test="${!empty msg}">
             <p id="pagelabel">${msg}</p> 
@@ -39,14 +44,14 @@
                 </form>            
             </c:when>
             <c:otherwise>   
-                <h2>Paper <strong>DESC-${param.paperid}</strong></h2>
+                <h2><strong>DESC-${param.paperid}</strong></h2>
                 <sql:query var="papertitle">
                     select paperid, title from descpub_publication where paperid = ?
                     <sql:param value="${param.paperid}"/>
                 </sql:query>
                     
                 <c:set var="papertitle" value="${papertitle.rows[0].title}"/>
-                <p id="pagelabel">${papertitle}</p> 
+                <p id="pagelabel">Title: ${papertitle}</p> 
 
                 <sql:query var="list">
                     select paperid, version, tstamp, to_char(tstamp,'Mon-dd-yyyy') pst, remarks from descpub_publication_versions where paperid=? order by version
@@ -67,12 +72,10 @@
                             ${row.pst}
                         </display:column>
                     </display:table>
-                </c:if>
-                            
                 <p/> 
                     <hr align="left" width="40%"/>   	
                 <p id="pagelabel">Upload new version of DESC-${param.paperid}</p>
-                
+                 </c:if>
                 <form action="upload.jsp" method="post" enctype="multipart/form-data">
                 <div>
                   <fieldset class="fieldset-auto-width">  
