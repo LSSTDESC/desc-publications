@@ -34,7 +34,10 @@
         <%-- when testing against dev the tag gm:isUserInGroup won't work because it always checks against the prod db so test separately if user can edit paper.
         canEdit checks if conveners can edit, userCanEdit checks if user can edit
         --%>
-        <c:set var="userCanEdit" value="false"/>
+        <c:set var="userCanEdit" value="false"/> <%-- can user edit --%>
+        <c:set var="canEdit" value="false"/> <%-- if user is convener, can convener edit --%>
+        <c:set var="selectFields" value=""/> <%-- var to build list of fields per pubtype --%>
+        
         <sql:query var="can">
           select count(*) tot from profile_ug where group_id=? and user_id=?
           <sql:param value="${paperGroup}"/>
@@ -44,14 +47,37 @@
           <c:set var="userCanEdit" value="true"/>
         </c:if>
         
+        <%-- build the list of fields appropriate for this pubtype --%>
+        <sql:query var="fi">
+            select pb.metaid, me.data, me.label, me.datatype, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
+            where pb.pubtype in (select pubtype from descpub_publication where paperid = ? )
+            order by pb.formposition
+            <sql:param value="${param.paperid}"/>
+        </sql:query>
+            
+        <c:forEach var="f" items="${fi.rows}">
+           <%--  <c:out value="F=${f.data}, ${f.label}"/><br> --%>
+            <c:choose>
+                <c:when test="${empty selectFields}">
+                    <c:set var="selectFields" value="${f.data}"/>
+                </c:when>
+                <c:when test="${!empty selectFields}">
+                    <c:set var="selectFields" value="${selectFields}, ${f.data}"/>
+                </c:when>
+            </c:choose>
+        </c:forEach> 
+        <%-- add on the pubtype and project_id --%>    
+        <c:set var="selectFields" value="${selectFields}, pubtype, project_id"/>
+            
+        <%-- get the publication using the selectList --%> 
+        <c:set var="qstr" value="select ${selectFields} from descpub_publication where paperid = ?"/>
+
         <sql:query var="pubs">
-            select * from descpub_publication where paperid = ? 
+            ${qstr}
             <sql:param value="${param.paperid}"/>
         </sql:query> 
-            
-        <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/>
         <c:set var="projid" value="${pubs.rows[0].project_id}"/>
-        <c:set var="canEdit" value="false"/>
+        <c:set var="pubtype" value="${fi.rows[0].pubtype}"/> 
         
         <%-- get the convener groupname --%>
         <sql:query var="leads">
@@ -60,20 +86,13 @@
            <sql:param value="${param.paperid}"/>
         </sql:query>
            
-        <%-- check if current user has r/w access --%>   
+        <%-- check if user is convener do they have r/w access --%>   
         <c:forEach var="x" items="${leads.rows}">
             <c:if test="${gm:isUserInGroup(pageContext,x.convener_group_name)}">
                 <c:set var="canEdit" value="true"/>
             </c:if>
         </c:forEach>
         
-        <%-- select the display fields appropriate for this pubtype --%>
-        <sql:query var="fi">
-            select pb.metaid, me.data, me.label, me.datatype, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
-            where pb.pubtype = ? order by pb.formposition
-            <sql:param value="${pubtype}"/>
-        </sql:query>
-               
         <sql:query var="countpapers">
             select count(*) from descpub_publication where project_id = ?
             <sql:param value="${projid}"/>
@@ -84,9 +103,12 @@
             select paperid, version, tstamp, to_char(tstamp,'Mon-dd-yyyy') pst, remarks from descpub_publication_versions where paperid=? order by version desc
             <sql:param value="${param.paperid}"/>
         </sql:query>
-            
+       
+             
         <h2>Document: <strong>DESC-${param.paperid}</strong></h2>
-        <display:table class="datatable" id="pubs" name="${pubs.rows}">
+        
+        <%-- delete this section 
+        <display:table class="datatable" id="publications" name="${pubs.rows}">
             <display:column title="Document type">
                 ${pubtype}
             </display:column>
@@ -94,16 +116,29 @@
             <c:forEach var="x" items="${fi.rows}">
                <display:column title="${x.label}" property="${x.data}" sortable="true" headerClass="sortable" style="text-align:left;"/>
             </c:forEach>
-             <c:if test="${pubs.can_request_authorship != 'N' && pubs.state != 'inactive'}">
+             <c:if test="${(publications.can_request_authorship != 'N' && publications.state != 'inactive') || !empty publications.can_request_authorship}">
                <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
             </c:if>
-            <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,paperGroup) || canEdit=='true' || userCanEdit=='true') && pubs.state != 'inactive'}">
+            <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,paperGroup) || canEdit=='true' || userCanEdit=='true') && publications.state != 'inactive'}">
                 <display:column title="Edit" href="editLink.jsp">
                        <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                 </display:column>
             </c:if>
-        </display:table>
-        <p/>  
+        </display:table>   --%>
+        
+        
+        <table class="datatable">
+            <utils:trEvenOdd reset="true"><th style="text-align: left;">Document type</th><td style="text-align: left">${pubs.rows[0]['pubtype']}</td></utils:trEvenOdd>
+            <utils:trEvenOdd reset="false"><th style="text-align: left">Project</th><td style="text-align: left">${pubs.rows[0]['project_id']}</td></utils:trEvenOdd>
+        <c:forEach var="x" items="${pubs.columnNames}">
+            <c:forEach var="f" items="${fi.rows}">
+                <c:if test="${fn:startsWith(fn:toLowerCase(x),fn:toLowerCase(f.label)) && fn:endsWith(fn:toLowerCase(x),fn:toLowerCase(f.label))}">
+                    <utils:trEvenOdd reset="false"><th style="text-align: left">${f.label}</th><td style="text-align: left">${pubs.rows[0][f.data]}</td></utils:trEvenOdd>
+                </c:if>
+            </c:forEach>
+        </c:forEach>
+        </table>
+
         
         <c:if test="${vers.rowCount > 0}">
             <display:table class="datatable" id="row" name="${vers.rows}">
