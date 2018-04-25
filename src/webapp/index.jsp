@@ -35,7 +35,7 @@
         </sql:query>
             
         <sql:query var="papers">
-            select paperid, createdate, modifydate, pubtype, title from (select * from descpub_publication order by createdate desc) where rownum <= 10
+            select paperid, project_id, createdate, modifydate, pubtype, title from (select * from descpub_publication order by createdate desc) where rownum <= 10
         </sql:query>
              
         <c:if test="${swgs.rowCount > 0}">
@@ -65,6 +65,9 @@
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="createdate" style="text-align:left;" title="Created" sortable="true" headerClass="sortable"/>
                 <display:column property="modifydate" style="text-align:left;" title="Last Modified" sortable="true" headerClass="sortable"/>
+                <display:column title="Project" style="text-align:left;" sortable="true" headerClass="sortable">
+                    <a href="projectView.jsp?projid=${Line.project_id}">Project-${Line.project_id}</a>
+                </display:column>
             </display:table>
         </c:if>        
     
