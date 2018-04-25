@@ -66,7 +66,7 @@
                 <display:column property="createdate" style="text-align:left;" title="Created" sortable="true" headerClass="sortable"/>
                 <display:column property="modifydate" style="text-align:left;" title="Last Modified" sortable="true" headerClass="sortable"/>
                 <display:column title="Project" style="text-align:left;" sortable="true" headerClass="sortable">
-                    <a href="projectView.jsp?projid=${Line.project_id}">Project-${Line.project_id}</a>
+                  ${Line.project_id}">Project-${Line.project_id}
                 </display:column>
             </display:table>
         </c:if>        
