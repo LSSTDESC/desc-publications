@@ -58,15 +58,15 @@
         <c:if test="${papers.rowCount > 0}">
              <p id="pagelabel">Most recent Documents</p> 
             <display:table class="datatable" id="Line" name="${papers.rows}">
-                <display:column title="ID" style="text-align:left;" sortable="true" headerClass="sortable" >
+                <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
                    <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
                 </display:column>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="createdate" style="text-align:left;" title="Created" sortable="true" headerClass="sortable"/>
                 <display:column property="modifydate" style="text-align:left;" title="Last Modified" sortable="true" headerClass="sortable"/>
-                <display:column title="Project" style="text-align:left;" sortable="true" headerClass="sortable">
-                  ${Line.project_id}">Project-${Line.project_id}
+                <display:column title="Project Id" style="text-align:left;" sortable="true" headerClass="sortable">
+                    <a href="projectView.jsp?projid=${Line.project_id}">${Line.project_id}</a>
                 </display:column>
             </display:table>
         </c:if>        

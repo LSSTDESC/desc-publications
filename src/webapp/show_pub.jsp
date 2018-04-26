@@ -37,6 +37,7 @@
         <c:set var="userCanEdit" value="false"/> <%-- can user edit --%>
         <c:set var="canEdit" value="false"/> <%-- if user is convener, can convener edit --%>
         <c:set var="selectFields" value=""/> <%-- var to build list of fields per pubtype --%>
+        <c:set var="primaryauths" value=""/>
         
         <sql:query var="can">
           select count(*) tot from profile_ug where group_id=? and user_id=?
@@ -69,7 +70,7 @@
         <%-- add on the pubtype and project_id --%>    
         <c:set var="selectFields" value="${selectFields}, pubtype, project_id"/>
             
-        <%-- get the publication using the selectList --%> 
+        <%-- get the publication using the selectList. This list used to control what fields are displayed per pubtype --%> 
         <c:set var="qstr" value="select ${selectFields} from descpub_publication where paperid = ?"/>
 
         <sql:query var="pubs">
@@ -78,6 +79,13 @@
         </sql:query> 
         <c:set var="projid" value="${pubs.rows[0].project_id}"/>
         <c:set var="pubtype" value="${fi.rows[0].pubtype}"/> 
+        <c:set var="paperlead_grp" value="paper_leads_${param.paperid}"/>
+        
+        <%-- second pub query grabs all the details e.g. can_request_authorship --%>
+        <sql:query var="pubDetails">
+            select * from descpub_publication where paperid = ?
+            <sql:param value="${param.paperid}"/>
+        </sql:query>
         
         <%-- get the convener groupname --%>
         <sql:query var="leads">
@@ -104,6 +112,24 @@
             <sql:param value="${param.paperid}"/>
         </sql:query>
        
+        <%-- get paper leads --%>
+        <sql:query var="leadauth">
+            select u.first_name, u.last_name, u.memidnum from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
+            where ug.group_id = ? and ug.experiment = ? order by u.last_name
+            <sql:param value="${paperlead_grp}"/>
+            <sql:param value="${appVariables.experiment}"/>
+        </sql:query>
+            
+        <c:forEach var="la" items="${leadauth.rows}">
+            <c:choose>
+                <c:when test="${empty primaryauths}">
+                    <c:set var="primaryauths" value="${la.first_name}:${la.last_name}:${la.memidnum}"/>
+                </c:when>
+                <c:when test="${!empty primaryauths}">
+                    <c:set var="primaryauths" value="${primaryauths},${la.first_name}:${la.last_name}:${la.memidnum}"/>
+                </c:when>
+            </c:choose>
+        </c:forEach>
              
         <h2>Document: <strong>DESC-${param.paperid}</strong></h2>
         
@@ -137,6 +163,24 @@
                 </c:if>
             </c:forEach>
         </c:forEach>
+        <utils:trEvenOdd reset="false"><th style="text-align: left">Lead authors</th>
+            <td style="text-align: left">
+                <c:set var="parts" value="${fn:split(primaryauths,',')}"/>
+                <c:forEach var="p" items="${parts}" varStatus="status">
+                    <c:set var="lead_author" value="${fn:split(p,':')}"/>
+                    <a href="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/user.jsp?memidnum=${lead_author[2]}">${lead_author[0]} ${lead_author[1]}&nbsp;</a>
+                </c:forEach>
+            </td>
+        </utils:trEvenOdd>
+
+       <c:if test="${(pubDetails.rows[0].can_request_authorship != 'N' && pubDetails.rows[0].state != 'inactive') || !empty pubDetailss.rows[0].can_request_authorship}">
+           <utils:trEvenOdd reset="false"><th style="text-align: left">Request authorship</th>
+               <td style="text-align: left">
+               <a href="requestAuthorship.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
+               </td>
+           </utils:trEvenOdd>
+       </c:if>       
+        
         </table>
 
         
@@ -152,7 +196,8 @@
             </display:table>
             <p/> 
         </c:if>
-         
+      
+        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperleads) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
         <form action="upload.jsp" method="post" enctype="multipart/form-data">
             <div>
               <fieldset class="fieldset-auto-width">
@@ -166,6 +211,6 @@
               </fieldset>
             </div>
         </form>
-            
+        </c:if>
     </body>
 </html>

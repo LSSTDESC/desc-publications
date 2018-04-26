@@ -112,6 +112,11 @@
                    <display:column title="Edit Project">
                        <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">${proj.id}</a>
                    </display:column>
+                       
+                   <display:column title="Add document">
+                       <a href="addPublication.jsp?task=create_publication_form&projid=${proj.id}&swgid=${param.swgid}">${proj.id}</a>
+                   </display:column>   
+                       
                </c:if>   
             </display:table>
         </c:if>    

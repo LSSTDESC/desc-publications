@@ -7,6 +7,7 @@
 <%@page contentType="text/html"%>
 <%@page pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
+<%@taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
@@ -42,7 +43,7 @@
                     </select>
                  <input type="hidden" name="ptype_selected" value="true"/>
                  <input type="hidden" name="projid" value="${param.projid}"/>
-                 <input type="hidden" name="swgid" value="${param.swgid}"/>
+                 <input type="hidden" name="swgid" value="${param.swgid}"/>  
                  <input type="submit" value="Continue" name="submit" /> 
             </form>
         </c:when>
@@ -68,15 +69,21 @@
                     <sql:param value="${appVariables.experiment}"/>
                 </sql:query>
                     
+                <c:set var="arrayDetails" value="${param.pubtype},${projInfo.rows[0].title},${projInfo.rows[0].name}"/>    
+
                 <div class="intro">
                     <p id="pagelabel">Document Details</p>
-                    <strong>Pubtype ${param.pubtype}<br/>
-                        Project id [ <a href="show_project.jsp?projid=${projInfo.rows[0].id}">${projInfo.rows[0].id}</a> ] ${projInfo.rows[0].title}. <br/> 
-                        Working group(s): ${projInfo.rows[0].name}</strong>
-                </div>
-                <p/>
+                    <strong>Pubtype: ${param.pubtype}<br/>
+                    Project id: [ <a href="show_project.jsp?projid=${projInfo.rows[0].id}">${projInfo.rows[0].id}</a> ] ${projInfo.rows[0].title}. <br/> 
+                    Working group(s): ${projInfo.rows[0].name}</strong>
+                    <p></p>
+                </div> 
+              
                 
                 <form action="addPublication.jsp" method="post" id="addPublication" name="addPublication">
+                    <div id="formRequest">
+                    <fieldset>
+                    <legend>New document form</legend>
                     <c:forEach var="x" items="${fields.rows}">
                         <c:set var="required" value="${!empty x.required ? 'required' : ''}"/>
                         <c:if test="${!empty x.fieldexplanation}">
@@ -151,7 +158,9 @@
                                <p></p>
                         </c:if>   
                     </c:forEach>
-                              
+                    </fieldset>
+                    </div>
+                               
                     <p id="pagelabel">
                     Select Lead Author(s):</p>  
                     <select name="authcontacts" multiple size="20" required>
@@ -202,7 +211,7 @@
              <c:set var="qmarks" value="${qmarks},DESCPUB_PUB_SEQ.nextval,?,sysdate,?"/>
              
              <sql:update>
-             insert into descpub_publication (${fieldstr}) values (${qmarks}) 
+                 insert into descpub_publication (${fieldstr}) values (${qmarks}) 
                  <c:forEach var="x" items="${valuestr}">
                      <sql:param value="${x}"/>
                  </c:forEach>
@@ -242,13 +251,12 @@
             </c:forEach>
 
             <%-- tack on a few document details that are not in the metadata table --%>
-            <c:set var="fieldstr" value="${fieldstr},paperid,project_id,createdate,pubtype"/>
-            <c:set var="valuestr" value="${valuestr},${param.projid},${param.pubtype}"/>
-            <c:set var="qmarks" value="${qmarks},DESCPUB_PUB_SEQ.nextval,?,sysdate,?"/>
-       
+            <c:set var="fieldstr" value="${fieldstr},paperid,project_id,createdate,createdby,pubtype"/>
+            <c:set var="valuestr" value="${valuestr},${param.projid},${userName},${param.pubtype}"/>
+            <c:set var="qmarks" value="${qmarks},DESCPUB_PUB_SEQ.nextval,?,sysdate,?,?"/>
+            
             <c:catch var="trapError"> 
                 <sql:transaction>   
-
                    <sql:update>
                      insert into descpub_publication (${fieldstr}) values (${qmarks}) 
                      <c:forEach var="x" items="${valuestr}">
@@ -260,39 +268,33 @@
                     <sql:query var="curr">
                         select DESCPUB_PUB_SEQ.currval as currval from dual
                     </sql:query>
-
+                        
+                    <%-- get the current pub sequence number --%>
                     <c:set var="current" value="${curr.rows[0].currval}"/>
-
+                    
+                    <%-- build the groups for this document --%>
                     <c:set var="group_name" value="paper_${current}"/> 
                     <c:set var="leadauthgrp" value="paper_leads_${current}"/>
                     <c:set var="reviewergrp" value="paper_reviewers_${current}"/>
                     <c:set var="grpmanager" value="lsst-desc-publications-admin"/>
 
-                    <%-- insert paper group into profile_group, paper lead group is the managing group --%> 
+                    <%-- insert group name into profile_group, initially empty, members will be added via grpmgr, paper lead group is the managing group --%> 
                     <sql:update>
                         insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
                         <sql:param value="${group_name}"/>
                         <sql:param value="${leadauthgrp}"/>
                         <sql:param value="${appVariables.experiment}"/>
                     </sql:update> 
-
-                    <%-- insert paper lead group into profile_group, lsst-desc-publications-admin is the managing group --%> 
+                        
+                    <%-- insert group name for lead authors, lsst-desc-publications-admin is the managing group --%> 
                     <sql:update>
                         insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
                         <sql:param value="${leadauthgrp}"/>
                         <sql:param value="${grpmanager}"/>
                         <sql:param value="${appVariables.experiment}"/>
                     </sql:update> 
-
-                    <%-- insert paper reviewer group into profile_group, lsst-desc-publications-admin is the managing group --%> 
-                    <sql:update>
-                        insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
-                        <sql:param value="${reviewergrp}"/>
-                        <sql:param value="${grpmanager}"/>
-                        <sql:param value="${appVariables.experiment}"/>
-                    </sql:update> 
-
-                    <%-- add lead authors to the paper lead group --%>
+                        
+                     <%-- add selected authors to group for lead authors --%> 
                     <c:forEach var="con" items="${paramValues['authcontacts']}">
                         <c:set var="array" value="${fn:split(con,':')}"/>
                         <sql:update>
@@ -302,9 +304,17 @@
                             <sql:param value="${appVariables.experiment}"/>
                             <sql:param value="${array[0]}"/>
                         </sql:update> 
-                    </c:forEach>
+                    </c:forEach>    
 
-                    <%-- add reviewers group  --%>
+                    <%-- insert paper reviewer group name into profile_group, lsst-desc-publications-admin is the managing group --%> 
+                    <sql:update>
+                        insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
+                        <sql:param value="${reviewergrp}"/>
+                        <sql:param value="${grpmanager}"/>
+                        <sql:param value="${appVariables.experiment}"/>
+                    </sql:update> 
+
+                    <%-- add reviewers to the reviewers group  --%>
                     <c:forEach var="rev" items="${paramValues['reviewers']}">
                         <c:set var="revarray" value="${fn:split(rev,':')}"/>
                         <sql:update>
@@ -330,7 +340,7 @@
                 </h1>
             </c:if>
             <c:if test="${trapError == null}">
-                    <c:redirect url="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}"/>  
+            <c:redirect url="show_pub.jsp?paperid=${current}"/>   
             </c:if>
        </c:when>
     </c:choose>

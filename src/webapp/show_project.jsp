@@ -50,15 +50,18 @@
        
     <tg:editProject projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/> 
   
-    <p/>
-    <hr align="left" width="45%"/>
+    <p><p/>
     
     <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leadersgrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
         <p id="pagelabel">Add or Remove Project Leads</p>
         <tg:groupMemberEditor groupname="${groupname}" returnURL="${returnURL}"/> 
     </c:if>
-    
+        
+       
     <c:if test="${pubs.rowCount > 0}">
+         <hr align="left" width="45%"/>
+        <p></p>
+        
         <p id="pagelabel">List of Document Entries (Total: ${pubs.rowCount})</p>
         
         <display:table class="datatable"  id="rows" name="${pubs.rows}">

@@ -13,6 +13,7 @@
 
 <script src="js/jquery-1.11.1.min.js"></script>
 <script src="js/jquery.validate.min.js"></script>
+<link rel="stylesheet" href="css/pubstyles.css">
 
 <%@attribute name="paperid" required="true"%>
 
@@ -51,6 +52,9 @@
     <p/> 
     
     <form action="editPublication.jsp?paperid=${param.paperid}" method="post">
+        <div id="formRequest">
+            <fieldset>
+                <legend>Edit document</legend>
         <c:forEach var="x" items="${fi.rows}">
             <c:if test="${!empty x.fieldexplanation}">
                 <p id="pagelabel">${x.fieldexplanation}</p>
@@ -115,7 +119,10 @@
             </c:if>
             
         </c:forEach>
+            
         <input type="submit" name="submit" value="update"/>
+        </fieldset>
+        </div>
     </form>
     
     

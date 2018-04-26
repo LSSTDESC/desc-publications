@@ -38,14 +38,12 @@
     
 <%-- find the project leads --%>
 <c:set var="projectLeaders" value=""/>
-
 <sql:query var="leads">
-    select u.first_name, u.last_name, u.email from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
+    select u.first_name, u.last_name, u.email, u.memidnum from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
     where ug.group_id = ? and ug.experiment = ? order by u.last_name
     <sql:param value="project_leads_${param.projid}"/>
     <sql:param value="${appVariables.experiment}"/>
 </sql:query>
-    
 <c:forEach var="line" items="${leads.rows}">
     <c:choose>
        <c:when test="${empty projectLeaders}">
@@ -102,6 +100,8 @@
                 select count(*) tot from descpub_publication_versions where paperid = ?
                 <sql:param value="${rows.paperid}"/>
             </sql:query>
+                ${vers.rows[0].tot}
+                <%--
             <c:choose>    
                 <c:when test="${vers.rowCount > 0}">
                     <a href="uploadPub.jsp?paperid=${rows.paperid}">${vers.rows[0].tot}</a>
@@ -109,10 +109,11 @@
                 <c:when test="${vers.rowCount < 1}">
                     ${vers.rows[0].tot}
                 </c:when>
-            </c:choose>
+            </c:choose> --%>
+                
         </display:column>
-        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leadersgrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
-          <display:column title="Edit" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
+        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperleads) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+            <display:column title="Edit" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
         </c:if>
     </display:table>
     <p/> 

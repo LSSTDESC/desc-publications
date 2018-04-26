@@ -47,14 +47,14 @@
                         <c:set var="userVals" value="${fn:split(user,':')}"/>  
                         <c:set var="memidnum" value="${userVals[0]}"/>
                         <c:set var="uid" value="${userVals[1]}"/>
-                        <c:if test="${!empty uid && !empty param.groupname && !empty memidnum}">
-                        <sql:update>
+                        <c:if test="${!empty uid && !empty param.groupname && !empty memidnum}">   
+                          <sql:update>
                             INSERT INTO PROFILE_UG (USER_ID,GROUP_ID,EXPERIMENT,MEMIDNUM) VALUES(?,?,?,?)
                             <sql:param value="${uid}"/>
                             <sql:param value="${param.groupname}"/>
                             <sql:param value="${appVariables.experiment}"/>
                             <sql:param value="${memidnum}"/>
-                        </sql:update> 
+                        </sql:update>  
                         </c:if>  
                         <c:if test="${empty uid || empty param.groupname || empty memidnum}">
                             One of uid, groupname or memidnum is empty:

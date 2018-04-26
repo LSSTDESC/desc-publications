@@ -8,6 +8,8 @@
 <%@attribute name="projid" required="true"%>
 <%@attribute name="swgid" required="true"%>  
 <%@attribute name="returnURL" required="true" %>
+<link rel="stylesheet" href="css/pubstyles.css">
+
  
     <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-members'))}">
         <c:redirect url="noPermission.jsp?errmsg=7"/>
@@ -57,6 +59,9 @@
     <c:set var="projectleads" value="project_leads_${projid}"/>
     
 <p id="pagelabel">Project Details [Working Group(s): ${wglist}]</p>
+<div id="formRequest">
+    <fieldset>
+        <legend>Edit project details</legend>
 <form action="modifySWGprojects.jsp">  
     <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />
     <input type="hidden" name="projid" id="projid" value="${projid}" /> 
@@ -104,4 +109,6 @@
       <input type="submit" value="Update_Project_Details" id="action" name="action" />    
     </c:if>  
   </form>
+    </fieldset>
+</div>
 <p/>

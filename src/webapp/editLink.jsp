@@ -38,9 +38,7 @@
         </sql:query>    
 
         <tg:editPublication paperid="${param.paperid}"/> 
-
-        <hr align="left" width="50%"/>
-        
+        <p></p>
         <c:set var="paperleads" value="paper_leads_${param.paperid}"/>
         <c:set var="paperreviewers" value="paper_reviewers_${param.paperid}"/>
         
