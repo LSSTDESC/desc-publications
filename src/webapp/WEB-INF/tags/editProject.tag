@@ -46,7 +46,7 @@
     </sql:query>
    
     <sql:query var="projects">
-        select id, title, summary, state, wkspaceurl, to_char(created,'yyyy-Mon-dd') crdate, to_char(lastmodified,'yyyy-Mon-dd') moddate from descpub_project where id = ?  
+        select id, title, summary, state, wkspaceurl, to_char(created,'YYYY-Mon-DD HH:MI:SS') crdate, to_char(lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate from descpub_project where id = ?  
         <sql:param value="${projid}"/>
     </sql:query>
     
