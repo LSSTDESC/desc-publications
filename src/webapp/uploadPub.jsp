@@ -54,7 +54,7 @@
                 <p id="pagelabel">Title: ${papertitle}</p> 
 
                 <sql:query var="list">
-                    select paperid, version, tstamp, to_char(tstamp,'Mon-dd-yyyy') pst, remarks from descpub_publication_versions where paperid=? order by version
+                    select paperid, version, to_char(tstamp,'YYYY-Mon-DD HH:MI:SS') tstamp, to_char(tstamp,'YYYY-Mon-DD') pst, remarks from descpub_publication_versions where paperid=? order by version
                     <sql:param value="${param.paperid}"/>
                 </sql:query>
 
@@ -66,7 +66,8 @@
                         </display:column>
                         <display:column title="Remarks" property="remarks"/>
                         <display:column title="Uploaded (UTC)">
-                           <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                            ${row.tstamp}
+                         <%--  <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/> --%>
                         </display:column>
                         <display:column title="Uploaded (PDT/PST)">
                             ${row.pst}
