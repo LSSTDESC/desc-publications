@@ -30,22 +30,32 @@
             <c:redirect url="noPermission.jsp?errmsg=7"/>
         </c:if>
             
-        <c:set var="paperGroup" value="paper_${param.paperid}"/>
+        <c:set var="paperMember" value="paper_${param.paperid}"/>
+        <c:set var="primary" value="paper_leads_${param.paperid}"/>
         <%-- when testing against dev the tag gm:isUserInGroup won't work because it always checks against the prod db so test separately if user can edit paper.
-        canEdit checks if conveners can edit, userCanEdit checks if user can edit
+        canEdit checks if conveners (primary auth) can edit, userCanEdit checks if member of the paper can edit
         --%>
         <c:set var="userCanEdit" value="false"/> <%-- can user edit --%>
-        <c:set var="canEdit" value="false"/> <%-- if user is convener, can convener edit --%>
+        <c:set var="primaryCanEdit" value="false"/> <%-- can primary author edit --%>
         <c:set var="selectFields" value=""/> <%-- var to build list of fields per pubtype --%>
         <c:set var="primaryauths" value=""/>
         
-        <sql:query var="can">
+        <sql:query var="canUser">
           select count(*) tot from profile_ug where group_id=? and user_id=?
-          <sql:param value="${paperGroup}"/>
+          <sql:param value="${paperMember}"/>
           <sql:param value="${userName}"/>
         </sql:query>
-        <c:if test="${can.rowCount > 0}">
+         <c:if test="${canUser.rows[0].tot > 0}">
           <c:set var="userCanEdit" value="true"/>
+        </c:if> 
+        <sql:query var="canPrimary">
+          select count(*) tot from profile_ug where group_id=? and user_id=?
+          <sql:param value="${primary}"/>
+          <sql:param value="${userName}"/>
+        </sql:query>
+
+        <c:if test="${canPrimary.rows[0].tot > 0}">
+          <c:set var="primaryCanEdit" value="true"/>
         </c:if>
         
         <%-- build the list of fields appropriate for this pubtype --%>
@@ -108,7 +118,7 @@
       
         <%-- check for versions --%>
         <sql:query var="vers">
-            select paperid, version, tstamp, to_char(tstamp,'Mon-dd-yyyy') pst, remarks from descpub_publication_versions where paperid=? order by version desc
+            select paperid, version, to_char(tstamp,'YYYY-Mon-DD HH:MI:SS') tstamp, to_char(tstamp,'YYYY-Mon-DD HH:MI:SS') pst, remarks from descpub_publication_versions where paperid=? order by version desc
             <sql:param value="${param.paperid}"/>
         </sql:query>
        
@@ -145,7 +155,7 @@
              <c:if test="${(publications.can_request_authorship != 'N' && publications.state != 'inactive') || !empty publications.can_request_authorship}">
                <display:column title="Request Authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable" style="text-align:right;"/>
             </c:if>
-            <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,paperGroup) || canEdit=='true' || userCanEdit=='true') && publications.state != 'inactive'}">
+            <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,paperMember) || canEdit=='true' || userCanEdit=='true') && publications.state != 'inactive'}">
                 <display:column title="Edit" href="editLink.jsp">
                        <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                 </display:column>
@@ -181,9 +191,16 @@
            </utils:trEvenOdd>
        </c:if>       
         
+       <c:if test="${primaryCanEdit || userCanEdit}">
+           <utils:trEvenOdd reset="false"><th style="text-align: left">Edit</th>
+               <td style="text-align: left">
+               <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
+               </td>
+           </utils:trEvenOdd>
+       </c:if>    
+               
         </table>
 
-        
         <c:if test="${vers.rowCount > 0}">
             <display:table class="datatable" id="row" name="${vers.rows}">
                 <display:column title="Versions of DESC-${row.paperid}" sortable="true" headerClass="sortable">
@@ -191,13 +208,14 @@
                 </display:column>
                 <display:column title="Remarks" property="remarks"/>
                 <display:column title="Uploaded (UTC)">
-                   <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                    ${row.tstamp}
+                  <%-- <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/> --%>
                 </display:column>
             </display:table>
             <p/> 
         </c:if>
       
-        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperleads) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperlead_grp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
         <form action="upload.jsp" method="post" enctype="multipart/form-data">
             <div>
               <fieldset class="fieldset-auto-width">
