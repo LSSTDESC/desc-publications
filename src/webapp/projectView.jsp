@@ -57,7 +57,7 @@
 
 <%-- get the project information --%>
 <sql:query var="projects">
-    select id, title, summary, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, lastmodified, lastmodby, wkspaceurl from descpub_project where id = ?
+    select id, title, summary, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, wkspaceurl from descpub_project where id = ?
     <sql:param value="${param.projid}"/>
 </sql:query>
 
@@ -87,6 +87,7 @@
     <p id="pagelabel">${docs.rowCount} Document Entries</p>
 
     <display:table class="datatable"  id="rows" name="${docs.rows}">
+        <c:set var="paperlead" value="paper_leads_${rows.paperid}"/>
         <display:column title="Document ID" style="text-align:left;" sortable="true" headerClass="sortable">
             DESC-${rows.paperid}
         </display:column>
@@ -100,19 +101,9 @@
                 select count(*) tot from descpub_publication_versions where paperid = ?
                 <sql:param value="${rows.paperid}"/>
             </sql:query>
-                ${vers.rows[0].tot}
-                <%--
-            <c:choose>    
-                <c:when test="${vers.rowCount > 0}">
-                    <a href="uploadPub.jsp?paperid=${rows.paperid}">${vers.rows[0].tot}</a>
-                </c:when>
-                <c:when test="${vers.rowCount < 1}">
-                    ${vers.rows[0].tot}
-                </c:when>
-            </c:choose> --%>
-                
+            ${vers.rows[0].tot}
         </display:column>
-        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperleads) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperlead) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
             <display:column title="Edit" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
         </c:if>
     </display:table>
