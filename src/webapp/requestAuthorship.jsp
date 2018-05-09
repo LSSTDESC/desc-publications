@@ -32,7 +32,7 @@
     <sql:query var="contribs">
         select initcap(label) label from descpub_contributions order by label
     </sql:query>
-        
+                   
     <c:choose>
         <c:when test="${!empty param.reason}">
             <%-- add chosen contributions to mail msg --%>
@@ -92,7 +92,7 @@
             <form action="requestAuthorship.jsp?paperid=${param.paperid}" name="requestAuth" id="requestAuth" method="post">
                 <input type="hidden" value="${param.paperid}" name="paperid"/><br/>
               <%--  <p id="pagelabel">Reason for authorship</p> --%>
-                <textarea name="reason" rows="5" cols="150" required></textarea><p/>
+                <textarea name="reason" rows="15" cols="80" required></textarea><p/>
                 <p id="pagelabel">Contribution(s) - check all that apply<br/>
                     Refer to authorship guide, section 3, for more detailed explanation
                 </p>
