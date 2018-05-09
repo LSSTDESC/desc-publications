@@ -20,7 +20,7 @@
 <c:set var="paperleads" value="paper_leads_${paperid}"/> 
   
  <sql:query var="pubs">
-  select paperid, state, title, short_title, pubtype, summary, to_char(createdate,'yyyy-mon-dd') added, to_char(modifydate,'yyyy-mon-dd') moddate, builder_eligible, key_paper,
+  select paperid, state, title, short_title, pubtype, summary, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') added, to_char(modifydate,'YYYY-Mon-DD HH:MI:SS') moddate, builder_eligible, key_paper,
   passed_internal_review, arxiv, published_reference, project_id, short_title from descpub_publication where paperid = ?
     <sql:param value="${paperid}"/>
  </sql:query>
