@@ -58,11 +58,18 @@
     <c:set var="wkspace" value="${projects.rows[0].wkspaceurl}"/>
     <c:set var="projectleads" value="project_leads_${projid}"/>
     
+    <sql:query var="isLead">
+        select count(*) tot from profile_ug where group_id = ? and user_id = ?
+        <sql:param value="${projectleads}"/>
+        <sql:param value="${userName}"/>
+    </sql:query>
+    <c:set var="canEdit" value="${isLead.rows[0].tot > 0 ? 'true' : 'false'}"/>
+    
 <p id="pagelabel">Project Details [Working Group(s): ${wglist}]</p>
 <div id="formRequest">
     <fieldset>
         <legend>Edit project details</legend>
-<form action="modifySWGprojects.jsp">  
+<form action="modifySWGprojects.jsp" method="post">  
     <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />
     <input type="hidden" name="projid" id="projid" value="${projid}" /> 
     <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp?projid=${projid}" />  
@@ -70,7 +77,10 @@
     Project ID: ${projid} &nbsp;&nbsp;&nbsp;
     Created: ${projects.rows[0].crdate}&nbsp;&nbsp;&nbsp;
     <c:if test="${!empty projects.rows[0].moddate}">
-    Last Modified: ${projects.rows[0].moddate}<p/>
+        Last changed: ${projects.rows[0].moddate}<p/>
+        <c:if test="${!empty projects.rows[0].lastmodby}">
+          Last changed by: ${projects.rows[0].lastmodby}<br/>
+        </c:if>
     </c:if>
     <p/>
     Title: <br/><input type="text" name="title" id="title" value="${title}" size="55" required/><p/>
@@ -105,7 +115,8 @@
     <p/>
     Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
-    <c:if test="${gm:isUserInGroup(pageContext,projectleads) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin')}">
+    
+    <c:if test="${canEdit || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin')}">
       <input type="submit" value="Update_Project_Details" id="action" name="action" />    
     </c:if>  
   </form>
