@@ -103,12 +103,12 @@
                            ${x.label}:  
                            <select name="${x.data}" ${required}>
                                 <c:forEach var="erow" items="${results.rows}">
-                                    <c:if test="${erow.defaultvalue == 'Y'}">
-                                        <option value="${erow.metavalue}" selected>${erow.metavalue} </option>
-                                    </c:if>
-                                    <c:if test="${erow.defaultvalue != 'Y'}">
-                                        <option value="${erow.metavalue}">${erow.metavalue} </option>
-                                    </c:if>
+                                   <c:if test="${erow.defaultvalue == 'Y'}">
+                                       <option value="${erow.metavalue}" selected>${erow.metavalue} </option>
+                                   </c:if>
+                                   <c:if test="${erow.defaultvalue != 'Y'}">
+                                       <option value="${erow.metavalue}">${erow.metavalue} </option>
+                                   </c:if>
                                 </c:forEach>
                             </select> 
                                 <p></p>
