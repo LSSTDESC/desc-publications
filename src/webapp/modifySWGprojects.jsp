@@ -16,24 +16,27 @@
       
    <c:set var="oranames" value=""/>
    <c:set var="oravals" value=""/>
+   <c:set var="debugMode" value="false"/>
    
    <sql:query var="projects">
         select id, title, summary, state, created, lastmodified, lastmodby from descpub_project where id = ?
         <sql:param value="${param.projid}"/>
    </sql:query> 
-           
-   <c:forEach var="x" items="${param}" varStatus="loop">
-       <c:if test="${x.key == 'summary'}">
-           summary found<br/>
-       </c:if>
-        <c:forEach var="a" items="${projects.rows}">
-            <c:if test="${!empty a[x.key]}">
-              <c:out value="Param: ${x.key} = ${x.value}"/><br/>
-              <c:out value="DB: ${a[x.key]}"/><p/>
-            </c:if>
+          
+   <c:if test="${debugMode=='true'}">
+       <c:forEach var="x" items="${param}" varStatus="loop">
+           <c:if test="${x.key == 'summary'}">
+               summary found<br/>
+           </c:if>
+            <c:forEach var="a" items="${projects.rows}">
+                <c:if test="${!empty a[x.key]}">
+                  <c:out value="Param: ${x.key} = ${x.value}"/><br/>
+                  <c:out value="DB: ${a[x.key]}"/><p/>
+                </c:if>
+            </c:forEach>
         </c:forEach>
-    </c:forEach>
-       
+    </c:if>
+              
    <%-- get column names and build query string --%>    
    <sql:query var="cols">
        select lower(column_name) as colname from user_tab_cols where table_name = ?
