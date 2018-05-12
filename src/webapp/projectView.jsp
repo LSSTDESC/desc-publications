@@ -35,13 +35,14 @@
     <sql:param value="${param.projid}"/>
 </sql:query> 
     
-    
+<c:set var="projectLeadGrpName" value="project_leads_${param.projid}"/>
+
 <%-- find the project leads --%>
 <c:set var="projectLeaders" value=""/>
 <sql:query var="leads">
-    select u.first_name, u.last_name, u.email, u.memidnum from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
+    select u.first_name, u.last_name, u.email, u.memidnum, u.user_name from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
     where ug.group_id = ? and ug.experiment = ? order by u.last_name
-    <sql:param value="project_leads_${param.projid}"/>
+    <sql:param value="${projectLeadGrpName}"/>
     <sql:param value="${appVariables.experiment}"/>
 </sql:query>
 <c:forEach var="line" items="${leads.rows}">
@@ -80,6 +81,10 @@
         <utils:trEvenOdd ><th>Workspace Url</th><td style="text-align: left">${empty row.wkspaceurl ? 'none' : row.wkspaceurl}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td></utils:trEvenOdd>
+
+    <c:if test="${gm:isUserInGroup(pageContext,projectLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsstdesc-publication-admin')}">
+      <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td></utils:trEvenOdd>
+    </c:if>
 </table>
  
  <c:if test="${docs.rowCount > 0}">
@@ -87,7 +92,8 @@
     <p id="pagelabel">${docs.rowCount} Document Entries</p>
 
     <display:table class="datatable"  id="rows" name="${docs.rows}">
-        <c:set var="paperlead" value="paper_leads_${rows.paperid}"/>
+        <c:set var="paperGrpName" value="paper_${rows.paperid}"/>
+        <c:set var="paperLeadGrpName" value="paper_leads_${rows.paperid}"/>
         <display:column title="Document ID" style="text-align:left;" sortable="true" headerClass="sortable">
             DESC-${rows.paperid}
         </display:column>
@@ -103,7 +109,7 @@
             </sql:query>
             ${vers.rows[0].tot}
         </display:column>
-        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperlead) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
             <display:column title="Edit" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
         </c:if>
     </display:table>
