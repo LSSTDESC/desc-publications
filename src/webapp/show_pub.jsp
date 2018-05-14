@@ -104,7 +104,6 @@
             </c:if>
         </c:forEach> 
         
-        <h1>convenerCanEdit ${empty convenerCanEdit ? 'false' : 'true'}</h1>
         <sql:query var="countpapers">
             select count(*) from descpub_publication where project_id = ?
             <sql:param value="${projid}"/>
