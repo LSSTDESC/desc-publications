@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" >
-
-
-     <Parameter name="version" value="${pom.version}" override="false"/>
-
-
-</Context>

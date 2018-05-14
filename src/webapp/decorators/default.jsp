@@ -10,7 +10,7 @@
 <html>
     <head>
         <title>
-            <decorator:title default="LSST DESC Voting"/>
+            <decorator:title default="LSST DESC Publication System"/>
         </title>
         <srs_utils:styleSheet/>
         <decorator:head />

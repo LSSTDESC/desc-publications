@@ -1,0 +1,73 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 25, 2017, 5:01:14 PM
+    Author     : chee
+*/
+
+#pagelabel {
+    /*color: #0000FF;*/
+    color: #000000;
+    font-family: georgia,serif;
+    font-size: 12px;
+}
+
+hr.style1 {
+    border-top: 1px dotted #8c8b8b;
+    border-bottom: 1px dotted #fff;
+    width: auto;
+}
+
+.changeSummaryWidth {
+    min-width: 25%;
+}
+
+.fieldset-auto-width {
+  display: inline-block;
+}
+
+ul.contributor {
+    list-style-type: square;
+}
+
+#pagerequire {
+    font-size: 14px;
+    color:red;
+}
+
+#formRequest {
+    width: 50%;
+}
+
+#formRequest fieldset {
+    max-width: 50%;
+}
+
+/*
+input[type=text], select{
+    width: auto;
+    padding: 3px 7px;
+    margin: 5px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+ 
+*/
+
+input[type=submit] {
+    width: auto;
+    background-color: #DADADA; 
+    color: black;
+    padding: 3px 7px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+ 
