@@ -18,7 +18,7 @@
  <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <link rel="stylesheet" type="text/css" href="css/pubstyles.css">
-      <title>LSST-DESC Project ${param.projid}</title>
+      <title>LSST DESC Project ${param.projid}</title>
 </head>
 
 <body>
@@ -47,7 +47,13 @@
         
     <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/> 
     <c:set var="leadersgrp" value="${leads.rows[0].cgn}"/>
-       
+    
+    <!-- Prominently display project number and title, and provide URL -->
+    <h1><strong>Project ${param.projid}: ${param.title}</strong></h1> 
+    <br>
+    <h2>URL: ${param.url}</h2>
+    <br>
+    
     <tg:editProject projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/> 
   
     <p><p/>
