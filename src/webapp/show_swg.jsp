@@ -87,7 +87,7 @@
     
     
        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
-           <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-deshttp://localhost:8080/Pubs/show_project.jsp?projid=87&swgid=12c-publications-admin')}">
+           <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                 <form action="project_details.jsp">
                     <input type="hidden" name="task" value="create_proj_form"/>
                     <input type="hidden" name="swgid" value="${param.swgid}"/>
