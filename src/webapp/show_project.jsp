@@ -35,6 +35,11 @@
     <c:set var="groupname" value="project_leads_${projid}"/>
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
    
+    <sql:query var="projDetails">
+        select * from descpub_project where id = ?
+        <sql:param value="${projid}"/>
+    </sql:query>
+    
     <sql:query var="pubs">
         select paperid, title, createdate, pubtype from descpub_publication where project_id = ?
         <sql:param value="${projid}"/>
@@ -49,9 +54,9 @@
     <c:set var="leadersgrp" value="${leads.rows[0].cgn}"/>
     
     <!-- Prominently display project number and title, and provide URL -->
-    <h1><strong>Project ${param.projid}: ${param.title}</strong></h1> 
+    <h1><strong>Project ${param.projid}: ${projDetails.rows[0].title}</strong></h1> 
     <br>
-    <h2>URL: ${param.url}</h2>
+    <h2>URL: ${projDetails.rows[0].wkspaceurl}</h2>
     <br>
     
     <tg:editProject projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/> 

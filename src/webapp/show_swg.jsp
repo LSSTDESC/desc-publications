@@ -22,7 +22,7 @@
       <script src="js/jquery.validate.min.js"></script>
       <link rel="stylesheet" href="css/site-demos.css">
       <link rel="stylesheet" href="css/pubstyles.css">
-      <title>SWG Page</title>
+      <title>Working Groups Page</title>
 </head>
 
    <body>
