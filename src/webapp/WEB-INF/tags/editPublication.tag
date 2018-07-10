@@ -114,7 +114,12 @@
                  <p></p>
             </c:if>
             <c:if test="${x.datatype == 'textarea'}">
-                ${x.label}:<br/><textarea name="${x.data}" ${x.required}>${results.rows[0][x.data]}</textarea><br/>
+                 <sql:query var="rowcol">
+                    select * from descpub_metadata_enum where metaid = ?
+                    <sql:param value="${x.metaid}"/>
+                </sql:query>
+                <c:set var="sumcols" value="${fn:split(rowcol.rows[0].metavalue,':')}"/>
+                ${x.label}:<br/><textarea rows=${sumcols[0]} cols=${sumcols[1]} name="${x.data}" ${x.required}>${results.rows[0][x.data]}</textarea><br/>
                  <p></p>
             </c:if>
             
