@@ -71,10 +71,11 @@
     <c:choose>  
         <c:when test="${param.task == 'create_proj_form'}">
              <h3>Working Group: ${swgs.rows[0].name}</h3><p/>
-             <em id="pagerequire">All form fields are required</em>
+             <em id="pagerequire">Some fields are required</em>
             <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}">
                 <strong>Title</strong><p/><input type="text" name="title" size="77" required/><p/>
-                <strong>Project workspace URL</strong><p/><input type="text" size="77" name="wkspaceurl" required/><p/>
+                <strong>Confluence URL</strong><p/><input type="text" size="77" name="wkspaceurl"/><p/>
+                <strong>Github URL</strong><p/><input type="text" size="77" name="gitspaceurl"/><p/>
                 <strong>Summary<br/></strong><textarea rows="22" cols="80" name="summary" required></textarea>
                 <p/>
                 <strong>Select project leads</strong><p/>
@@ -92,21 +93,22 @@
         </c:when>
         <c:when test="${param.formsubmitted == 'true'}">
             <c:set var="trapError" value=""/>
-          <%--  
+            
             <c:forEach var="x" items="${param}">
                 <c:forEach var="y" items="${paramValues[x.key]}">
                     <c:out value="key = ${x.key} paramValue: ${y}"/><br/>
                 </c:forEach>
-            </c:forEach> --%>
-            
+            </c:forEach>  
+                     
             <c:catch var="trapError">
                 <sql:transaction>
                     <sql:update >
-                    insert into descpub_project (id,title,summary,state,wkspaceurl,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,sysdate,?)
+                    insert into descpub_project (id,title,summary,state,wkspaceurl,gitspaceurl,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,?,sysdate,?)
                     <sql:param value="${param.title}"/>
                     <sql:param value="${param.summary}"/>
                     <sql:param value="${param.state}"/>
                     <sql:param value="${param.wkspaceurl}"/>
+                    <sql:param value="${param.gitspaceurl}"/>
                     <sql:param value="${userName}"/>
                     </sql:update>
                     

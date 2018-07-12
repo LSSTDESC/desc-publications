@@ -85,7 +85,6 @@
     <h2>Working Group(s): ${swgname}</h2>
     <p id="pagelabel">Conveners: ${convenerList}</p>
     
-    
        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
            <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                 <form action="project_details.jsp">

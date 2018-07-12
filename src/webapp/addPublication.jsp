@@ -26,7 +26,14 @@
     DOI = digital object identifier
     ADS = astrophysics data system
     --%>
-    <c:set var="debugMode" value="false"/>
+    <c:set var="debugMode" value="true"/>
+    
+    <c:if test="${debugMode =='true'}">
+        <c:forEach var="pa" items="${param}">
+            <c:out value="${pa.key} = ${pa.value}"/><br/>
+        </c:forEach>
+    </c:if>
+    
     <sql:query var="ptypes">
         select pubtype from descpub_publication_types order by pubtype
     </sql:query>
@@ -48,10 +55,16 @@
             </form>
         </c:when>
         <c:when test="${param.ptype_selected == 'true' && param.formsubmitted != 'true'}">
+            <%--
                 <sql:query var="fields">
                    select me.metaid, me.label, me.data, me.datatype, me.numrows, me.numcols, pb.fieldexplanation, pb.required, pb.sqlstr from 
                    descpub_metadata me join descpub_pubtype_fields pb on me.metaid = pb.metaid where pb.pubtype = ? 
                    order by formposition
+                   <sql:param value="${param.pubtype}"/>
+                </sql:query> --%>
+                   
+                <sql:query var="fields">
+                   select * from descpub_metadata me join descpub_pubtype_fields pb on me.metaid = pb.metaid where pb.pubtype = ? order by formposition
                    <sql:param value="${param.pubtype}"/>
                 </sql:query>
                    
@@ -141,9 +154,26 @@
                         </c:if>
                            
                         <c:if test="${x.datatype == 'textarea'}">
-                             <p></p>
-                            ${x.label}:<br/>  <textarea name="${x.data}" ${required}></textarea><br/>
-                             <p></p>
+                            <c:set var="textrow" value=""/> 
+                            <c:set var="textcol" value=""/>
+                            <sql:query var="rowcol">
+                                select metavalue from descpub_metadata_enum where metaid = ?
+                                <sql:param value="${x.metaid}"/>
+                            </sql:query>
+                            <c:set var="arr" value="${fn:split(rowcol,':')}"/>
+
+                            <c:choose>
+                                <c:when test="${!empty array}">
+                                    <p></p>
+                                    ${x.label}:<br/> <textarea rows=${arr[0]} cols=${arr[1]} name=${x.data} ${required}></textarea><br/>
+                                    <p></p>
+                                </c:when>
+                                <c:when test="${empty rowcol.rowCount || rowcol.rowCount < 1}">
+                                    <p></p>
+                                    ${x.label}:<br/>  <textarea name="${x.data}" ${required}></textarea><br/>
+                                    <p></p>
+                                </c:when>
+                            </c:choose>
                         </c:if>
                             
                         <c:if test="${x.datatype == 'checkbox'}">

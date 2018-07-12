@@ -58,7 +58,7 @@
 
 <%-- get the project information --%>
 <sql:query var="projects">
-    select id, title, summary, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, wkspaceurl from descpub_project where id = ?
+    select id, title, summary, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, wkspaceurl, gitspaceurl from descpub_project where id = ?
     <sql:param value="${param.projid}"/>
 </sql:query>
 
@@ -78,7 +78,8 @@
     <c:if test="${!empty row.lastmodby}">
         <utils:trEvenOdd ><th>Modified By</th><td style="text-align: left">${row.lastmodby}</td></utils:trEvenOdd>
     </c:if>
-        <utils:trEvenOdd ><th>Workspace Url</th><td style="text-align: left">${empty row.wkspaceurl ? 'none' : row.wkspaceurl}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Confluence Url</th><td style="text-align: left">${empty row.wkspaceurl ? 'none' : row.wkspaceurl}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Github Url</th><td style="text-align: left">${empty row.gitspaceurl ? 'none' : row.gitspaceurl}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td></utils:trEvenOdd>
 
@@ -110,7 +111,7 @@
             ${vers.rows[0].tot}
         </display:column>
         <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
-            <display:column title="Edit" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
+            <display:column title="Edit doc" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
         </c:if>
     </display:table>
     <p/> 

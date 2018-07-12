@@ -55,9 +55,6 @@
     
     <!-- Prominently display project number and title, and provide URL -->
     <h1><strong>Project ${param.projid}: ${projDetails.rows[0].title}</strong></h1> 
-    <br>
-    <h2>URL: ${projDetails.rows[0].wkspaceurl}</h2>
-    <br>
     
     <tg:editProject projid="${projid}" swgid="${swgid}" returnURL="show_project.jsp?projid=${projid}&swgid=${swgid}"/> 
   
