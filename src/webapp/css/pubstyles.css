@@ -8,13 +8,7 @@ and open the template in the editor.
     Author     : chee
 */
 
-#pagelabel {
-    /*color: #0000FF;*/
-    color: #000000;
-    font-family: georgia,serif;
-    font-size: 12px;
-}
-
+/* __ CLASSES  __ */
 hr.style1 {
     border-top: 1px dotted #8c8b8b;
     border-bottom: 1px dotted #fff;
@@ -33,31 +27,26 @@ ul.contributor {
     list-style-type: square;
 }
 
+#pagelabel {
+    /*color: #0000FF;*/
+    color: #000000;
+    font-family: georgia,serif;
+    font-size: 12px;
+}
+
+/* __ IDS __ */
 #pagerequire {
     font-size: 14px;
     color:red;
 }
 
 #formRequest {
-    width: 50%;
+    width: 70%;
 }
 
 #formRequest fieldset {
-    max-width: 50%;
+    max-width: 70%;
 }
-
-/*
-input[type=text], select{
-    width: auto;
-    padding: 3px 7px;
-    margin: 5px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
- 
-*/
 
 input[type=submit] {
     width: auto;
@@ -69,5 +58,3 @@ input[type=submit] {
     border-radius: 4px;
     cursor: pointer;
 }
-
- 

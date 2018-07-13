@@ -64,10 +64,14 @@
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="createdate" style="text-align:left;" title="Created" sortable="true" headerClass="sortable"/>
+                <c:if test="${!empty Line.modifydate}">
                 <display:column property="modifydate" style="text-align:left;" title="Last Modified" sortable="true" headerClass="sortable"/>
+                </c:if>
+                <c:if test="${Line.project_id != '0'}">
                 <display:column title="Project Id" style="text-align:left;" sortable="true" headerClass="sortable">
                     <a href="projectView.jsp?projid=${Line.project_id}">${Line.project_id}</a>
                 </display:column>
+                </c:if>
             </display:table>
         </c:if>        
     

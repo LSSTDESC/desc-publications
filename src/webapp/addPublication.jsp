@@ -25,8 +25,9 @@
     status = paper is either internal to the collaboration or public
     DOI = digital object identifier
     ADS = astrophysics data system
+    projid = 0 means the document is not associated with any project
     --%>
-    <c:set var="debugMode" value="true"/>
+    <c:set var="debugMode" value="false"/>
     
     <c:if test="${debugMode =='true'}">
         <c:forEach var="pa" items="${param}">
@@ -68,13 +69,15 @@
                    <sql:param value="${param.pubtype}"/>
                 </sql:query>
                    
-                <sql:query var="projInfo">
-                   select p.id, p.title, s.name from descpub_project p join descpub_project_swgs j on p.id=j.project_id
-                   join descpub_swg s on s.id=j.swg_id  where p.id = ? and s.id = ?
-                   <sql:param value="${param.projid}"/>
-                   <sql:param value="${param.swgid}"/>
-                </sql:query>
-
+                <c:if test="${param.projid != '0'}">
+                    <sql:query var="projInfo">
+                       select p.id, p.title, s.name from descpub_project p join descpub_project_swgs j on p.id=j.project_id
+                       join descpub_swg s on s.id=j.swg_id  where p.id = ? and s.id = ?
+                       <sql:param value="${param.projid}"/>
+                       <sql:param value="${param.swgid}"/>
+                    </sql:query>
+                </c:if>
+                       
                 <sql:query var="poolOfCandidates">
                     select m.firstname, m.lastname, m.memidnum, u.username from um_member m join um_project_members p on m.memidnum=p.memidnum
                     join um_member_username u on u.memidnum=m.memidnum where p.activestatus = 'Y' and p.project = ? and m.lastname != 'lsstdesc-user' 
@@ -82,17 +85,18 @@
                     <sql:param value="${appVariables.experiment}"/>
                 </sql:query>
                     
-                <c:set var="arrayDetails" value="${param.pubtype},${projInfo.rows[0].title},${projInfo.rows[0].name}"/>    
+              <%--  <c:set var="arrayDetails" value="${param.pubtype},${projInfo.rows[0].title},${projInfo.rows[0].name}"/>  --%>  
 
                 <div class="intro">
                     <p id="pagelabel">Document Details</p>
                     <strong>Pubtype: ${param.pubtype}<br/>
-                    Project id: [ <a href="show_project.jsp?projid=${projInfo.rows[0].id}">${projInfo.rows[0].id}</a> ] ${projInfo.rows[0].title}. <br/> 
+                    <c:if test="${param.projid != '0'}">
+                       Project id: [ <a href="show_project.jsp?projid=${projInfo.rows[0].id}">${projInfo.rows[0].id}</a> ] ${projInfo.rows[0].title}. <br/> 
+                    </c:if>
                     Working group(s): ${projInfo.rows[0].name}</strong>
                     <p></p>
                 </div> 
               
-                
                 <form action="addPublication.jsp" method="post" id="addPublication" name="addPublication">
                     <div id="formRequest">
                     <fieldset>
@@ -154,26 +158,15 @@
                         </c:if>
                            
                         <c:if test="${x.datatype == 'textarea'}">
-                            <c:set var="textrow" value=""/> 
-                            <c:set var="textcol" value=""/>
                             <sql:query var="rowcol">
-                                select metavalue from descpub_metadata_enum where metaid = ?
+                                select numrows, numcols from descpub_metadata where metaid = ?
                                 <sql:param value="${x.metaid}"/>
                             </sql:query>
-                            <c:set var="arr" value="${fn:split(rowcol,':')}"/>
-
-                            <c:choose>
-                                <c:when test="${!empty array}">
-                                    <p></p>
-                                    ${x.label}:<br/> <textarea rows=${arr[0]} cols=${arr[1]} name=${x.data} ${required}></textarea><br/>
-                                    <p></p>
-                                </c:when>
-                                <c:when test="${empty rowcol.rowCount || rowcol.rowCount < 1}">
-                                    <p></p>
-                                    ${x.label}:<br/>  <textarea name="${x.data}" ${required}></textarea><br/>
-                                    <p></p>
-                                </c:when>
-                            </c:choose>
+                            <c:set var="numrows" value="${empty rowcol.rows[0].numrows ? '20' : rowcol.rows[0].numrows}"/>
+                            <c:set var="numcols" value="${empty rowcol.rows[0].numcols ? '20' : rowcol.rows[0].numcols}"/>
+                            <p></p>
+                            ${x.label}:<br/>  <textarea name="${x.data} rows=${numrows} cols=${numcols} ${required}"></textarea><br/>
+                            <p></p>
                         </c:if>
                             
                         <c:if test="${x.datatype == 'checkbox'}">
@@ -209,17 +202,21 @@
                 </form>
         </c:when>
         <c:when test="${param.formsubmitted == 'true' && debugMode}">
-            <sql:query var="res">
+           <%-- <sql:query var="res">
                 select me.metaid, me.data, me.label, pb.multiplevalues from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
                 where pb.pubtype = ?
                 <sql:param value="${param.pubtype}"/>
-            </sql:query>
+            </sql:query> --%>
               
+            <sql:query var="res">
+                select * from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid where pb.pubtype = ?
+                <sql:param value="${param.pubtype}"/>
+            </sql:query>
+                
             <c:set var="current" value="99999"/>
              <br>
              <c:forEach var="par" items="${param}">
                  <c:forEach var="fi" items="${res.rows}" varStatus="loop">
-                     
                      <c:choose>
                          <c:when test="${fi.data == par.key && empty fieldstr && !empty par.value}">
                              <c:set var="fieldstr" value="${fi.data}"/>
@@ -245,18 +242,24 @@
                  <c:forEach var="x" items="${valuestr}">
                      <sql:param value="${x}"/>
                  </c:forEach>
-             </sql:update>
+             </sql:update>  
                  
              <p></p>
         </c:when>
         <c:when test="${param.formsubmitted && !debugMode}">
-            <%-- get fields for this pubtype --%>    
+            <%-- get fields for this pubtype --%>
+            <%-- orig query
             <sql:query var="res">
                 select pb.metaid, me.data, me.label, pb.multiplevalues from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
-                where pb.pubtype = ? order by pb.formposition
+                where pb.pubtype = ? order by formposition
                 <sql:param value="${param.pubtype}"/>
-            </sql:query>
-          
+            </sql:query> --%>
+                
+            <sql:query var="res">
+                select * from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid where pb.pubtype = ? order by formposition
+                <sql:param value="${param.pubtype}"/>
+            </sql:query>   
+                
             <c:set var="fieldstr" value=""/>
             <c:set var="valuestr" value=""/>
             <c:set var="qmarks" value=""/>

@@ -109,7 +109,7 @@
             <input type="hidden" name="task" value="create_publication_form"/>
             <input type="hidden" name="swgid" value="${swgid}"/>
             <input type="hidden" name="projid" value="${projid}"/>
-            <input type="submit" value="Create Document Entry"/>
+            <input type="submit" value="Create Document For This Project"/>
         </form>
     </c:if>  
         

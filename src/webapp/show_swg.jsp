@@ -92,6 +92,14 @@
                     <input type="hidden" name="swgid" value="${param.swgid}"/>
                     <input type="submit" value="Create Project"/>
                 </form>
+                <form action="addPublication.jsp" method="post">
+                    <input type="hidden" name="task" value="create_publication_form"/>
+                    <input type="hidden" name="swgid" value="${param.swgid}"/>
+                    <input type="hidden" name="projid" value='0'/>
+                    <div class="tooltip">
+                    <input type="submit" value="Create Project-less Document"/>
+                    </div>
+                </form>
            </c:if>
            <p></p>
             <strong>Projects</strong><br/>
