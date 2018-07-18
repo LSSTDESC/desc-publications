@@ -165,7 +165,7 @@
                             <c:set var="numrows" value="${empty rowcol.rows[0].numrows ? '20' : rowcol.rows[0].numrows}"/>
                             <c:set var="numcols" value="${empty rowcol.rows[0].numcols ? '20' : rowcol.rows[0].numcols}"/>
                             <p></p>
-                            ${x.label}:<br/>  <textarea name="${x.data} rows=${numrows} cols=${numcols} ${required}"></textarea><br/>
+                            ${x.label}:<br/><textarea name="${x.data}" rows="${numrows}" cols="${numcols}" ${required}></textarea><br/>
                             <p></p>
                         </c:if>
                             
@@ -191,8 +191,15 @@
                         <option value="${auth.memidnum}:${auth.firstname} ${auth.lastname}:${auth.username}">${auth.lastname},  ${auth.firstname} </option>
                     </c:forEach>
                     </select>
-                    
-                   <br/> 
+                    <p></p>
+                    <p id="pagelabel">
+                    Select Reviewer(s):</p>  
+                    <select name="reviewers" multiple size="20">
+                    <c:forEach var="revs" items="${poolOfCandidates.rows}">
+                        <option value="${revs.memidnum}:${revs.firstname} ${revs.lastname}:${revs.username}">${revs.lastname},  ${revs.firstname} </option>
+                    </c:forEach>
+                    </select>
+                   <br/>
                      <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
                      <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
                      <input type="hidden" name="pubtype" value="${param.pubtype}"/>

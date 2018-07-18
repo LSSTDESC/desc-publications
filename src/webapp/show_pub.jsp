@@ -30,6 +30,22 @@
             <c:redirect url="noPermission.jsp?errmsg=7"/>
         </c:if>
             
+        <sql:query var="pnum">
+            select project_id from descpub_publication where paperid = ?
+            <sql:param value="${param.paperid}"/>
+        </sql:query>
+        <c:set var="projid" value="${pnum.rows[0].project_id}"/> 
+        <c:set var="projectGrpName" value="project_${param.paperid}"/>
+        
+       <%-- check if users in project group. isUserInGroup not working --%>
+        <sql:query var="inGrp">
+            select count(*) from profile_ug where group_id = ?
+            <sql:param value="${projectGrpName}"/>
+        </sql:query>
+        <c:if test="${inGrp.rowCount > 0}">
+            <c:set var="inProjGrp" value="true"/>        
+        </c:if>    
+        
         <c:set var="paperGrpName" value="paper_${param.paperid}"/>
         <c:set var="paperLeadGrpName" value="paper_leads_${param.paperid}"/>
         <%-- when testing against dev the tag gm:isUserInGroup won't work because it always checks against the prod db so test separately if user can edit paper.
@@ -39,7 +55,7 @@
         <c:set var="selectFields" value=""/> <%-- var to build list of fields per pubtype --%>
         <c:set var="primaryauths" value=""/>  
         
-        <sql:query var="canUser"> <%-- check if user in either group --%>
+        <sql:query var="canUser"> <%-- check if user is in one of the allowed groups --%>
           select memidnum from profile_ug where group_id in (?,?) and user_id=? and experiment = ?
           <sql:param value="${paperGrpName}"/>
           <sql:param value="${paperLeadGrpName}"/>
@@ -135,6 +151,7 @@
         </c:forEach>
              
         <h2>Document: <strong>DESC-${param.paperid}</strong></h2> 
+         
         <table class="datatable">
             <utils:trEvenOdd reset="true"><th style="text-align: left;">Document type</th><td style="text-align: left">${pubs.rows[0]['pubtype']}</td></utils:trEvenOdd>
             <utils:trEvenOdd reset="false"><th style="text-align: left">Project</th><td style="text-align: left">${pubs.rows[0]['project_id']}</td></utils:trEvenOdd>
@@ -155,7 +172,7 @@
                 </td>
             </utils:trEvenOdd>
 
-           <c:if test="${(pubDetails.rows[0].can_request_authorship == 'Y' && pubDetails.rows[0].state != 'inactive' && gm:isUserInGroup(pageContext,paperLeadGrpName) && userCanEdit==true)}">
+           <c:if test="${(pubDetails.rows[0].can_request_authorship == 'Y' && pubDetails.rows[0].state != 'inactive' && ( gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,paperGrpName) ) )}">
                <utils:trEvenOdd reset="false"><th style="text-align: left">Request authorship</th>
                    <td style="text-align: left">
                    <a href="requestAuthorship.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
@@ -181,13 +198,12 @@
                 <display:column title="Remarks" property="remarks"/>
                 <display:column title="Uploaded (UTC)">
                     ${row.tstamp}
-                  <%-- <fmt:formatDate value="${row.tstamp}" pattern="yyyy-MM-dd HH:mm:ss"/> --%>
                 </display:column>
             </display:table>
             <p/> 
         </c:if>
       
-        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publication-admin')}">
+        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publication-admin')}">
         <form action="upload.jsp" method="post" enctype="multipart/form-data">
             <div>
               <fieldset class="fieldset-auto-width">

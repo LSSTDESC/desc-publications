@@ -36,11 +36,12 @@
 </sql:query> 
     
 <c:set var="projectLeadGrpName" value="project_leads_${param.projid}"/>
+<c:set var="projectGrpName" value="project_${param.projid}"/>
 
 <%-- find the project leads --%>
 <c:set var="projectLeaders" value=""/>
 <sql:query var="leads">
-    select u.first_name, u.last_name, u.email, u.memidnum, u.user_name from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
+    select u.first_name, u.last_name, u.memidnum, u.user_name from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
     where ug.group_id = ? and ug.experiment = ? order by u.last_name
     <sql:param value="${projectLeadGrpName}"/>
     <sql:param value="${appVariables.experiment}"/>
@@ -85,15 +86,18 @@
 
     <c:if test="${gm:isUserInGroup(pageContext,projectLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsstdesc-publication-admin')}">
       <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td></utils:trEvenOdd>
+    </c:if>
+    <c:if test="${gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsstdesc-publication-admin')}">
       <utils:trEvenOdd ><th>Document </th><td style="text-align: left"><a href="addPublication.jsp?task=create_publication_form&projid=${param.projid}&swgid=${param.swgid}">Add</a></td></utils:trEvenOdd>
     </c:if>
+      
 </table>
  
  <c:if test="${docs.rowCount > 0}">
     <p></p>
     <p id="pagelabel">${docs.rowCount} Document Entries</p>
 
-    <display:table class="datatable"  id="rows" name="${docs.rows}">
+    <display:table class="datatable"  id="rows" name="${docs.rows}" cellpadding="5" cellspacing="8">
         <c:set var="paperGrpName" value="paper_${rows.paperid}"/>
         <c:set var="paperLeadGrpName" value="paper_leads_${rows.paperid}"/>
         <display:column title="Document ID" style="text-align:left;" sortable="true" headerClass="sortable">

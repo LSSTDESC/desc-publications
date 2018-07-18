@@ -32,6 +32,15 @@
     <sql:query var="contribs">
         select initcap(label) label from descpub_contributions order by label
     </sql:query>
+        
+    <sql:query var="recips">
+       select p.first_name, p.last_name, p.email from profile_user p join profile_ug ug on p.memidnum = ug.memidnum and p.experiment=ug.experiment
+       where ug.group_id = ? and ug.experiment = ?
+       <sql:param value="paper_leads_${param.paperid}"/>
+       <sql:param value="${appVariables.experiment}"/>
+    </sql:query>
+       
+    <p id="pagelabel">Your request will go to the lead author(s).</p>
                    
     <c:choose>
         <c:when test="${!empty param.reason}">
@@ -55,12 +64,12 @@
             <c:set var="msgbody" value="Reason: ${param.reason}  Selected Contributions: ${contributions}"/>
 
             <sql:transaction>
-                <sql:query var="recips">
+              <%--  <sql:query var="recips">
                    select p.first_name, p.last_name, p.email from profile_user p join profile_ug ug on p.memidnum = ug.memidnum and p.experiment=ug.experiment
                    where ug.group_id = ? and ug.experiment = ?
                    <sql:param value="paper_leads_${param.paperid}"/>
                    <sql:param value="${appVariables.experiment}"/>
-                </sql:query>
+                </sql:query> --%>
                      
                 <sql:update>
                      insert into descpub_mailbody (msgid, subject, body, mail_originator, askdate) values(DESCPUB_MAIL_SEQ.nextval, ?, ?, ?,sysdate)

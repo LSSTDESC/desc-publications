@@ -25,12 +25,12 @@
          
         
         <sql:query var="pjs" >
-             select id, title, created, lastmodified from descpub_project order by id
+             select id, title, created, lastmodified from descpub_project where state != 'Inactive' order by id
         </sql:query>   
          
         <h2>LSST DESC Projects</h2>
              
-        <display:table class="datatable" id="Row" name="${pjs.rows}">
+        <display:table class="datatable" id="Row" name="${pjs.rows}" cellspacing="10" cellpadding="10">
              <display:column title="Working Groups" style="text-align:left;" sortable="true" headerClass="sortable">
                 <sql:query var="wgs">
                         select s.id, s.name from descpub_swg s join descpub_project_swgs j on s.id = j.swg_id and j.project_id = ?

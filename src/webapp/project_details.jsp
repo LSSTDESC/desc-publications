@@ -158,9 +158,9 @@
             </c:catch> 
 
             <c:if test="${!empty trapError}">
-                Create project ${param.title} failed.<br/>
+                Create project ${param.title} failed. insert into profile_group values(project_${projNum.rows[0]['newProjNum']}, project_leads_${projNum.rows[0]['newProjNum']}, ${appVariables.experiment})<br/>
                 ${trapError}
-            </c:if> 
+            </c:if>
             <c:if test="${empty trapError}">
                 <c:redirect url="show_project.jsp?projid=${projNum.rows[0]['newProjNum']}&swgid=${param.swgid}"/>
                 <%--

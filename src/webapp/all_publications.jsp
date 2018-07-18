@@ -33,7 +33,7 @@
 
         <c:if test="${vers.rowCount>0}">  
             <h2>LSST DESC Documents</h2>
-            <display:table class="datatable" id="record" name="${vers.rows}">
+            <display:table class="datatable" id="record" name="${vers.rows}" cellpadding="5" cellspacing="5">
                 <display:column title="DESC ID" style="text-align:left;" group="1" sortable="true" headerClass="sortable">
                     <a href="show_pub.jsp?paperid=${record.paperid}">DESC-${record.paperid}</a>
                 </display:column>
@@ -48,7 +48,7 @@
                         select max(version) version from descpub_publication_versions where paperid = ?
                         <sql:param value="${record.paperid}"/>
                     </sql:query>
-                        ${v.rows[0].version}
+                    ${v.rows[0].version}
                 </display:column>
                         
                 <display:column title="Lead Authors" sortable="true" headerClass="sortable" style="text-align:left;">

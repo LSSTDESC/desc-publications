@@ -57,7 +57,7 @@
 
         <c:if test="${papers.rowCount > 0}">
              <p id="pagelabel">Most recent Documents</p> 
-            <display:table class="datatable" id="Line" name="${papers.rows}">
+             <display:table class="datatable" id="Line" name="${papers.rows}" cellpadding="5" cellspacing="8">
                 <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
                    <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
                 </display:column>
