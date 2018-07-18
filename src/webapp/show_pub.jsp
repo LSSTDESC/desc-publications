@@ -180,7 +180,7 @@
                </utils:trEvenOdd>
            </c:if>       
 
-           <c:if test="${userCanEdit || convenerCanEdit || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publication-admin')}">
+           <c:if test="${userCanEdit || convenerCanEdit || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                <utils:trEvenOdd reset="false"><th style="text-align: left">Edit</th>
                    <td style="text-align: left">
                    <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
@@ -203,7 +203,7 @@
             <p/> 
         </c:if>
       
-        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publication-admin')}">
+        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
         <form action="upload.jsp" method="post" enctype="multipart/form-data">
             <div>
               <fieldset class="fieldset-auto-width">
