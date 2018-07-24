@@ -31,17 +31,23 @@
                 <sql:query var="list">
                     select paperid, title from descpub_publication order by paperid
                 </sql:query>
-
-                <p id="pagelabel"> Choose your paper: </p>
-                <form action="uploadPub.jsp">
-                    <select name="paperid" size="8" required>
-                        <c:forEach var="p" items="${list.rows}">
-                            <option value="${p.paperid}">${p.title}</option>
-                        </c:forEach>
-                    </select>
-                    <br>
-                    <input type="submit" value="Go" name="submit">
-                </form>            
+                <c:choose>
+                    <c:when test="${list.rowCount > 0}">
+                    <p id="pagelabel"> Choose your paper: </p>
+                    <form action="uploadPub.jsp">
+                        <select name="paperid" size="8" required>
+                            <c:forEach var="p" items="${list.rows}">
+                                <option value="${p.paperid}">${p.title}</option>
+                            </c:forEach>
+                        </select>
+                        <br>
+                        <input type="submit" value="Go" name="submit">
+                    </form> 
+                    </c:when>
+                    <c:otherwise>
+                        <p id="pagelabel">A document must have an entry before it can be uploaded. </p> 
+                    </c:otherwise>
+                </c:choose>
             </c:when>
             <c:otherwise>   
                 <h2><strong>DESC-${param.paperid}</strong></h2>
