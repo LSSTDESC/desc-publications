@@ -68,7 +68,7 @@
     
 <p id="pagelabel">Project Details [Working Group(s): ${wglist}]</p>
 <div id="formRequest">
-    <fieldset>
+    <fieldset class="fieldset-auto-width">
         <legend>Edit project details</legend>
 <form action="modifySWGprojects.jsp" method="post">  
     <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />

@@ -41,6 +41,7 @@
         <p></p>
         <c:set var="paperleads" value="paper_leads_${param.paperid}"/>
         <c:set var="paperreviewers" value="paper_reviewers_${param.paperid}"/>
+        <c:set var="papermembers" value="paper_${param.paperid}"/>
         
         <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperleads) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
             Add or Remove Lead Authors
@@ -51,7 +52,11 @@
             <p></p>
             <tg:groupMemberEditor groupname="${paperreviewers}" returnURL="editLink.jsp?paperid=${param.paperid}"/>  
             <p>   
-
+            Add or Remove Eligible Authors
+            <p></p>
+            <tg:groupMemberEditor groupname="${papermembers}" returnURL="editLink.jsp?paperid=${param.paperid}"/>  
+            <p>   
+                
             <c:if test="${countpapers.rowCount > 0}">     
                <a href="uploadPub.jsp?paperid=${param.paperid}">Upload Draft of paper ${param.paperid}</a> &nbsp;&nbsp;&nbsp;&nbsp;
             </c:if>

@@ -34,6 +34,9 @@
         <c:when test="${param.errmsg == '8'}">
             <h3>All working groups must have at least one convener. Use the LSSTDESC Group Manager to add conveners.</h3>
         </c:when>
+        <c:when test="${param.errmsg == '9'}">
+            <h3>Failed to get user information from the ${appVariables.experiment} Group Manager.</h3>
+        </c:when>
         </c:choose>
     </body>
 </html>

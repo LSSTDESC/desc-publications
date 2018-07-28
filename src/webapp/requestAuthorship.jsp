@@ -40,6 +40,14 @@
        <sql:param value="${appVariables.experiment}"/>
     </sql:query>
        
+    <sql:query var="userInfo">
+        select m.firstname, m.lastname, m.memidnum from um_member m join um_member_username u on m.memidnum=u.memidnum where u.username = ?
+        <sql:param value="${userName}"/>
+    </sql:query> 
+    <c:if test="${userInfo.rowCount < 1}">
+       <c:redirect url="noPermission.jsp?errmsg=9"/>
+    </c:if>    
+       
     <p id="pagelabel">Your request will go to the lead author(s).</p>
                    
     <c:choose>
@@ -100,13 +108,12 @@
             <p id="pagelabel">Request Authorship for DESC-${param.paperid}. &nbsp;&nbsp;Please state your reason for this request.</p>
             <form action="requestAuthorship.jsp?paperid=${param.paperid}" name="requestAuth" id="requestAuth" method="post">
                 <input type="hidden" value="${param.paperid}" name="paperid"/><br/>
-              <%--  <p id="pagelabel">Reason for authorship</p> --%>
                 <textarea name="reason" rows="15" cols="80" required></textarea><p/>
                 <p id="pagelabel">Contribution(s) - check all that apply<br/>
                     Refer to authorship guide, section 3, for more detailed explanation
                 </p>
                 <c:forEach var="c" items="${contribs.rows}">
-                    ${c['label']}  <input type="checkbox" class="checkbox" name="name" value="${c['label']}"/><br/>
+                     <input type="checkbox" class="checkbox" name="name" value="${c['label']}"/>${c['label']} <br/>
                 </c:forEach>
                 <p></p>
                 <input type="submit" value="Send_Request" name="submit"/>    

@@ -40,12 +40,19 @@ ul.contributor {
     color:red;
 }
 
+/*
 #formRequest {
-    width: 70%;
+   width: 60%;
 }
 
+ 
 #formRequest fieldset {
+    
     max-width: 70%;
+} */
+
+.fieldset-auto-width {
+    display: inline-block;
 }
 
 input[type=submit] {

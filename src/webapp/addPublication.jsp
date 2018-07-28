@@ -99,7 +99,7 @@
               
                 <form action="addPublication.jsp" method="post" id="addPublication" name="addPublication">
                     <div id="formRequest">
-                    <fieldset>
+                        <fieldset class="fieldset-auto-width">
                     <legend>New document form</legend>
                     <c:forEach var="x" items="${fields.rows}">
                         <c:set var="required" value="${!empty x.required ? 'required' : ''}"/>

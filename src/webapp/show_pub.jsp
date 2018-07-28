@@ -171,11 +171,11 @@
                     </c:forEach>
                 </td>
             </utils:trEvenOdd>
-
-           <c:if test="${(pubDetails.rows[0].can_request_authorship == 'Y' && pubDetails.rows[0].state != 'inactive' && ( gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,paperGrpName) ) )}">
+                
+           <c:if test="${(pubDetails.rows[0].can_request_authorship == 'Y' && pubDetails.rows[0].state != 'inactive' && ( gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ) )}">
                <utils:trEvenOdd reset="false"><th style="text-align: left">Request authorship</th>
                    <td style="text-align: left">
-                   <a href="requestAuthorship.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
+                   <a href="requestAuthorship.jsp?paperid=${param.paperid}">DESC-${param.paperid} request</a>
                    </td>
                </utils:trEvenOdd>
            </c:if>       

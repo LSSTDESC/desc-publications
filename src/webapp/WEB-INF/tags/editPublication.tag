@@ -53,7 +53,7 @@
     
     <form action="editPublication.jsp?paperid=${param.paperid}" method="post">
         <div id="formRequest">
-            <fieldset>
+            <fieldset class="fieldset-auto-width">
                 <legend>Edit document</legend>
         <c:forEach var="x" items="${fi.rows}">
             <c:if test="${!empty x.fieldexplanation}">
@@ -115,11 +115,10 @@
             </c:if>
             <c:if test="${x.datatype == 'textarea'}">
                  <sql:query var="rowcol">
-                    select * from descpub_metadata_enum where metaid = ?
+                    select numrows, numcols from descpub_metadata where metaid = ?
                     <sql:param value="${x.metaid}"/>
-                </sql:query>
-                <c:set var="sumcols" value="${fn:split(rowcol.rows[0].metavalue,':')}"/>
-                ${x.label}:<br/><textarea rows=${sumcols[0]} cols=${sumcols[1]} name="${x.data}" ${x.required}>${results.rows[0][x.data]}</textarea><br/>
+                </sql:query> 
+                ${x.label}:<br/><textarea rows="${rowcol.rows[0].numrows}" cols="${rowcol.rows[0].numcols}" name="${x.data}" ${x.required}>${results.rows[0][x.data]}</textarea><br/>
                  <p></p>
             </c:if>
             
