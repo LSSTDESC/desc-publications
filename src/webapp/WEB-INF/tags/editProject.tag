@@ -46,7 +46,7 @@
     </sql:query>
    
     <sql:query var="projects">
-        select id, title, summary, state, wkspaceurl, gitspaceurl, to_char(created,'YYYY-Mon-DD HH:MI:SS') crdate, to_char(lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate from descpub_project where id = ?  
+        select id, title, summary, state, wkspaceurl, gitspaceurl, srmurl, to_char(created,'YYYY-Mon-DD HH:MI:SS') crdate, to_char(lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate from descpub_project where id = ?  
         <sql:param value="${projid}"/>
     </sql:query>
     
@@ -57,6 +57,7 @@
     <c:set var="comm" value="${projects.rows[0].comm}"/>
     <c:set var="wkspace" value="${projects.rows[0].wkspaceurl}"/>
     <c:set var="gitspace" value="${projects.rows[0].gitspaceurl}"/>
+    <c:set var="srmspace" value="${projects.rows[0].srmurl}"/>
     <c:set var="projectleads" value="project_leads_${projid}"/>
     
     <sql:query var="isLead">
@@ -117,6 +118,9 @@
     <p/>
     Github URL:<br/>
     <input type="text" name="gitspaceurl" id="gitspaceurl" value="${gitspace}" size="55" required/>
+    <p/>
+    SRM URL:<br/>
+    <input type="text" name="srmurl" id="srmurl" value="${srmspace}" size="55" required/>
     <p/>
     Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
