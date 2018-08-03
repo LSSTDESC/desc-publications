@@ -33,11 +33,14 @@
             select id, name, profile_group_name as pgn, convener_group_name as cgn from descpub_swg 
             order by name
         </sql:query>
-            
-        <sql:query var="papers">
-            select paperid, project_id, createdate, modifydate, pubtype, title from (select * from descpub_publication order by createdate desc) where rownum <= 10
-        </sql:query>
              
+        <%-- new select, order by journal paper --%>
+        <sql:query var="papers">
+            select paperid, project_id, createdate, modifydate, pubtype, title from descpub_publication where modifydate > sysdate - 30 or createdate > sysdate - 30
+            order by case
+            when pubtype='Journal paper' then 1 else 2 end
+        </sql:query>
+            
         <c:if test="${swgs.rowCount > 0}">
             <display:table class="datatable"  id="Row" name="${swgs.rows}">
                 <display:column title="Working Groups (WGs)" href="show_swg.jsp" paramId="swgid" property="name" paramProperty="id" sortable="true" headerClass="sortable" style="text-align:left;"/>
@@ -64,14 +67,12 @@
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="createdate" style="text-align:left;" title="Created" sortable="true" headerClass="sortable"/>
-                <c:if test="${!empty Line.modifydate}">
                 <display:column property="modifydate" style="text-align:left;" title="Last Modified" sortable="true" headerClass="sortable"/>
-                </c:if>
-                <c:if test="${Line.project_id != '0'}">
                 <display:column title="Project Id" style="text-align:left;" sortable="true" headerClass="sortable">
+                    <c:if test="${Line.project_id > 0}">
                     <a href="projectView.jsp?projid=${Line.project_id}">${Line.project_id}</a>
+                    </c:if>
                 </display:column>
-                </c:if>
             </display:table>
         </c:if>        
     
