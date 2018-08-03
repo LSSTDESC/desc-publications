@@ -37,8 +37,6 @@
         <%-- new select, order by journal paper --%>
         <sql:query var="papers">
             select paperid, project_id, createdate, modifydate, pubtype, title from descpub_publication where modifydate > sysdate - 30 or createdate > sysdate - 30
-            order by case
-            when pubtype='Journal paper' then 1 else 2 end
         </sql:query>
             
         <c:if test="${swgs.rowCount > 0}">
