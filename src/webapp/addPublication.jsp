@@ -89,7 +89,7 @@
 
                 <div class="intro">
                     <p id="pagelabel">Document Details</p>
-                    <strong>Pubtype: ${param.pubtype}<br/>
+                    <strong>Document type: ${param.pubtype}<br/>
                     <c:if test="${param.projid != '0'}">
                        Project id: [ <a href="show_project.jsp?projid=${projInfo.rows[0].id}">${projInfo.rows[0].id}</a> ] ${projInfo.rows[0].title}. <br/> 
                     </c:if>
