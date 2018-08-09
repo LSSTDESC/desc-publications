@@ -14,7 +14,11 @@
     <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-members'))}">
         <c:redirect url="noPermission.jsp?errmsg=7"/>
     </c:if>  
-   
+
+    <sql:query var="srmdata">
+        select srmact from descpub_srm_activities order by srmact
+    </sql:query>
+
     <c:set var="wglist" value=""/>
     <sql:query var="validStates">
         select state from descpub_project_states order by state
@@ -50,6 +54,7 @@
         <sql:param value="${projid}"/>
     </sql:query>
     
+    <c:set var="srmact_selected" value="${projects.rows[0].srmact}"/>
     <c:set var="project_grp" value="project_${projid}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].state}"/>
@@ -120,7 +125,12 @@
     <input type="text" name="gitspaceurl" id="gitspaceurl" value="${gitspace}" size="55" required/>
     <p/>
     SRM activity:<br/>
-    <input type="text" name="srmact" id="srmact" value="${srmspace}" size="55" required/>
+     <select name="srmact" size="20" required>
+        <c:forEach var="s" items="${srmdata.rows}">
+            <option value="${s.srmact}"  <c:if test="${s.srmact == srmact_selected}">selected</c:if>  >${s.srmact}</option>
+        </c:forEach>
+     </select>
+    <%--<input type="text" name="srmact" id="srmact" value="${srmspace}" size="55" required/> --%>
     <p/>
     Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
