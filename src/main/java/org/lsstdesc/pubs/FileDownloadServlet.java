@@ -30,7 +30,13 @@ public class FileDownloadServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int paperid = Integer.parseInt(request.getParameter("paperid"));
-        int version = Integer.parseInt(request.getParameter("version"));
+        // if a version number is not specified default is to return the latest version of the paper. The request comes in as a string so check for
+        // version and convert it to integer or default set to zero before calling dbutil.getFile.
+        int version = 0;
+        String versionPar = request.getParameter("version");
+        if ( versionPar != null && !versionPar.isEmpty() ) {
+            version = Integer.parseInt(versionPar);
+        }            
         try {
             File serverFile;
             try (Connection conn = ConnectionManager.getConnection(request)) {
