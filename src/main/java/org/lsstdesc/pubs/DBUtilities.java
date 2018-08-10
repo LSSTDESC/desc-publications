@@ -60,10 +60,22 @@ public class DBUtilities {
     }
 
     File getFile(int paperid, int version) throws SQLException {
-        String sql = "select location from DESCPUB_PUBLICATION_VERSIONS where version=? and paperid=?";
+        // url request may or may not include a version number. If no version number is specified the default is to return the most recent file.
+        String sql;
+        if (version == 0){
+            sql = "select location from DESCPUB_PUBLICATION_VERSIONS where version in (select max(version) from DESCPUB_PUBLICATION_VERSIONS where paperid = ?) and paperid=? ";
+        } else {
+            sql = "select location from DESCPUB_PUBLICATION_VERSIONS where version=? and paperid=?";
+        }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, version);
-            stmt.setInt(2, paperid);
+            if (version == 0){
+                stmt.setInt(1, paperid);
+                stmt.setInt(2, paperid);
+            }
+            else {
+                stmt.setInt(1, version);
+                stmt.setInt(2, paperid);
+            }
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return new File(rs.getString(1));
