@@ -7,11 +7,12 @@
 <%@page pageEncoding="UTF-8"%>
 <%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib uri="http://srs.slac.stanford.edu/displaytag" prefix="displayutils" %>
-<%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
+<%@taglib uri="http://srs.slac.stanford.edu/utils" prefix="utils"%>
 <%@taglib tagdir="/WEB-INF/tags/" prefix="tg"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 
 <!DOCTYPE html>
@@ -74,10 +75,10 @@
     <c:forEach var="c" items="${conveners.rows}">
         <c:choose>
         <c:when test="${empty convenerList}">
-            <c:set var="convenerList" value="${c.first_name} ${c.last_name}"/>
+            <c:set var="convenerList" value="<a href=mailto:${c.email}>${c.first_name} ${c.last_name}</a>"/>
         </c:when>
         <c:when test="${!empty convenerList}">
-            <c:set var="convenerList" value="${convenerList}, ${c.first_name} ${c.last_name}"/>
+            <c:set var="convenerList" value="${convenerList}, <a href=mailto:${c.email}>${c.first_name} ${c.last_name}</a>"/>
         </c:when>
         </c:choose>
     </c:forEach>
@@ -86,29 +87,16 @@
     <p id="pagelabel">Conveners: ${convenerList}</p>
     
        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
-           <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
-                <form action="project_details.jsp">
-                    <input type="hidden" name="task" value="create_proj_form"/>
-                    <input type="hidden" name="swgid" value="${param.swgid}"/>
-                    <input type="submit" value="Create Project"/>
-                </form>
-                <form action="addPublication.jsp" method="post">
-                    <input type="hidden" name="task" value="create_publication_form"/>
-                    <input type="hidden" name="swgid" value="${param.swgid}"/>
-                    <input type="hidden" name="projid" value='0'/>
-                    <div class="tooltip">
-                    <input type="submit" value="Create Project-less Document"/>
-                    </div>
-                </form>
-           </c:if>
-           <p></p>
+          
             <strong>Projects</strong><br/>
             <display:table class="datatable" id="proj" name="${projects.rows}">
                <display:column title="Id" property="id" sortable="true" headerClass="sortable"/>
                <display:column title="Project Title" style="text-align:left;" sortable="true" headerClass="sortable">
                   <a href="projectView.jsp?projid=${proj.id}&swgid=${param.swgid}">${proj.title}</a>
                </display:column>   
-               <display:column title="# of Documents">
+               <display:column property="created" title="Created" style="text-align:left;" sortable="true" headerClass="sortable"/>
+               <display:column property="lastmodified" title="Last modified" style="text-align:left;" sortable="true" headerClass="sortable"/>
+               <display:column title="# of Docs">
                    <sql:query var="results">
                      select count(*) tot from descpub_publication where project_id = ?
                      <sql:param value="${proj.id}"/>
@@ -117,15 +105,24 @@
                </display:column>
                <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                    <display:column title="Edit Project">
-                       <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">${proj.id}</a>
+                       <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">e</a>
                    </display:column>
-                       
-                   <display:column title="Add document">
-                       <a href="addPublication.jsp?task=create_publication_form&projid=${proj.id}&swgid=${param.swgid}">${proj.id}</a>
-                   </display:column>   
-                       
-               </c:if>   
+                      
+                   <display:column title="Add document" style="text-align:right;">
+                       <a href="addPublication.jsp?task=create_publication_form&projid=${proj.id}&swgid=${param.swgid}">e</a>
+                   </display:column>    
+
+               </c:if>       
             </display:table>
-        </c:if>    
+        </c:if>  
+        <p></p>
+        <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+          <table class="datatable">
+            <utils:trEvenOdd reset="true"><th>Authorized tasks</th><td style="text-align: left"> <a href="project_details.jsp?task=create_proj_form&swgid=${param.swgid}">Add a project</a></td></utils:trEvenOdd>
+            <utils:trEvenOdd reset="true"><th></th><td style="text-align: left"><a href="addPublication.jsp?task=create_publication_form&swgid=${param.swgid}&projid=0">Add a project-less document</a></td></utils:trEvenOdd>
+          </table>
+        </c:if>
+         
+                       
    </body>
 </html>
