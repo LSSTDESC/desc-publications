@@ -19,7 +19,7 @@
    <c:set var="debugMode" value="false"/>
    
    <sql:query var="projects">
-        select id, title, summary, state, created, lastmodified, lastmodby from descpub_project where id = ?
+        select id, title, srmact, summary, state, created, lastmodified, lastmodby from descpub_project where id = ?
         <sql:param value="${param.projid}"/>
    </sql:query> 
           

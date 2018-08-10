@@ -149,7 +149,7 @@
                 </c:when>
             </c:choose>
         </c:forEach>
-             
+            
         <h2>Document: <strong>DESC-${param.paperid}</strong></h2> 
          
         <table class="datatable">

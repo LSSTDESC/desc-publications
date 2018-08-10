@@ -30,11 +30,18 @@
 <tg:underConstruction/>
 
 <%-- get all the papers under this project --%>
+<%-- old query
  <sql:query var="docs">
-    select paperid, title, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') createdate, pubtype from descpub_publication where project_id = ?
+    select paperid, title, can_request_authorship, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') createdate, pubtype from descpub_publication where project_id = ?
     <sql:param value="${param.projid}"/>
-</sql:query> 
-    
+</sql:query> --%>
+   
+<sql:query var="docs">
+   select paperid, title, can_request_authorship, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') createdate, pubtype 
+   from descpub_publication where project_id = ? order by case when pubtype='Journal paper' then 1 else 2 end
+   <sql:param value="${param.projid}"/>
+</sql:query>
+     
 <c:set var="projectLeadGrpName" value="project_leads_${param.projid}"/>
 <c:set var="projectGrpName" value="project_${param.projid}"/>
 
@@ -59,7 +66,7 @@
 
 <%-- get the project information --%>
 <sql:query var="projects">
-    select id, title, summary, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, wkspaceurl, gitspaceurl from descpub_project where id = ?
+    select id, title, summary, srmact, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, wkspaceurl, gitspaceurl from descpub_project where id = ?
     <sql:param value="${param.projid}"/>
 </sql:query>
 
@@ -81,25 +88,27 @@
     </c:if>
     <utils:trEvenOdd ><th>Confluence Url</th><td style="text-align: left">${empty row.wkspaceurl ? 'none' : row.wkspaceurl}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Github Url</th><td style="text-align: left">${empty row.gitspaceurl ? 'none' : row.gitspaceurl}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>SRM activity</th><td style="text-align: left">${empty row.srmact ? 'none' : row.srmact}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td></utils:trEvenOdd>
 
     <c:if test="${gm:isUserInGroup(pageContext,projectLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
       <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td></utils:trEvenOdd>
     </c:if>
+      <%--
     <c:if test="${gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
       <utils:trEvenOdd ><th>Document </th><td style="text-align: left"><a href="addPublication.jsp?task=create_publication_form&projid=${param.projid}&swgid=${param.swgid}">Add</a></td></utils:trEvenOdd>
-    </c:if>
-      
+    </c:if> --%>
 </table>
  
  <c:if test="${docs.rowCount > 0}">
-    <p></p>
+     
     <p id="pagelabel">${docs.rowCount} Document Entries</p>
 
     <display:table class="datatable"  id="rows" name="${docs.rows}" cellpadding="5" cellspacing="8">
         <c:set var="paperGrpName" value="paper_${rows.paperid}"/>
         <c:set var="paperLeadGrpName" value="paper_leads_${rows.paperid}"/>
+        <c:set var="authreq" value="${rows.can_request_authorship}"/>
         <display:column title="Document ID" style="text-align:left;" sortable="true" headerClass="sortable">
             DESC-${rows.paperid}
         </display:column>
@@ -118,8 +127,17 @@
         <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
             <display:column title="Edit doc" href="editLink.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
         </c:if>
+        <c:if test="${(gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'lsst-desc-members') || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )) && rows.can_request_authorship=='Y'}">
+            <display:column title="Request authorship" href="requestAuthorship.jsp" paramId="paperid" property="paperid" paramProperty="paperid" sortable="true" headerClass="sortable"/>
+        </c:if>     
     </display:table>
     <p/> 
 </c:if>
-
+    
+<c:if test="${gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+    <table class="datatable">
+        <utils:trEvenOdd reset="true"><th>Authorized tasks</th><td style="text-align:left;"><a href="addPublication.jsp?task=create_publication_form&projid=${param.projid}&swgid=${param.swgid}">Add document to project ${param.projid}</a></td></utils:trEvenOdd>
+    </table>
+</c:if>
+      
 </html>

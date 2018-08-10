@@ -30,13 +30,12 @@
      <c:set var="convenLink" value="http://srs.slac.stanford.edu/GroupManager/exp/LSST-DESC/protected/group.jsp?name="/>
         
         <sql:query var="swgs">
-            select id, name, profile_group_name as pgn, convener_group_name as cgn from descpub_swg 
-            order by name
+            select id, name, profile_group_name as pgn, convener_group_name as cgn from descpub_swg order by name
         </sql:query>
              
         <%-- new select, order by journal paper --%>
         <sql:query var="papers">
-        select paperid, project_id, pubtype, title, createdate, case when (modifydate > createdate and modifydate is not null) then modifydate
+        select paperid, project_id, pubtype, title, createdate, case when (modifydate > createdate and modifydate is not null) then modifydate 
         else createdate end as dt from descpub_publication order by dt desc
         </sql:query>
             
@@ -58,7 +57,7 @@
      
 
         <c:if test="${papers.rowCount > 0}">
-             <p id="pagelabel">Most recent Documents</p> 
+             <p id="pagelabel">Most recently Updated Documents</p> 
              <display:table class="datatable" id="Line" name="${papers.rows}" cellpadding="5" cellspacing="8">
                 <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
                    <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>

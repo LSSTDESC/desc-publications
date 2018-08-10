@@ -75,21 +75,21 @@
     <c:choose>  
         <c:when test="${param.task == 'create_proj_form'}">
              <h3>Working Group: ${swgs.rows[0].name}</h3><p/>
-             <em id="pagerequire">Some fields are required</em>
+             <em id="pagerequire">* fields are required</em>
             <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}">
-                <strong>Title</strong><p/><input type="text" name="title" size="77" required/><p/>
+                <strong>* Title</strong><p/><input type="text" name="title" size="77" required/><p/>
                 <strong>Confluence URL</strong><p/><input type="text" size="77" name="wkspaceurl"/><p/>
                 <strong>Github URL</strong><p/><input type="text" size="77" name="gitspaceurl"/><p/>
-                <strong>Select SRM activity</strong><p/>
-                <select name="srmdata" size="20" required>
+                <strong>* SRM activity</strong><p/>
+                <select name="srmact" size="20" required>
                     <c:forEach var="s" items="${srmdata.rows}">
                         <option value="${s.srmact}">${s.srmact}</option>
                     </c:forEach>
                 </select>
                 <p></p>
-                <strong>Summary<br/></strong><textarea rows="22" cols="80" name="summary" required></textarea>
+                <strong>* Summary<br/></strong><textarea rows="22" cols="80" name="summary" required></textarea>
                 <p/>
-                <strong>Select project leads</strong><p/>
+                <strong>* Select project leads</strong><p/>
                 <select name="addLeads" size="8" multiple required>
                     <c:forEach var="addrow" items="${candidates.rows}">
                         <option value="${addrow.memidnum}:${addrow.username}">${addrow.firstname} ${addrow.lastname}</option>
@@ -101,7 +101,7 @@
                 <input type="hidden" value="true" name="formsubmitted"/><p/>
                 <input type="submit" value="Create" name="submit">
             </form>
-                    </c:when>
+        </c:when>
         <c:when test="${param.formsubmitted == 'true'}">
             <c:set var="trapError" value=""/>
             
@@ -114,7 +114,7 @@
                     <sql:param value="${param.state}"/>
                     <sql:param value="${param.wkspaceurl}"/>
                     <sql:param value="${param.gitspaceurl}"/>
-                    <sql:param value="${param.srmact}"/>
+                    <sql:param value="${param.srmdata}"/>
                     <sql:param value="${userName}"/>
                     </sql:update>
                     
