@@ -36,7 +36,11 @@
     </c:if>
     
     <sql:query var="ptypes">
-        select pubtype from descpub_publication_types order by pubtype
+        select pubtype from descpub_publication_types 
+        <c:if test="${param.projid == 0}">
+            where projectless = 'Y'
+        </c:if>
+        order by pubtype
     </sql:query>
         
     <c:choose>
@@ -56,14 +60,6 @@
             </form>
         </c:when>
         <c:when test="${param.ptype_selected == 'true' && param.formsubmitted != 'true'}">
-            <%--
-                <sql:query var="fields">
-                   select me.metaid, me.label, me.data, me.datatype, me.numrows, me.numcols, pb.fieldexplanation, pb.required, pb.sqlstr from 
-                   descpub_metadata me join descpub_pubtype_fields pb on me.metaid = pb.metaid where pb.pubtype = ? 
-                   order by formposition
-                   <sql:param value="${param.pubtype}"/>
-                </sql:query> --%>
-                   
                 <sql:query var="fields">
                    select * from descpub_metadata me join descpub_pubtype_fields pb on me.metaid = pb.metaid where pb.pubtype = ? order by formposition
                    <sql:param value="${param.pubtype}"/>
@@ -77,7 +73,7 @@
                        <sql:param value="${param.swgid}"/>
                     </sql:query>
                 </c:if>
-                       
+                
                 <sql:query var="poolOfCandidates">
                     select m.firstname, m.lastname, m.memidnum, u.username from um_member m join um_project_members p on m.memidnum=p.memidnum
                     join um_member_username u on u.memidnum=m.memidnum where p.activestatus = 'Y' and p.project = ? and m.lastname != 'lsstdesc-user' 
@@ -255,13 +251,6 @@
         </c:when>
         <c:when test="${param.formsubmitted && !debugMode}">
             <%-- get fields for this pubtype --%>
-            <%-- orig query
-            <sql:query var="res">
-                select pb.metaid, me.data, me.label, pb.multiplevalues from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
-                where pb.pubtype = ? order by formposition
-                <sql:param value="${param.pubtype}"/>
-            </sql:query> --%>
-                
             <sql:query var="res">
                 select * from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid where pb.pubtype = ? order by formposition
                 <sql:param value="${param.pubtype}"/>
@@ -303,21 +292,30 @@
                          <sql:param value="${x}"/>
                      </c:forEach>
                    </sql:update>
-
-                    <%-- get the paperid, add it to the insert fields and create the associated groups for the paper --%>
+                     
+                   <%-- get the paperid, add it to the insert fields and create the associated groups for the paper --%>
                     <sql:query var="curr">
                         select DESCPUB_PUB_SEQ.currval as currval from dual
                     </sql:query>
                         
                     <%-- get the current pub sequence number --%>
                     <c:set var="current" value="${curr.rows[0].currval}"/>
+                     
+                    <%-- if project-less document update working group for document --%>
+                    <c:if test="${param.projid == 0}">
+                        <sql:update>
+                            insert into descpub_publication_swgs (paperid, swgid, entrydate) values (?,?,sysdate)
+                            <sql:param value="${current}"/>
+                            <sql:param value="${param.swgid}"/>
+                        </sql:update>
+                    </c:if>
                     
                     <%-- build the groups for this document --%>
                     <c:set var="group_name" value="paper_${current}"/> 
                     <c:set var="leadauthgrp" value="paper_leads_${current}"/>
                     <c:set var="reviewergrp" value="paper_reviewers_${current}"/>
                     <c:set var="grpmanager" value="lsst-desc-publications-admin"/>
-
+                    
                     <%-- insert group name into profile_group, initially empty, members will be added via grpmgr, paper lead group is the managing group --%> 
                     <sql:update>
                         insert into profile_group (group_name,group_manager,experiment) values (?, ?, ?)
@@ -372,7 +370,8 @@
                 <h1>Error. Failed to create document: ${param.title}<br/>
                     Parent key is ${param.projid}<br/>
                     CurrSequence: ${current}<br/>
-
+                    Fieldstr: ${fieldstr}<br/>
+                    Valuestr: ${valuestr}<br/>
                     ${trapError}<br/>
                     <c:forEach var="par" items="${param}">
                     <c:out value="PARAM=${par.key}=${par.value}"/><br/>
@@ -380,7 +379,7 @@
                 </h1>
             </c:if>
             <c:if test="${trapError == null}">
-            <c:redirect url="show_pub.jsp?paperid=${current}"/>   
+              <c:redirect url="show_pub.jsp?paperid=${current}"/>   
             </c:if>
        </c:when>
     </c:choose>
