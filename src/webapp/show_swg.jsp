@@ -108,7 +108,7 @@
                        <a href="show_project.jsp?projid=${proj.id}&swgid=${param.swgid}">e</a>
                    </display:column>
                       
-                   <display:column title="Add document" style="text-align:right;">
+                   <display:column title="Add doc" style="text-align:right;">
                        <a href="addPublication.jsp?task=create_publication_form&projid=${proj.id}&swgid=${param.swgid}">e</a>
                    </display:column>    
 
