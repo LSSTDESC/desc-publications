@@ -23,9 +23,9 @@
   select paperid, state, title, short_title, pubtype, summary, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') added, to_char(modifydate,'YYYY-Mon-DD HH:MI:SS') moddate, builder_eligible, key_paper,
   passed_internal_review, arxiv, published_reference, project_id, short_title from descpub_publication where paperid = ?
     <sql:param value="${paperid}"/>
- </sql:query>
+ </sql:query>  
 
- <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/>
+<c:set var="pubtype" value="${pubs.rows[0].pubtype}"/>
     
 <sql:query var="states">
     select state from descpub_publication_states order by state

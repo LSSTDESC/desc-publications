@@ -37,6 +37,18 @@
         <c:set var="projid" value="${pnum.rows[0].project_id}"/> 
         <c:set var="projectGrpName" value="project_${param.paperid}"/>
         
+        <%-- if project-less document find it's the working group --%>
+        <c:set var="projLessWG" value="no working group"/>
+        <sql:query var="projectLessWG">
+            select wg.name from descpub_publication_swgs s join descpub_swg wg on s.swgid = wg.id
+            where s.paperid = ?
+            <sql:param value="${param.paperid}"/>
+        </sql:query>
+         
+        <c:if test="${projectLessWG.rowCount > 0}">
+            <c:set var="projLessWG" value="${projectLessWG.rows[0]['name']}"/>
+        </c:if>
+             
        <%-- check if users in project group. isUserInGroup not working --%>
         <sql:query var="inGrp">
             select count(*) from profile_ug where group_id = ?
@@ -46,6 +58,7 @@
             <c:set var="inProjGrp" value="true"/>        
         </c:if>    
         
+        <c:set var="paperReviewGrp" value="paper_reviewers_${param.paperid}"/>
         <c:set var="paperGrpName" value="paper_${param.paperid}"/>
         <c:set var="paperLeadGrpName" value="paper_leads_${param.paperid}"/>
         <%-- when testing against dev the tag gm:isUserInGroup won't work because it always checks against the prod db so test separately if user can edit paper.
@@ -67,7 +80,7 @@
              <c:set var="userCanEdit" value="true"/>
         </c:if> 
         
-        <%-- build the list of fields appropriate for this pubtype --%>
+        <%-- get the list of fields appropriate for this pubtype  --%>
         <sql:query var="fi">
             select pb.metaid, me.data, me.label, me.datatype, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
             where pb.pubtype in (select pubtype from descpub_publication where paperid = ? )
@@ -76,7 +89,6 @@
         </sql:query>
             
         <c:forEach var="f" items="${fi.rows}">
-           <%--  <c:out value="F=${f.data}, ${f.label}"/><br> --%>
             <c:choose>
                 <c:when test="${empty selectFields}">
                     <c:set var="selectFields" value="${f.data}"/>
@@ -85,8 +97,9 @@
                     <c:set var="selectFields" value="${selectFields}, ${f.data}"/>
                 </c:when>
             </c:choose>
-        </c:forEach> 
-        <%-- add on the pubtype and project_id --%>    
+        </c:forEach>      
+            
+        <%-- add on the pubtype and project_id column names --%>    
         <c:set var="selectFields" value="${selectFields}, pubtype, project_id"/>
             
         <%-- get the publication using the selectList. This list used to control what fields are displayed per pubtype --%> 
@@ -100,11 +113,11 @@
         <c:set var="pubtype" value="${fi.rows[0].pubtype}"/> 
         
         
-        <%-- second pub query grabs all the details e.g. can_request_authorship --%>
+        <%-- second pub query grabs all the details e.g. can_request_authorship 
         <sql:query var="pubDetails">
             select * from descpub_publication where paperid = ?
             <sql:param value="${param.paperid}"/>
-        </sql:query>
+        </sql:query> --%>
         
         <%-- get the convener groupname --%>
         <sql:query var="leads">
@@ -120,10 +133,11 @@
             </c:if>
         </c:forEach> 
         
+        <%-- NOT USED
         <sql:query var="countpapers">
             select count(*) from descpub_publication where project_id = ?
             <sql:param value="${projid}"/>
-        </sql:query>   
+        </sql:query>    --%>
       
         <%-- check for versions --%>
         <sql:query var="vers">
@@ -150,18 +164,32 @@
             </c:choose>
         </c:forEach>
             
-        <h2>Document: <strong>DESC-${param.paperid}</strong></h2> 
-         
+        <h2>Document: <strong>DESC-${param.paperid}</strong></h2>   
         <table class="datatable">
             <utils:trEvenOdd reset="true"><th style="text-align: left;">Document type</th><td style="text-align: left">${pubs.rows[0]['pubtype']}</td></utils:trEvenOdd>
             <utils:trEvenOdd reset="false"><th style="text-align: left">Project</th><td style="text-align: left">${pubs.rows[0]['project_id']}</td></utils:trEvenOdd>
+            <c:if test="${projid == 0}">
+                <utils:trEvenOdd reset="false"><th style="text-align: left">Working Group</th><td style="text-align: left">${projLessWG}</td></utils:trEvenOdd>
+            </c:if>
             <c:forEach var="x" items="${pubs.columnNames}">
                 <c:forEach var="f" items="${fi.rows}">
-                    <c:if test="${fn:startsWith(fn:toLowerCase(x),fn:toLowerCase(f.label)) && fn:endsWith(fn:toLowerCase(x),fn:toLowerCase(f.label))}">
-                        <utils:trEvenOdd reset="false"><th style="text-align: left">${f.label}</th><td style="text-align: left">${pubs.rows[0][f.data]}</td></utils:trEvenOdd>
+                    <c:if test="${fn:toLowerCase(x) == f.data}">
+                        <c:choose>
+                            <c:when test="${f.datatype == 'url' && (fn:startsWith(pubs.rows[0][f.data],'http') || fn:startsWith(pubs.rows[0][f.data],'https'))}">
+                                <utils:trEvenOdd reset="false"><th style="text-align: left">${f.label}</th><td style="text-align: left"><a href="${pubs.rows[0][f.data]}">link</a></td></utils:trEvenOdd>
+                            </c:when>
+                            <c:when test="${f.data == 'can_request_authorship' && pubs.rows[0][f.data] == 'Y'}">
+                                <utils:trEvenOdd reset="false"><th style="text-align: left">Request authorship</th><td style="text-align: left"><a href="requestAuthorship.jsp?paperid=${param.paperid}">DESC-${param.paperid} request</a></td></utils:trEvenOdd>
+                            </c:when> 
+                            <c:otherwise>
+                                <utils:trEvenOdd reset="false"><th style="text-align: left">${f.label}</th><td style="text-align: left">${pubs.rows[0][f.data]}</td></utils:trEvenOdd>
+                            </c:otherwise>
+                        </c:choose>
                     </c:if>
                 </c:forEach>
             </c:forEach>
+            
+                
             <utils:trEvenOdd reset="false"><th style="text-align: left">Lead authors</th>
                 <td style="text-align: left">
                     <c:set var="parts" value="${fn:split(primaryauths,',')}"/>
@@ -171,14 +199,14 @@
                     </c:forEach>
                 </td>
             </utils:trEvenOdd>
-                
-           <c:if test="${(pubDetails.rows[0].can_request_authorship == 'Y' && pubDetails.rows[0].state != 'inactive' && ( gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ) )}">
+               <%--
+            <c:if test="${pubs.rows[0].can_request_authorship}">
                <utils:trEvenOdd reset="false"><th style="text-align: left">Request authorship</th>
                    <td style="text-align: left">
                    <a href="requestAuthorship.jsp?paperid=${param.paperid}">DESC-${param.paperid} request</a>
                    </td>
                </utils:trEvenOdd>
-           </c:if>       
+           </c:if>   --%>    
 
            <c:if test="${userCanEdit || convenerCanEdit || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                <utils:trEvenOdd reset="false"><th style="text-align: left">Edit</th>
@@ -189,7 +217,7 @@
            </c:if>    
                
         </table>
-
+            
         <c:if test="${vers.rowCount > 0}">
             <display:table class="datatable" id="row" name="${vers.rows}">
                 <display:column title="Versions of DESC-${row.paperid}" sortable="true" headerClass="sortable">

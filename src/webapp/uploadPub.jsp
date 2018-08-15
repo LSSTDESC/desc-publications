@@ -16,7 +16,7 @@
         <title>Upload </title>
     </head>
     <body>
-        <fmt:setTimeZone value="UTC"/>  
+        <fmt:setTimeZone value="UTC"/> 
         
         <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-members'))}">
             <c:redirect url="noPermission.jsp?errmsg=7"/>
@@ -82,7 +82,7 @@
                 <p/> 
                     <hr align="left" width="40%"/>   	
                 <p id="pagelabel">Upload new version of DESC-${param.paperid}</p>
-                 </c:if>
+                </c:if>
                 <form action="upload.jsp" method="post" enctype="multipart/form-data">
                 <div>
                   <fieldset class="fieldset-auto-width">  

@@ -36,7 +36,12 @@
         <%-- new select, order by journal paper --%>
         <sql:query var="papers">
         select paperid, project_id, pubtype, title, createdate, case when (modifydate > createdate and modifydate is not null) then modifydate 
-        else createdate end as dt from descpub_publication order by dt desc
+        else createdate end as dt from descpub_publication where project_id != 0 order by dt desc
+        </sql:query>
+        
+        <sql:query var="projectless">
+        select paperid, project_id, pubtype, title, createdate, case when (modifydate > createdate and modifydate is not null) then modifydate 
+        else createdate end as dt from descpub_publication where project_id = 0 order by dt desc
         </sql:query>
             
         <c:if test="${swgs.rowCount > 0}">
@@ -54,10 +59,23 @@
             </display:table>
         </c:if>  
         <p></p>
-     
-
+        
+        <c:if test="${projectless.rowCount > 0}">
+           <p id="pagelabel">Most recently Updated Project-less Documents</p> 
+           <display:table class="datatable" id="Line" name="${projectless.rows}" cellpadding="5" cellspacing="8">
+               <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
+                   <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
+                </display:column>
+                <display:column property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"/>
+                <display:column property="dt" title="Last modified" style="" sortable="true" headerClass="sortable"/>
+                <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
+                <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
+           </display:table>
+        </c:if>
+        
+        <p></p>
         <c:if test="${papers.rowCount > 0}">
-             <p id="pagelabel">Most recently Updated Documents</p> 
+             <p id="pagelabel">Most recently Updated Project Documents</p> 
              <display:table class="datatable" id="Line" name="${papers.rows}" cellpadding="5" cellspacing="8">
                 <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
                    <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
