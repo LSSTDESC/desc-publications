@@ -29,7 +29,7 @@
         <c:choose>
             <c:when test="${empty param.paperid}">
                 <sql:query var="list">
-                    select paperid, title from descpub_publication order by paperid
+                    select paperid, title from descpub_publication order by lower(title)
                 </sql:query>
                 <c:choose>
                     <c:when test="${list.rowCount > 0}">
