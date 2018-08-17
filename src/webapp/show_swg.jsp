@@ -76,15 +76,17 @@
         <c:choose>
         <c:when test="${empty convenerList}">
             <c:set var="convenerList" value="<a href=mailto:${c.email}>${c.first_name} ${c.last_name}</a>"/>
+            <c:set var="allconveners" value="${c.email}"/>
         </c:when>
         <c:when test="${!empty convenerList}">
             <c:set var="convenerList" value="${convenerList}, <a href=mailto:${c.email}>${c.first_name} ${c.last_name}</a>"/>
+            <c:set var="allconveners" value="${allconveners},${c.email}"/>
         </c:when>
         </c:choose>
     </c:forEach>
              
     <h2>Working Group(s): ${swgname}</h2>
-    <p id="pagelabel">Conveners: ${convenerList}</p>
+    <p id="pagelabel"><a href="mailto:${allconveners}">Conveners</a>: ${convenerList}</p>
     
        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
           
