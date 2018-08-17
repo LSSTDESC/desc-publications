@@ -32,8 +32,8 @@
 </sql:query>
      
 <sql:query var="fi">
-    select pb.metaid, me.data, me.label, me.datatype, pb.sqlstr, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
-    where pb.pubtype = ? order by pb.formposition
+     select pb.metaid, me.data, me.label, me.datatype, me.numrows, me.numcols, pb.sqlstr, pb.multiplevalues, pb.formposition from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
+     where pb.pubtype = ? order by pb.formposition
     <sql:param value="${pubtype}"/>
 </sql:query>
     
@@ -60,7 +60,7 @@
                 <p id="pagelabel">${x.fieldexplanation}</p>
             </c:if>
             <c:if test="${x.datatype == 'string'}">
-                 ${x.label}  <input type="text" value="${results.rows[0][x.data]}" name="${x.data}"/>
+                 ${x.label}  <input type="text" value="${results.rows[0][x.data]}" name="${x.data}" size="${fn:length(results.rows[0][x.data])}"/>
                  <p></p>
             </c:if>
             <c:if test="${x.datatype == 'dropbox'}">
@@ -121,7 +121,11 @@
                 ${x.label}:<br/><textarea rows="${rowcol.rows[0].numrows}" cols="${rowcol.rows[0].numcols}" name="${x.data}" ${x.required}>${results.rows[0][x.data]}</textarea><br/>
                  <p></p>
             </c:if>
-            
+            <c:if test="${x.datatype == 'url'}">
+                ${x.label}: <input type="text" name="${x.data}" value="${results.rows[0][x.data]}" size="${fn:length(results.rows[0][x.data])}"/>
+                <p></p>
+            </c:if>       
+                  
         </c:forEach>
             
         <input type="submit" name="submit" value="update"/>
