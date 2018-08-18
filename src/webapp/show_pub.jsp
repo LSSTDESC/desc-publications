@@ -36,7 +36,10 @@
         </sql:query>
         <c:set var="projid" value="${pnum.rows[0].project_id}"/> 
         <c:set var="projectGrpName" value="project_${param.paperid}"/>
-        
+        <c:set var="paperGrpName" value="paper_${param.paperid}"/>
+        <c:set var="paperLeadGrpName" value="paper_leads_${param.paperid}"/>
+        <c:set var="paperReviewGrp" value="paper_reviewers_${param.paperid}"/>
+
         <%-- if project-less document find it's the working group --%>
         <c:set var="projLessWG" value="no working group"/>
         <sql:query var="projectLessWG">
@@ -49,18 +52,34 @@
             <c:set var="projLessWG" value="${projectLessWG.rows[0]['name']}"/>
         </c:if>
              
-       <%-- check if users in project group. isUserInGroup not working --%>
-        <sql:query var="inGrp">
-            select count(*) from profile_ug where group_id = ?
-            <sql:param value="${projectGrpName}"/>
+       <%-- make mailto list of reviewers, if they exist --%>
+        <sql:query var="revGrp">
+            select v.first_name, v.last_name, v.email from profile_user v join profile_ug g on v.memidnum=g.memidnum and v.experiment=g.experiment
+            where g.group_id = ? and g.experiment = ? and v.email is not null
+            <sql:param value="${paperReviewGrp}"/>
+            <sql:param value="${appVariables.experiment}"/>
         </sql:query>
-        <c:if test="${inGrp.rowCount > 0}">
-            <c:set var="inProjGrp" value="true"/>        
-        </c:if>    
+            
+        <c:forEach var="rev" items="${revGrp.rows}">
+            <c:choose>
+                <c:when test="${revGrp.rowCount > 0}">
+                    <c:choose>
+                    <c:when test="${empty reviewList}">
+                       <c:set var="reviewList" value="<a href=mailto:${rev.email}>${rev.first_name} ${rev.last_name}</a>"/>
+                       <c:set var="reviewAll" value="${rev.email}"/>
+                    </c:when>
+                    <c:when test="${! empty reviewList}">
+                        <c:set var="reviewList" value="${reviewList}, <a href=mailto:${rev.email}>${rev.first_name} ${rev.last_name}</a>"/>
+                        <c:set var="reviewAll" value="${reviewAll}, ${rev.email}"/>
+                    </c:when>
+                    </c:choose>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="reviewList" value="No reviewers for DESC-${param.paperid}"/>
+                </c:otherwise>
+            </c:choose>      
+        </c:forEach>     
         
-        <c:set var="paperReviewGrp" value="paper_reviewers_${param.paperid}"/>
-        <c:set var="paperGrpName" value="paper_${param.paperid}"/>
-        <c:set var="paperLeadGrpName" value="paper_leads_${param.paperid}"/>
         <%-- when testing against dev the tag gm:isUserInGroup won't work because it always checks against the prod db so test separately if user can edit paper.
         canEdit checks if conveners (primary auth) can edit, userCanEdit checks if member of the paper can edit
         --%>
@@ -111,7 +130,7 @@
         </sql:query> 
         <c:set var="projid" value="${pubs.rows[0].project_id}"/>
         <c:set var="pubtype" value="${fi.rows[0].pubtype}"/> 
-        
+         
         
         <%-- second pub query grabs all the details e.g. can_request_authorship 
         <sql:query var="pubDetails">
@@ -164,7 +183,19 @@
             </c:choose>
         </c:forEach>
             
-        <h2>Document: <strong>DESC-${param.paperid}</strong></h2>   
+        <h2>Document: <strong>DESC-${param.paperid}</strong></h2>  
+         
+        <c:choose>
+        <c:when test="${fn:contains(reviewList,'@')}">
+            <p id="pagelabel"><a href="mailto:${reviewAll}">Reviewers</a>: ${reviewList} </p>
+        </c:when>
+        <c:otherwise>
+            <p id="pagelabel">${reviewList}</p>
+        </c:otherwise>
+        </c:choose>  
+            
+
+            
         <table class="datatable">
             <utils:trEvenOdd reset="true"><th style="text-align: left;">Document type</th><td style="text-align: left">${pubs.rows[0]['pubtype']}</td></utils:trEvenOdd>
             <utils:trEvenOdd reset="false"><th style="text-align: left">Project</th><td style="text-align: left">${pubs.rows[0]['project_id']}</td></utils:trEvenOdd>
