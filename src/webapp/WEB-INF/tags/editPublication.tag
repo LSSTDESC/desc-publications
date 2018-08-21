@@ -122,7 +122,14 @@
                  <p></p>
             </c:if>
             <c:if test="${x.datatype == 'url'}">
-                ${x.label}: <input type="text" name="${x.data}" value="${results.rows[0][x.data]}" size="${fn:length(results.rows[0][x.data])}"/>
+                <c:choose>
+                    <c:when test="${!empty results.rows[0][x.data]}">
+                         ${x.label}: <input type="text" name="${x.data}" value="${results.rows[0][x.data]}" size="${fn:length(results.rows[0][x.data])}"/>
+                    </c:when>
+                    <c:otherwise>
+                         ${x.label}: <input type="text" name="${x.data}" value="${results.rows[0][x.data]}" size="${x.numcols}"/>
+                    </c:otherwise>
+                </c:choose>
                 <p></p>
             </c:if>       
                   
