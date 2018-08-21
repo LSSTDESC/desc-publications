@@ -219,7 +219,10 @@
                     </c:if>
                 </c:forEach>
             </c:forEach>
-            
+           
+            <utils:trEvenOdd reset="false"><th style="text-align: left">Reviewers</th>
+                <td>${reviewList}<td/>
+            </utils:trEvenOdd>
                 
             <utils:trEvenOdd reset="false"><th style="text-align: left">Lead authors</th>
                 <td style="text-align: left">
