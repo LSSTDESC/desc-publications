@@ -104,13 +104,19 @@
     <p/>
  
     <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leadersgrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+      <c:if test="${gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+          <table class="datatable">
+            <utils:trEvenOdd reset="true"><th>Authorized tasks</th><td style="text-align:left;"><a href="addPublication.jsp?task=create_publication_form&projid=${param.projid}&swgid=${param.swgid}">Add document to project ${param.projid}</a></td></utils:trEvenOdd>
+          </table>
+      </c:if>
+        <%--
         <hr align="left" width="45%"/> 
         <form action="addPublication.jsp" method="post">
             <input type="hidden" name="task" value="create_publication_form"/>
             <input type="hidden" name="swgid" value="${swgid}"/>
             <input type="hidden" name="projid" value="${projid}"/>
             <input type="submit" value="Create Document For This Project"/>
-        </form>
+        </form> --%>
     </c:if>  
         
 </body>
