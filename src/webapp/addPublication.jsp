@@ -92,7 +92,7 @@
                     Working group(s): ${projInfo.rows[0].name}</strong>
                     <p></p>
                 </div> 
-              
+                    
                 <form action="addPublication.jsp" method="post" id="addPublication" name="addPublication">
                     <div id="formRequest">
                         <fieldset class="fieldset-auto-width">
@@ -175,7 +175,14 @@
                               ${chkbx.metavalue}   <input type="checkbox" name="${x.data}" value="${chkbx.metavalue}" ${required}/><br/>
                             </c:forEach>
                                <p></p>
-                        </c:if>   
+                        </c:if> 
+                               
+                        <c:if test="${x.datatype == 'url'}">
+                            <p></p>
+                           ${x.label}: <input type="text" name="${x.data}" value="${results.rows[0][x.data]}" size="${x.numcols}"/>
+                           <p></p>
+                        </c:if>  
+                               
                     </c:forEach>
                     </fieldset>
                     </div>
