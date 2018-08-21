@@ -74,9 +74,9 @@
     
 <p id="pagelabel">Project Details [Working Group(s): ${wglist}]</p>
 <div id="formRequest">
-    <fieldset class="fieldset-auto-width">
-        <legend>Edit project details</legend>
-<form action="modifySWGprojects.jsp" method="post">  
+  <fieldset class="fieldset-auto-width">
+  <legend>Edit project details</legend>
+  <form action="modifySWGprojects.jsp" method="post">  
     <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />
     <input type="hidden" name="projid" id="projid" value="${projid}" /> 
     <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp?projid=${projid}" />  
@@ -136,7 +136,7 @@
     <p/>
     
     <c:if test="${canEdit || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin')}">
-      <input type="submit" value="Update_Project_Details" id="action" name="action" />    
+      <input type="submit" value="Update_Project_Details" id="action" name="action" />
     </c:if>  
   </form>
     </fieldset>
