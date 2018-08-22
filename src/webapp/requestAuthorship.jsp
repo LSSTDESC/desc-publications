@@ -138,27 +138,28 @@ Checklist contributions: ${contributions} %0D%0A
         </c:when>
         <c:when test="${!empty param.reason && debugMode != 'true'}">
             <%-- add chosen contributions to mail msg --%>
-          <%--  <c:set var="msgbody" value="From: ${requestfrom} Reason: ${param.reason}  Selected Contributions: ${contributions}"/> --%>
-            <c:set var="msgbody" value="Dear Primary Authors,%0D%0A
-${fname} ${lname} is asking to be considered as a co-author of your publication DESC-${param.paperid}. You can read their justification below. %0D%0A
-When you have converged on a good response, please reply to them via the publication mgmt system at this link, and update the author list as %0D%0A
-required. For guidance on authorship criteria, please consult the LSST DESC publication policy, and if in doubt, please don't hesitate to contact%0D%0A
-the LSST DESC pub board (cc on this email).%0D%0A
+            <c:set var="msgbody" value="Dear Primary Authors,
+${fname} ${lname} is asking to be considered as a co-author of your publication DESC-${param.paperid}. You can read their justification below.
+When you have converged on a good response, please reply to them via the publication mgmt system at this link, and update the author list as
+required. For guidance on authorship criteria, please consult the LSST DESC publication policy, and if in doubt, please don't hesitate to contact
+the LSST DESC pub board (cc on this email).
 
-Thanks!%0D%0A
+Thanks!
 
-The DESC Publication Management System%0D%0A
+The DESC Publication Management System
 
-${fname} ${lname} writes: %0D%0A
-Reason for co-authorship: ${param.reason} %0D%0A
-Proposed contribution statement: ${param.contribution_stmt} %0D%0A
-Checklist contributions: ${contributions} %0D%0A
+${fname} ${lname} writes:
+Reason for co-authorship: ${param.reason}
+
+Proposed contribution statement: ${param.contribution_stmt}
+
+Checklist contributions: ${contributions}
 "/>
             
             <sql:transaction>
                 <sql:update>
                      insert into descpub_mailbody (msgid, subject, body, mail_originator, askdate) values(DESCPUB_MAIL_SEQ.nextval, ?, ?, ?,sysdate)
-                     <sql:param value="Request for authorship on ${title}, DESC-${param.paperid} "/>
+                     <sql:param value="Request from ${fname} ${lname} for authorship on DESC-${param.paperid}: ${title} "/>
                      <sql:param value="${msgbody}"/>
                      <sql:param value="${memidnum}"/>
                  </sql:update>  
