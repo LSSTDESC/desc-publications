@@ -39,12 +39,11 @@
         else createdate end as dt from descpub_publication where project_id != 0 order by dt desc
         </sql:query>
         
-        <sql:query var="projectless">
-            select p.paperid, pubtype, title, createdate, modifydate, wg.name from descpub_publication p join descpub_publication_swgs s on p.paperid = s.paperid
-            join descpub_swg wg on wg.id = s.swgid where project_id = 0 order by 
-            case
-              when (modifydate > createdate and modifydate is not null) then modifydate
-              else createdate end desc
+        <sql:query var="projectless"> 
+          select p.paperid, pubtype, title, wg.name, createdate, case
+          when (modifydate > createdate and modifydate is not null) then modifydate
+          else createdate end as dt from descpub_publication p join descpub_publication_swgs s on p.paperid = s.paperid
+          join descpub_swg wg on wg.id = s.swgid where project_id = 0 
         </sql:query>
             
         <c:if test="${swgs.rowCount > 0}">
@@ -70,7 +69,7 @@
                    <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
                 </display:column>
                 <display:column property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"/>
-                <display:column property="modifydate" title="Last modified" style="" sortable="true" headerClass="sortable"/>
+                <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="name" title="Working group" style="text-align:left;" sortable="true" headerClass="sortable"/>
@@ -85,7 +84,7 @@
                    <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
                 </display:column>
                 <display:column property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"/>
-                <display:column property="dt" title="Last modified" style="" sortable="true" headerClass="sortable"/>
+                <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column title="Project Id" style="text-align:left;" sortable="true" headerClass="sortable">
