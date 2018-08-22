@@ -27,19 +27,23 @@
     </c:if>  
         
     <sql:query var="userInfo">
-        select m.firstname, m.lastname, m.memidnum from um_member m join um_member_username u on m.memidnum=u.memidnum join profile_user u on u.memidnum=m.memidnum
+        select m.firstname, m.lastname, u.email, m.memidnum from um_member m join um_member_username u on m.memidnum=u.memidnum join profile_user u on u.memidnum=m.memidnum
         where u.username = ? and u.active = 'Y'
         <sql:param value="${userName}"/>
     </sql:query> 
     <c:if test="${userInfo.rowCount < 1}">
        <c:redirect url="noPermission.jsp?errmsg=9"/>
-    </c:if>   
-        
+    </c:if> 
+    <c:set var="fname" value="${userInfo.rows[0].firstname}"/>
+    <c:set var="lname" value="${userInfo.rows[0].lastname}"/>
+    <c:set var="requestfrom" value="${userInfo.rows[0].email}"/>
+    <c:set var="memidnum" value="${userInfo.rows[0].memidnum}"/>
+    
     <tg:underConstruction/>
     
     Link to <a href="https://github.com/LSSTDESC/Author_Guide/raw/compiled/Author_Guide.pdf">Authorship Guide</a> [pdf] (requires github login)<br/>  
      
-    <c:set var="debugMode" value="true"/>
+    <c:set var="debugMode" value="false"/>
     
     <%-- get list of possible contributions --%>
     <sql:query var="contribs">
@@ -50,8 +54,26 @@
        select title from descpub_publication where paperid = ?
        <sql:param value="${param.paperid}"/>
     </sql:query>
+       
     <c:set var="title" value="${t.rows[0].title}"/>
     
+   <%-- build the contributions list --%>
+    <c:forEach var="x" items="${param}" varStatus="loop">
+        <c:if test="${x.key =='cname'}">
+            <c:forEach var="pv" items="${paramValues[x.key]}">
+                <c:choose>
+                <c:when test="${empty contributions}">
+                    <c:set var="contributions" value="${pv}"/>
+                </c:when>
+                <c:when test="${!empty contributions}">
+                    <c:set var="contributions" value="${contributions}, ${pv}"/> 
+                </c:when>
+                </c:choose>
+            </c:forEach>
+        </c:if>
+    </c:forEach>
+    
+    <%-- build the recipient list --%>
     <c:choose>
         <c:when test="${debugMode == 'false'}">
             <sql:query var="recips">
@@ -71,83 +93,87 @@
                     </c:when>
                 </c:choose>
             </c:forEach>
+            
+            <p id="pagelabel">Your request will go to ${recips}.</p> 
         </c:when>
         <c:when test="${debugMode=='true'}">
             <c:set var="recips" value="chee@slac.stanford.edu"/>
+            <p id="pagelabel">Your request will go to the lead author(s) ${recips}.</p>
         </c:when>
-    </c:choose>
-        
-    <c:choose>
-        <c:when test="${debugMode}='false'">
-                <p id="pagelabel">Your request will go to ${recips}.</p>
-        </c:when>
-        <c:when test="${debugMode} = 'true'">
-                <p id="pagelabel">Your request will go to the lead author(s).</p>
-
-        </c:when>
-    </c:choose>        
+    </c:choose> 
                    
     <c:choose>
         <c:when test="${!empty param.reason && debugMode == 'true'}">
-            <c:forEach var="p" items="${param}">
-                <c:out value="${p.key} = ${p.value}"/><br/>
-            </c:forEach>
+          <%--  <c:set var="msgbody" value="From: ${requestfrom} Reason: ${param.reason}  Selected Contributions: ${contributions}"/> --%>
+          
+            <c:set var="msgbody" value="
+            Dear Primary Authors,%0D%0A
+
+${fname} ${lname} is asking to be considered as a co-author of your publication DESC-${param.paperid}. You can read their justification below. %0D%0A
+When you have converged on a good response, please reply to them via the publication mgmt system at this link, and update the author list as %0D%0A
+required. For guidance on authorship criteria, please consult the LSST DESC publication policy, and if in doubt, please don't hesitate to contact%0D%0A
+the LSST DESC pub board (cc on this email).%0D%0A
+
+Thanks!%0D%0A
+
+The DESC Publication Management System%0D%0A
+
+${fname} ${lname} writes: %0D%0A
+Reason for co-authorship: ${param.reason} %0D%0A
+Proposed contribution statement: ${param.contribution_stmt} %0D%0A
+Checklist contributions: ${contributions} %0D%0A
+"/>
+          
+            <p>insert into descpub_mailbody values ('sequence', ${param.paperid}, ${msgbody}, ${userName})</p>
+            <p>msgbody: ${msgbody}</p>
+            <p>${param.reason}</p>
+            <p>${param.contribution_stmt}</p>
+            <p>From: ${requestfrom}</p>
+            <p>Memidnum: ${memidnum}</p>
+            <p>userName: ${userName}</p>
+
+          
+            
+
         </c:when>
         <c:when test="${!empty param.reason && debugMode != 'true'}">
             <%-- add chosen contributions to mail msg --%>
-            <c:set var="contributions" value=""/>
-            <c:forEach var="x" items="${param}" varStatus="loop">
-                <c:if test="${x.key =='cname'}">
-                    <c:forEach var="pv" items="${paramValues[x.key]}">
-                        <c:choose>
-                        <c:when test="${empty contributions}">
-                            <c:set var="contributions" value="${pv}"/>
-                        </c:when>
-                        <c:when test="${!empty contributions}">
-                            <c:set var="contributions" value="${contributions}, ${pv}"/> 
-                        </c:when>
-                        </c:choose>
-                    </c:forEach>
-                </c:if>
-            </c:forEach>
+          <%--  <c:set var="msgbody" value="From: ${requestfrom} Reason: ${param.reason}  Selected Contributions: ${contributions}"/> --%>
+            <c:set var="msgbody" value="Dear Primary Authors,%0D%0A
+${fname} ${lname} is asking to be considered as a co-author of your publication DESC-${param.paperid}. You can read their justification below. %0D%0A
+When you have converged on a good response, please reply to them via the publication mgmt system at this link, and update the author list as %0D%0A
+required. For guidance on authorship criteria, please consult the LSST DESC publication policy, and if in doubt, please don't hesitate to contact%0D%0A
+the LSST DESC pub board (cc on this email).%0D%0A
+
+Thanks!%0D%0A
+
+The DESC Publication Management System%0D%0A
+
+${fname} ${lname} writes: %0D%0A
+Reason for co-authorship: ${param.reason} %0D%0A
+Proposed contribution statement: ${param.contribution_stmt} %0D%0A
+Checklist contributions: ${contributions} %0D%0A
+"/>
             
-            <c:set var="msgbody" value="Reason: ${param.reason}  Selected Contributions: ${contributions}"/>
-            <c:if test="${debugMode == 'true'}">
-                <p>insert into descpub_mailbody values ('sequence', ${param.paperid}, ${msgbody}, ${userName})</p>
-                <p>checked contributions = ${contributions}</p>
-                <p>${param.reason}</p>
-                <p>${param.contribution_stmt}</p>
-            </c:if>
             <sql:transaction>
                 <sql:update>
                      insert into descpub_mailbody (msgid, subject, body, mail_originator, askdate) values(DESCPUB_MAIL_SEQ.nextval, ?, ?, ?,sysdate)
                      <sql:param value="Request for authorship on ${title}, DESC-${param.paperid} "/>
                      <sql:param value="${msgbody}"/>
-                     <sql:param value="${userName}"/>
+                     <sql:param value="${memidnum}"/>
                  </sql:update>  
-        
-                 <c:if test="${debugMode == 'false'}">
-             
-                     <sql:update>
-                         insert into descpub_mail_recipient (msgid, groupname_or_emailaddr) values(DESCPUB_MAIL_SEQ.currval,?)
-                         <sql:param value="paper_leads_${param.paperid}"/>
-                    </sql:update>
-                </c:if>
-                <c:if test="${debugMode == 'true'}">
-                    <sql:update>
-                         insert into descpub_mail_recipient (msgid, groupname_or_emailaddr) values(DESCPUB_MAIL_SEQ.currval,?)
-                         <sql:param value="TESTLIST"/>
-                    </sql:update>
-                </c:if>     
-            </sql:transaction>  
-     
-                     
+                <sql:update>
+                     insert into descpub_mail_recipient (msgid, groupname_or_emailaddr) values(DESCPUB_MAIL_SEQ.currval,?)
+                     <sql:param value="TESTLIST"/>
+                </sql:update>
+            </sql:transaction> 
+           
             <c:if test="${empty catchError}">
                 <p id="pagelabel"> Thank you. Your request for authorship has been sent to:</p>
                 <display:table class="datatable" name="${recips.rows}" id="Rows">
                     <display:column title="FirstName" property="first_name" style="text-align:left;"/>
                     <display:column title="LastName" property="last_name" style="text-align:left;"/>
-                    <display:column title="LastName" property="email" style="text-align:left;"/>
+                    <display:column title="Email" property="email" style="text-align:left;"/>
                 </display:table>
            </c:if>  
            <c:if test="${!empty catchError}">
