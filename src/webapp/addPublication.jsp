@@ -104,7 +104,10 @@
                         </c:if>
                             
                         <c:if test="${x.datatype == 'string'}">
-                           ${x.label}: <input type ="text" name="${x.data}"  ${required}/> 
+                            <c:if test="${!empty x.numcols}">
+                                <c:set var="size" value="size=${x.numcols}"/>
+                            </c:if>
+                            ${x.label} <input type ="text" name="${x.data}" ${size} ${required}/> 
                            <p></p>
                         </c:if>
                            
