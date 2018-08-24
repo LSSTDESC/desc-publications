@@ -68,7 +68,7 @@
                <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
                    <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
                 </display:column>
-                <display:column property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"/>
+                <display:column property="createdate" title="Created" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
@@ -83,7 +83,7 @@
                 <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
                    <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
                 </display:column>
-                <display:column property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"/>
+                <display:column property="createdate" title="Created" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
