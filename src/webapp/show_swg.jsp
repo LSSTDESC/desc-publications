@@ -111,7 +111,7 @@
                    </display:column>
                       
                    <display:column title="Add doc" style="text-align:right;">
-                       <a href="addPublication.jsp?task=create_publication_form&projid=${proj.id}&swgid=${param.swgid}">e</a>
+                       <a href="addPublication.jsp?task=create_publication_form&projid=${proj.id}&swgid=${param.swgid}">a</a>
                    </display:column>    
 
                </c:if>       
