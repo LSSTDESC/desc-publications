@@ -45,20 +45,12 @@
      
     <c:set var="debugMode" value="false"/>
     
-    <%-- get list of possible contributions --%>
+    <%-- get possible contribution choices --%>
     <sql:query var="contribs">
         select initcap(label) label from descpub_contributions order by label
     </sql:query>
-    
-    <sql:query var="t">
-       select title from descpub_publication where paperid = ?
-       <sql:param value="${param.paperid}"/>
-    </sql:query>
-       
-    <c:set var="title" value="${t.rows[0].title}"/>
-    
-   <%-- build the contributions list --%>
-    <c:forEach var="x" items="${param}" varStatus="loop">
+     <%-- build the contributions list --%>
+    <c:forEach var="x" items="${param}">
         <c:if test="${x.key =='cname'}">
             <c:forEach var="pv" items="${paramValues[x.key]}">
                 <c:choose>
@@ -72,6 +64,13 @@
             </c:forEach>
         </c:if>
     </c:forEach>
+    <%-- get title of paper --%>
+    <sql:query var="t">
+       select title from descpub_publication where paperid = ?
+       <sql:param value="${param.paperid}"/>
+    </sql:query>
+       
+    <c:set var="title" value="${t.rows[0].title}"/>
     
     <%-- build the recipient list --%>
     <c:choose>
@@ -94,7 +93,7 @@
                 </c:choose>
             </c:forEach>
             
-            <p id="pagelabel">Your request will go to ${recips}.</p> 
+            <p id="pagelabel">Your request will be sent to ${recipList}.</p> 
         </c:when>
         <c:when test="${debugMode=='true'}">
             <c:set var="recips" value="chee@slac.stanford.edu"/>
@@ -104,24 +103,28 @@
                    
     <c:choose>
         <c:when test="${!empty param.reason && debugMode == 'true'}">
-          <%--  <c:set var="msgbody" value="From: ${requestfrom} Reason: ${param.reason}  Selected Contributions: ${contributions}"/> --%>
-          
+            <c:forEach var="p" items="${param}">
+                <c:if test="${!fn:contains(p.key,'cname')}">
+                <c:out value="Key=${p.key}  Value=${p.value}"/><br/> 
+                </c:if>
+            </c:forEach>            
+            <c:out value="contributions checked=${contributions}"/>
             <c:set var="msgbody" value="
-            Dear Primary Authors,%0D%0A
+            Dear Primary Authors,
 
-${fname} ${lname} is asking to be considered as a co-author of your publication DESC-${param.paperid}. You can read their justification below. %0D%0A
-When you have converged on a good response, please reply to them via the publication mgmt system at this link, and update the author list as %0D%0A
-required. For guidance on authorship criteria, please consult the LSST DESC publication policy, and if in doubt, please don't hesitate to contact%0D%0A
-the LSST DESC pub board (cc on this email).%0D%0A
+${fname} ${lname} is asking to be considered as a co-author of your publication DESC-${param.paperid}. You can read their justification below.
+When you have converged on a good response, please reply to them via the publication mgmt system at this link, and update the author list as
+required. For guidance on authorship criteria, please consult the LSST DESC publication policy, and if in doubt, please don't hesitate to contact
+the LSST DESC pub board (cc on this email).
 
-Thanks!%0D%0A
+Thanks!
 
-The DESC Publication Management System%0D%0A
+The DESC Publication Management System
 
-${fname} ${lname} writes: %0D%0A
-Reason for co-authorship: ${param.reason} %0D%0A
-Proposed contribution statement: ${param.contribution_stmt} %0D%0A
-Checklist contributions: ${contributions} %0D%0A
+${fname} ${lname} writes: 
+Reason for co-authorship: ${param.reason} 
+Proposed contribution statement: ${param.contribution_stmt} 
+Checklist contributions: ${contributions} 
 "/>
           
             <p>insert into descpub_mailbody values ('sequence', ${param.paperid}, ${msgbody}, ${userName})</p>
@@ -132,12 +135,9 @@ Checklist contributions: ${contributions} %0D%0A
             <p>Memidnum: ${memidnum}</p>
             <p>userName: ${userName}</p>
 
-          
-            
-
         </c:when>
         <c:when test="${!empty param.reason && debugMode != 'true'}">
-            <%-- add chosen contributions to mail msg --%>
+            <%-- create mail msgbody --%>
             <c:set var="msgbody" value="Dear Primary Authors,
 ${fname} ${lname} is asking to be considered as a co-author of your publication DESC-${param.paperid}. You can read their justification below.
 When you have converged on a good response, please reply to them via the publication mgmt system at this link, and update the author list as
@@ -155,7 +155,7 @@ Proposed contribution statement: ${param.contribution_stmt}
 
 Checklist contributions: ${contributions}
 "/>
-            
+            <%-- post the request so mail will be delivered --%>
             <sql:transaction>
                 <sql:update>
                      insert into descpub_mailbody (msgid, subject, body, mail_originator, askdate) values(DESCPUB_MAIL_SEQ.nextval, ?, ?, ?,sysdate)
@@ -166,6 +166,15 @@ Checklist contributions: ${contributions}
                 <sql:update>
                      insert into descpub_mail_recipient (msgid, groupname_or_emailaddr) values(DESCPUB_MAIL_SEQ.currval,?)
                      <sql:param value="TESTLIST"/>
+                </sql:update>
+                <sql:update>
+                    insert into descpub_authorship (paperid, memidnum, contribution_text, contribution_list, reason, auth_request_date) 
+                    values (?,?,?,?,?,sysdate)
+                    <sql:param value="${param.paperid}"/>
+                    <sql:param value="${memidnum}"/> 
+                    <sql:param value="${param.contribution_stmt}"/> 
+                    <sql:param value="${contributions}"/> 
+                    <sql:param value="${param.reason}"/>
                 </sql:update>
             </sql:transaction> 
            
@@ -184,7 +193,7 @@ Checklist contributions: ${contributions}
         </c:when>
         <c:when test="${!empty param.paperid}">
             <p id="pagelabel">Request Authorship for DESC-${param.paperid}. &nbsp;&nbsp;Please state your reason for this request.</p>
-            <form action="requestAuthorship.jsp?paperid=${param.paperid}" name="requestAuth" id="requestAuth" method="post">
+            <form action="requestAuthorship.jsp?paperid=${param.paperid}" name="requestAuth" method="post">
                 <input type="hidden" value="${param.paperid}" name="paperid"/>
                 <p><textarea name="reason" rows="15" cols="80" required></textarea></p>
                 

@@ -137,7 +137,7 @@ public class DBUtilities {
         addMailRecipients(msgId,message);
         return msgId;
     }
-
+   
     void purgeMessage(int messageId) throws SQLException {
         String sql = "delete from descpub_mailbody where msgid=?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
