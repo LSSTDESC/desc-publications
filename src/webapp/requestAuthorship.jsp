@@ -93,7 +93,7 @@
                 </c:choose>
             </c:forEach>
             
-            <p id="pagelabel">Your request will be sent to ${recipList}.</p> 
+         <%--   <p id="pagelabel">Your request will be sent to ${recipList}.</p>  --%>
         </c:when>
         <c:when test="${debugMode=='true'}">
             <c:set var="recips" value="chee@slac.stanford.edu"/>
@@ -159,7 +159,7 @@ Checklist contributions: ${contributions}
             <sql:transaction>
                 <sql:update>
                      insert into descpub_mailbody (msgid, subject, body, mail_originator, askdate) values(DESCPUB_MAIL_SEQ.nextval, ?, ?, ?,sysdate)
-                     <sql:param value="Request from ${fname} ${lname} for authorship on DESC-${param.paperid}: ${title} "/>
+                     <sql:param value="Request for authorship on DESC-${param.paperid} from ${fname} ${lname}. Title: ${title} "/>
                      <sql:param value="${msgbody}"/>
                      <sql:param value="${memidnum}"/>
                  </sql:update>  
