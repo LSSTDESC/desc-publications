@@ -1,5 +1,6 @@
 package org.lsstdesc.pubs;
 
+import com.j256.simplemagic.ContentInfoUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -86,6 +87,7 @@ public class FileUploadServlet extends HttpServlet {
                     DBUtilities dbUtil = new DBUtilities(conn);
                     int nextVersion = dbUtil.getMaxExistingVersion(paperid) + 1;
                     int projId = dbUtil.getProjectForPaper(paperid);
+                    checkFileType(file);
                     checkIfPDF(file);
                     File saveFile = getPathForFile(paperid, projId, nextVersion);
                     file.write(saveFile);
@@ -112,6 +114,13 @@ public class FileUploadServlet extends HttpServlet {
             throw new ServletException("Uploaded file is not in PDF format");
         }
     }
+    
+    private void checkFileType(FileItem item) throws IOException, ServletException {
+        byte[] b = new byte[4];
+        ContentInfoUtil util = new ContentInfoUtil();
+        System.out.println(util.findMatch(item.getInputStream()));
+    }
+    
 
     private File getPathForFile(int paperid, int projId, int version) {
         File result = new File(baseDir, String.format("Project-%d/Paper-%d/DESC-%d_v%d.pdf", projId, paperid, paperid, version));
