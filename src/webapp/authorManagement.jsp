@@ -44,17 +44,18 @@
         <c:choose>
             <c:when test="${empty param}">
                  <sql:query var="docs">
-                    select a.paperid, a.memidnum, a.auth_pos, a.request_status, a.contribution_text, a.contribution_list, a.reason, a.auth_request_date, 
+                    select a.paperid, a.memidnum, a.request_status, a.contribution_text, a.contribution_list, a.reason, a.auth_request_date, 
                     a.approved_by, a.modifydate, a.modby, p.title, v.first_name, v.last_name, v.email from 
                     descpub_authorship a join descpub_publication p on a.paperid = p.paperid  join profile_user v on v.memidnum = a.memidnum and v.experiment = 'LSST-DESC'
                     order by auth_request_date
                 </sql:query>
-                 
+                    
                 <h2 id="pagelabel">Request(s) For Authorship</h2>
                 <display:table class="datatable" id="row" name="${docs.rows}" cellspacing="10" cellpadding="10">
                     <display:column property="auth_request_date" title="Request date" style="text-align:left;" sortable="true" headerClass="sortable"/>
-                    <display:column property="first_name" title="First name" style="text-align:left;" url="/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${row.memidnum}" sortable="true" headerClass="sortable"/>
-                    <display:column property="last_name" title="Last name" style="text-align:left;" url="/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${row.memidnum}" sortable="true" headerClass="sortable"/>
+                    <display:column title="Name" style="text-align:left;">
+                        <a href="srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${row.memidnum}">${row.first_name} ${row.last_name}</a>
+                    </display:column>
                     <display:column property="request_status" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/>
                     <display:column property="approved_by" title="Approved by" style="text-align:left;" sortable="true" headerClass="sortable"/>
                     <display:column title="Manage approval" style="text-align:left;" sortable="true" headerClass="sortable">
@@ -66,8 +67,8 @@
                 </display:table>
             </c:when>
             <c:when test="${param.task == 'view'}">
-                  <sql:query var="docs">
-                     select a.paperid, a.memidnum, a.auth_pos, a.request_status, a.contribution_text, a.contribution_list, a.reason, a.auth_request_date, 
+                  <sql:query var="vdocs">
+                     select a.paperid, a.memidnum, a.request_status, a.contribution_text, a.contribution_list, a.reason, a.auth_request_date, 
                      a.approved_by, a.modifydate, a.modby, p.title, v.first_name, v.last_name, v.email from 
                      descpub_authorship a join descpub_publication p on a.paperid = p.paperid  join profile_user v on v.memidnum = a.memidnum and v.experiment = 'LSST-DESC'
                      where a.paperid = ? and a.memidnum = ?
@@ -76,22 +77,23 @@
                   </sql:query>
                      
                   <a href="authorManagement.jsp">view all</a>
+                  <h3>Requestor's information</h3>
                   <table class="datatable" style="text-align:left;">
-                    <utils:trEvenOdd reset="true"><th style="text-align: left;">Requestor's first name</th><td style="text-align: left;">${pers.rows[0].first_name}</td></utils:trEvenOdd>
-                    <utils:trEvenOdd><th style="text-align: left;">Requestor's last name</th><td style="text-align: left;">${pers.rows[0].last_name}</td></utils:trEvenOdd>
-                    <utils:trEvenOdd><th style="text-align: left;">Requestor's email</th><td style="text-align: left;">${pers.rows[0].email}</td></utils:trEvenOdd>
-                    <utils:trEvenOdd><th style="text-align: left;">Date requested</th><td style="text-align: left;">${docs.rows[0].auth_request_date}</td></utils:trEvenOdd>
-                    <utils:trEvenOdd><th style="text-align: left;">Title</th><td style="text-align: left;">DESC-${docs.rows[0].title}</td></utils:trEvenOdd>
-                    <utils:trEvenOdd><th style="text-align: left;">Contribution statement</th><td style="text-align: left; size=${fn:length(docs.rows[0].contribution_text)}">${docs.rows[0].contribution_text}</td></utils:trEvenOdd>
-                    <utils:trEvenOdd><th style="text-align: left;">Check list of contributions</th><td style="text-align: left;">${docs.rows[0].contribution_list}</td></utils:trEvenOdd>
-                    <utils:trEvenOdd><th style="text-align: left;">Reason</th><td style="text-align: left;">${docs.rows[0].reason}</td></utils:trEvenOdd>
-                    <utils:trEvenOdd><th style="text-align: left;">Status</th><td style="text-align: left;">${docs.rows[0].request_status}</td></utils:trEvenOdd>            
+                    <utils:trEvenOdd reset="true"><th style="text-align: left;">First name</th><td style="text-align: left;">${pers.rows[0].first_name}</td></utils:trEvenOdd>
+                    <utils:trEvenOdd><th style="text-align: left;">Last name</th><td style="text-align: left;">${pers.rows[0].last_name}</td></utils:trEvenOdd>
+                    <utils:trEvenOdd><th style="text-align: left;">email</th><td style="text-align: left;">${pers.rows[0].email}</td></utils:trEvenOdd>
+                    <utils:trEvenOdd><th style="text-align: left;">Date requested</th><td style="text-align: left;">${vdocs.rows[0].auth_request_date}</td></utils:trEvenOdd>
+                    <utils:trEvenOdd><th style="text-align: left;">Title</th><td style="text-align: left;">DESC-${vdocs.rows[0].title}</td></utils:trEvenOdd>
+                    <utils:trEvenOdd><th style="text-align: left;">Contribution statement</th><td style="text-align: left; size=${fn:length(vdocs.rows[0].contribution_text)}">${vdocs.rows[0].contribution_text}</td></utils:trEvenOdd>
+                    <utils:trEvenOdd><th style="text-align: left;">Check list of contributions</th><td style="text-align: left;">${vdocs.rows[0].contribution_list}</td></utils:trEvenOdd>
+                    <utils:trEvenOdd><th style="text-align: left;">Reason</th><td style="text-align: left;">${vdocs.rows[0].reason}</td></utils:trEvenOdd>
+                    <utils:trEvenOdd><th style="text-align: left;">Status</th><td style="text-align: left;">${vdocs.rows[0].request_status}</td></utils:trEvenOdd>            
                  </table>
             </c:when>
             <c:when test="${param.task == 'form'}">
                   <h2>Authorship request on DESC-${param.paperid}</h2>
-                  <sql:query var="docs">
-                     select a.paperid, a.memidnum, a.auth_pos, a.request_status, a.contribution_text, a.contribution_list, a.reason, a.auth_request_date, 
+                  <sql:query var="fdocs">
+                     select a.paperid, a.memidnum, a.request_status, a.contribution_text, a.contribution_list, a.reason, a.auth_request_date, 
                      a.approved_by, a.modifydate, a.modby, p.title, v.first_name, v.last_name, v.email from 
                      descpub_authorship a join descpub_publication p on a.paperid = p.paperid  join profile_user v on v.memidnum = a.memidnum and v.experiment = 'LSST-DESC'
                      where a.memidnum = ?
@@ -114,19 +116,20 @@
                   <form action="authorManagement.jsp?paperid=${param.paperid}&memidnum=${param.memidnum}" method="post">
                     <input type="hidden" name="responseSubmitted" value="true"/>
                     <table class="datatable">
-                        <utils:trEvenOdd reset="true"><th style="text-align: left;">Requestor's first name</th><td style="text-align: left;"><input type="text" name="fname" value="${pers.rows[0].first_name}" size="100" style="text-align:right;"/></td>
+                        <utils:trEvenOdd reset="true"><th style="text-align: left;">Requestor's first name</th><td style="text-align: left;">${pers.rows[0].first_name}"</td>
                         </utils:trEvenOdd>
-                        <utils:trEvenOdd><th style="text-align: left;">Requestor's last name</th><td style="text-align: left;"><input type="text" name="lname" value="${pers.rows[0].last_name}" size="100" style="text-align:right;"/></td>
+                        <utils:trEvenOdd><th style="text-align: left;">Requestor's last name</th><td style="text-align: left;">${pers.rows[0].last_name}</td>
                         </utils:trEvenOdd>
-                        <utils:trEvenOdd><th style="text-align: left;">Requestor's email</th><td style="text-align: left;"><input type="text" name="Email" value="${pers.rows[0].email}" size="100" style="text-align:right;"/></td>
+                        <utils:trEvenOdd><th style="text-align: left;">Requestor's email</th><td style="text-align: left;">${pers.rows[0].email}</td>
                         </utils:trEvenOdd>
-                        <utils:trEvenOdd><th style="text-align: left;">Date requested</th><td style="text-align: left;"><input type="text" name="auth_request_date" value="${docs.rows[0].auth_request_date}" size="100" style="text-align:right;"/></td></utils:trEvenOdd>
-                        <utils:trEvenOdd><th style="text-align: left;">Title</th><td>DESC-${docs.rows[0].title}</td></utils:trEvenOdd>
-                        <utils:trEvenOdd><th style="text-align: left;">Contribution statement</th><td style="text-align: left;"><input type="text" name="contribution_text" value="${docs.rows[0].contribution_text}" size="100" style="text-align:right;" /></td></utils:trEvenOdd>
-                        <utils:trEvenOdd><th style="text-align: left;">Check list of contributions</th><td style="text-align: left;"><input type="text" name="contribution_list" value="${docs.rows[0].contribution_list}" size="100" style="text-align:right;"/></td></utils:trEvenOdd>
-                        <utils:trEvenOdd><th style="text-align: left;">Reason</th><td style="text-align: left;"><input type="text" name="reason" value="DESC-${docs.rows[0].reason}" size="100" style="text-align:right;"/></td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Date requested</th><td style="text-align: left;">${fdocs.rows[0].auth_request_date}</td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Title</th><td style="text-align: left;">DESC-${fdocs.rows[0].title}</td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Contribution statement</th><td style="text-align: left;">${fdocs.rows[0].contribution_text}</td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Check list of contributions</th><td style="text-align: left;">${fdocs.rows[0].contribution_list}</td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Reason</th><td style="text-align: left;">${fdocs.rows[0].reason}</td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Current status</th><td style="text-align:left;">${fdocs.rows[0].request_status}</td></utils:trEvenOdd>
                         <utils:trEvenOdd><th style="text-align: left;">Response to email to the requestor (limit 4000 chars)</th><td style="text-align: left;"><textarea name="response" rows="20" cols="100" maxlength="4000" required></textarea></td></utils:trEvenOdd>
-                        <utils:trEvenOdd><th style="text-align: left;">Assign status</th><td style="text-align: left;">              
+                        <utils:trEvenOdd><th style="text-align: left;">Update status</th><td style="text-align: left;">              
                             <select name="request_status" ${required}>
                                 <option value="approved">Request approved</option>
                                 <option value="denied" selected>Request denied</option>
@@ -138,6 +141,12 @@
                   
             </c:when>
             <c:when test="${param.responseSubmitted == 'true'}">
+                
+                <c:forEach var="x" items="${param}">
+                    <c:out value="${x.key}=${x.value}"/><br/>
+                </c:forEach>
+                <c:out value="paper_${param.paperid}"/><br/>
+                
                 <c:set var="msgbody" value="${param.response}"/>
                 <sql:query var="rid">
                     select user_name, first_name, last_name, memidnum, email from profile_user where memidnum = ? and experiment = ?
@@ -145,25 +154,29 @@
                     <sql:param value="${appVariables.experiment}"/>
                 </sql:query>   
                    
+                <c:out value="select count(*) from profile_ug where group_id = paper_${param.paperid} and experiment=${appVariables.experiment} and memidnum = ${rid.rows[0].memidnum}"/><br/>
+                    
                 <c:catch var="trapError">
                     <sql:transaction>
-                        <c:if test="${param.request_status == 'approved'}">
+                         <sql:query var="inGrp">
+                            select group_id from profile_ug where group_id = ? and experiment = ? and memidnum = ?
+                            <sql:param value="paper_${param.paperid}"/>
+                            <sql:param value="${appVariables.experiment}"/>
+                            <sql:param value="${rid.rows[0].memidnum}"/>
+                         </sql:query>
+                            <c:out value="inGrp results = ${inGrp.rows[0].group_id}"/><br/>      
+                        <c:if test="${param.request_status == 'approved' && empty inGrp.rows[0].group_id}">
                             <sql:update>
                                insert into profile_ug (user_id, group_id, experiment, memidnum) values (?,?,?,?)
                                <sql:param value="${rid.rows[0].user_name}"/>
                                <sql:param value="paper_${param.paperid}"/>
                                <sql:param value="${appVariables.experiment}"/>
                                <sql:param value="${param.memidnum}"/>
-                            </sql:update>
+                            </sql:update>  
                         </c:if>
+                               
                         <c:if test="${param.request_status == 'denied'}">
-                            <sql:query var="inGrp">
-                                select count(*) from profile_ug where group_id = ? and experiment = ? and memidnum = ?
-                                <sql:param value="paper_${param.paperid}"/>
-                                <sql:param value="${appVariables.experiment}"/>
-                                <sql:param value="${rid.rows[0].memidnum}"/>
-                            </sql:query>
-                            <c:if test="${inGrp.rowCount > 0}">
+                            <c:if test="${!empty inGrp.rows[0].group_id}">
                                 <sql:update>
                                    delete from profile_ug where group_id = ? and experiment = ? and memidnum = ?
                                    <sql:param value="paper_${param.paperid}"/>
@@ -172,6 +185,7 @@
                                 </sql:update>
                             </c:if>
                         </c:if>
+                                   
                         <sql:update var="upd">
                             update descpub_authorship set request_status = ?, approved_by = ?, approval_date = sysdate where paperid = ? and memidnum = ?
                             <sql:param value="${param.request_status}"/>
