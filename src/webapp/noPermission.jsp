@@ -37,6 +37,9 @@
         <c:when test="${param.errmsg == '9'}">
             <h3>Failed to get user information from the ${appVariables.experiment} Group Manager.</h3>
         </c:when>
+        <c:when test="${param.errmsg == '10'}">
+            <h3>You do not have permission to approve DESC documents. Please contact the Publications Board for help.</h3>
+        </c:when>
         </c:choose>
     </body>
 </html>
