@@ -27,6 +27,7 @@ ul.contributor {
     list-style-type: square;
 }
 
+/* __ IDS __ */
 #pagelabel {
     /*color: #0000FF;*/
     color: #000000;
@@ -34,7 +35,6 @@ ul.contributor {
     font-size: 12px;
 }
 
-/* __ IDS __ */
 #pagerequire {
     font-size: 14px;
     color:red;

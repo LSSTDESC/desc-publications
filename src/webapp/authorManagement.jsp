@@ -27,9 +27,6 @@
         
         <tg:underConstruction/>
         
-       
-        
-        
         <c:set var="memidnum" value="${param.memidnum}"/>
         <c:set var="paperid" value="${param.paperid}"/>
         <c:set var="leadgrp" value="paper_leads_${paperid}"/>
@@ -53,8 +50,6 @@
                     order by auth_request_date
                 </sql:query>
                  
-               
-            
                 <h2 id="pagelabel">Request(s) For Authorship</h2>
                 <display:table class="datatable" id="row" name="${docs.rows}" cellspacing="10" cellpadding="10">
                     <display:column property="auth_request_date" title="Request date" style="text-align:left;" sortable="true" headerClass="sortable"/>
@@ -102,51 +97,50 @@
                      where a.memidnum = ?
                      <sql:param value="${memidnum}"/>
                   </sql:query>
-                  
                     
                   <sql:query var="isMem"> <%-- check if user already on author list, e.g. paper_N --%>
-                      select ug.user_id, p.first_name, p.last_name from profile_ug ug join profile_user p on ug.memidnum=p.memidnum
+                      select ug.user_id, p.first_name, p.last_name from profile_ug ug join profile_user p on ug.memidnum=p.memidnum and ug.experiment = p.experiment
                       where ug.memidnum = ? and ug.group_id = ? and ug.experiment = ?
                       <sql:param value="${memidnum}"/> 
                       <sql:param value="paper_${paperid}"/>
                       <sql:param value="${appVariables.experiment}"/>
                   </sql:query> 
                   
-                  
-                 <h3>${pers.rows[0].first_name} ${pers.rows[0].last_name} is already an author on DESC-${param.paperid}</h3>
-                   
-                  <c:if test="${isMem.rowCount < 1}">
-                     <form action="authorManagement.jsp?paperid=${param.paperid}&memidnum=${param.memidnum}" method="post">
-                        <input type="hidden" name="responseSubmitted" value="true"/>
-                        <table class="datatable">
-                            <utils:trEvenOdd reset="true"><th>Requestor's first name</th><td><input type="text" name="fname" value="${pers.rows[0].first_name}" size="100" style="text-align:right;"/></td>
-                            </utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Requestor's last name</th><td><input type="text" name="lname" value="${pers.rows[0].last_name}" size="100" style="text-align:right;"/></td>
-                            </utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Requestor's email</th><td><input type="text" name="Email" value="${pers.rows[0].email}" size="100" style="text-align:right;"/></td>
-                            </utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Date requested</th><td><input type="text" name="auth_request_date" value="${docs.rows[0].auth_request_date}" size="100" style="text-align:right;"/></td></utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Title</th><td>DESC-${docs.rows[0].title}</td></utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Contribution statement</th><td><input type="text" name="contribution_text" value="${docs.rows[0].contribution_text}" size="100" style="text-align:right;" /></td></utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Check list of contributions</th><td><input type="text" name="contribution_list" value="${docs.rows[0].contribution_list}" size="100" style="text-align:right;"/></td></utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Reason</th><td><input type="text" name="reason" value="DESC-${docs.rows[0].reason}" size="100" style="text-align:right;"/></td></utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Response to email to the requestor (limit 4000 chars)</th><td><textarea name="response" rows="20" cols="100" maxlength="4000" required></textarea></td></utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Assign status</th><td>              
-                                <select name="request_status" ${required}>
-                                    <option value="approved">Request approved</option>
-                                    <option value="denied" selected>Request denied</option>
-                                </select></td>                         
-                            </utils:trEvenOdd>
-                            <utils:trEvenOdd><th>Send the response</th><td><input type="submit" name="submit" value="submit"/></td></utils:trEvenOdd>
-                        </table>
-                     </form>
+                  <c:if test="${isMem.rowCount > 0}">
+                      <p style="color:red" id="pagelabel">${isMem.rows[0].first_name} ${isMem.rows[0].last_name} is already an author </strong> on DESC-${param.paperid}. Submitting this form
+                       may change their authorship status. </p>     
                   </c:if>
+                   
+                  <form action="authorManagement.jsp?paperid=${param.paperid}&memidnum=${param.memidnum}" method="post">
+                    <input type="hidden" name="responseSubmitted" value="true"/>
+                    <table class="datatable">
+                        <utils:trEvenOdd reset="true"><th style="text-align: left;">Requestor's first name</th><td style="text-align: left;"><input type="text" name="fname" value="${pers.rows[0].first_name}" size="100" style="text-align:right;"/></td>
+                        </utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Requestor's last name</th><td style="text-align: left;"><input type="text" name="lname" value="${pers.rows[0].last_name}" size="100" style="text-align:right;"/></td>
+                        </utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Requestor's email</th><td style="text-align: left;"><input type="text" name="Email" value="${pers.rows[0].email}" size="100" style="text-align:right;"/></td>
+                        </utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Date requested</th><td style="text-align: left;"><input type="text" name="auth_request_date" value="${docs.rows[0].auth_request_date}" size="100" style="text-align:right;"/></td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Title</th><td>DESC-${docs.rows[0].title}</td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Contribution statement</th><td style="text-align: left;"><input type="text" name="contribution_text" value="${docs.rows[0].contribution_text}" size="100" style="text-align:right;" /></td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Check list of contributions</th><td style="text-align: left;"><input type="text" name="contribution_list" value="${docs.rows[0].contribution_list}" size="100" style="text-align:right;"/></td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Reason</th><td style="text-align: left;"><input type="text" name="reason" value="DESC-${docs.rows[0].reason}" size="100" style="text-align:right;"/></td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Response to email to the requestor (limit 4000 chars)</th><td style="text-align: left;"><textarea name="response" rows="20" cols="100" maxlength="4000" required></textarea></td></utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Assign status</th><td style="text-align: left;">              
+                            <select name="request_status" ${required}>
+                                <option value="approved">Request approved</option>
+                                <option value="denied" selected>Request denied</option>
+                            </select></td>                         
+                        </utils:trEvenOdd>
+                        <utils:trEvenOdd><th style="text-align: left;">Send the response</th><td style="text-align: left;"><input type="submit" name="submit" value="submit"/></td></utils:trEvenOdd>
+                    </table>
+                  </form>
                   
             </c:when>
             <c:when test="${param.responseSubmitted == 'true'}">
                 <c:set var="msgbody" value="${param.response}"/>
                 <sql:query var="rid">
-                    select user_name, first_name, last_name, email from profile_user where memidnum = ? and experiment = ?
+                    select user_name, first_name, last_name, memidnum, email from profile_user where memidnum = ? and experiment = ?
                     <sql:param value="${param.memidnum}"/>
                     <sql:param value="${appVariables.experiment}"/>
                 </sql:query>   
@@ -161,6 +155,22 @@
                                <sql:param value="${appVariables.experiment}"/>
                                <sql:param value="${param.memidnum}"/>
                             </sql:update>
+                        </c:if>
+                        <c:if test="${param.request_status == 'denied'}">
+                            <sql:query var="inGrp">
+                                select count(*) from profile_ug where group_id = ? and experiment = ? and memidnum = ?
+                                <sql:param value="paper_${param.paperid}"/>
+                                <sql:param value="${appVariables.experiment}"/>
+                                <sql:param value="${rid.rows[0].memidnum}"/>
+                            </sql:query>
+                            <c:if test="${inGrp.rowCount > 0}">
+                                <sql:update>
+                                   delete from profile_ug where group_id = ? and experiment = ? and memidnum = ?
+                                   <sql:param value="paper_${param.paperid}"/>
+                                   <sql:param value="${appVariables.experiment}"/>
+                                   <sql:param value="${rid.rows[0].memidnum}"/>
+                                </sql:update>
+                            </c:if>
                         </c:if>
                         <sql:update var="upd">
                             update descpub_authorship set request_status = ?, approved_by = ?, approval_date = sysdate where paperid = ? and memidnum = ?
@@ -177,7 +187,7 @@
                             <sql:param value="Response to authorship request for DESC-${param.paperid}"/>
                             <sql:param value="${msgbody}"/>
                             <sql:param value="263"/>
-                         </sql:update> 
+                        </sql:update> 
 
                         <sql:update>
                             insert into descpub_mail_recipient (groupname_or_emailaddr, msgid) values(?,DESCPUB_MAIL_SEQ.currval) 
