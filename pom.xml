@@ -38,7 +38,7 @@
         <dependency>
             <groupId>srs</groupId>
             <artifactId>org-srs-groupmanager-web</artifactId>
-            <version>1.45</version>
+            <version>1.64</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

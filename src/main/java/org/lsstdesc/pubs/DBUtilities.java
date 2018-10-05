@@ -26,15 +26,16 @@ public class DBUtilities {
         this.conn = conn;
     }
 
-    void insertPaperVersion(int paperid, int version, String remarks, String origname, String location) throws SQLException {
+    void insertPaperVersion(int paperid, int version, String remarks, String origname, String location, String mimetype) throws SQLException {
 
-        String insStr = "insert into descpub_publication_versions (paperid, tstamp, version, remarks, origname, location) values (?, sysdate, ?, ?, ?, ?)";
+        String insStr = "insert into descpub_publication_versions (paperid, tstamp, version, remarks, origname, location, mimetype) values (?, sysdate, ?, ?, ?, ?, ?)";
         try (PreparedStatement insertStatement = conn.prepareStatement(insStr)) {
             insertStatement.setInt(1, paperid);
             insertStatement.setInt(2, version);
             insertStatement.setString(3, remarks);
             insertStatement.setString(4, origname);
             insertStatement.setString(5, location);
+            insertStatement.setString(6, mimetype);
             insertStatement.execute();
         }
 
@@ -53,6 +54,37 @@ public class DBUtilities {
             }
         }
 
+    }
+    
+     String getMimetype(int paperid, int version) throws SQLException {
+        // If the mimetype is missing the default is PDF.
+        //
+        String defaultMimeType = "application/pdf";
+        String sql;
+        if (version == 0){
+            sql = "select mimetype from DESCPUB_PUBLICATION_VERSIONS where version in (select max(version) from DESCPUB_PUBLICATION_VERSIONS where paperid = ?) and paperid=? ";
+        } else {
+            sql = "select mimetype from DESCPUB_PUBLICATION_VERSIONS where version=? and paperid=?";
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            if (version == 0){
+                stmt.setInt(1, paperid);
+                stmt.setInt(2, paperid);
+            }
+            else {
+                stmt.setInt(1, version);
+                stmt.setInt(2, paperid);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String mtype = rs.getString(1);
+//                    System.out.println("MIMETYPE IS " + mtype);
+                    return (mtype != null ? mtype : defaultMimeType);
+                } else {
+                    throw new SQLException("Could not get mimetype for paperid=" + paperid + " version=" + version);
+                }
+            }
+        }
     }
 
     void commit() throws SQLException {

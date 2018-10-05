@@ -40,6 +40,12 @@
         <c:when test="${param.errmsg == '10'}">
             <h3>You do not have permission to approve DESC documents. Please contact the Publications Board for help.</h3>
         </c:when>
+        <c:when test="${param.errmsg == '11'}">
+            <h3>Non-existent project number. Please contact the Publications Board for help.</h3>
+        </c:when>
+        <c:when test="${param.errmsg == '12'}">
+            <h3>Invalid project number. Please contact the Publications Board for help.</h3>
+        </c:when>
         </c:choose>
     </body>
 </html>

@@ -30,6 +30,7 @@ public class FileDownloadServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int paperid = Integer.parseInt(request.getParameter("paperid"));
+        String mimetype;
         // if a version number is not specified default is to return the latest version of the paper. The request comes in as a string so check for
         // version and convert it to integer or default set to zero before calling dbutil.getFile.
         int version = 0;
@@ -42,8 +43,10 @@ public class FileDownloadServlet extends HttpServlet {
             try (Connection conn = ConnectionManager.getConnection(request)) {
                 DBUtilities dbUtil = new DBUtilities(conn);
                 serverFile = dbUtil.getFile(paperid, version);
+                mimetype = dbUtil.getMimetype(paperid, version);
             }
-            response.setContentType("application/pdf");
+            response.setContentType(mimetype);
+//          response.setContentType("application/pdf");
             response.setHeader( "Content-Disposition", "attachment;filename=" + serverFile.getName());
             response.setContentLength((int) serverFile.length());
             byte[] buffer = new byte[65536];

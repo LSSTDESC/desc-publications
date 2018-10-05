@@ -16,18 +16,31 @@
 
 <!DOCTYPE html>
  
-<html>
+
  <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <link rel="stylesheet" type="text/css" href="css/pubstyles.css">
       <title>LSST-DESC Project ${param.projid}</title>
 </head>
 
+<tg:underConstruction/>
+
 <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-members')}">  
      <c:redirect url="noPermission.jsp?errmsg=7"/>
 </c:if>
-    
-<tg:underConstruction/>
+
+<c:catch var="sqlErrors">
+    <sql:query var="validID">
+        select id from descpub_project where id = ?
+        <sql:param value="${param.projid}"/>
+    </sql:query>
+</c:catch>
+        
+<c:choose>
+   <c:when test="${!empty sqlErrors || validID.rowCount < 1}"> 
+      <c:redirect url="noPermission.jsp?errmsg=11"/>
+   </c:when>
+</c:choose>    
 
 <%-- get all the papers under this project --%>
 <%-- old query
@@ -140,4 +153,4 @@
     </table>
 </c:if>
       
-</html>
+
