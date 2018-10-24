@@ -54,7 +54,7 @@
                 <display:table class="datatable" id="row" name="${docs.rows}" cellspacing="10" cellpadding="10">
                     <display:column property="auth_request_date" title="Request date" style="text-align:left;" sortable="true" headerClass="sortable"/>
                     <display:column title="Name" style="text-align:left;">
-                        <a href="srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${row.memidnum}">${row.first_name} ${row.last_name}</a>
+                        <a href="https://srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${row.memidnum}">${row.first_name} ${row.last_name}</a>
                     </display:column>
                     <display:column property="request_status" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/>
                     <display:column property="approved_by" title="Approved by" style="text-align:left;" sortable="true" headerClass="sortable"/>

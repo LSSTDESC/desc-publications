@@ -1,11 +1,13 @@
 package org.lsstdesc.pubs;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -13,6 +15,9 @@ import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.servlet.ServletException;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.tika.Tika;
 
 /**
  *
@@ -55,11 +60,81 @@ public class DBUtilities {
         }
 
     }
+
+    String getFiletype (FileItem item) throws IOException, ServletException {
+//      make sure we split on the last dot, in case the filename contains more than one of them
+        String[] parts = item.getName().split("\\.(?=[^.]*$)");
+        if (parts.length > 0){
+           String filetype = parts[1];
+           return filetype;
+        } else {
+            return null;
+        }
+    }
     
-     String getMimetype(int paperid, int version) throws SQLException {
-        // If the mimetype is missing the default is PDF.
-        //
-        String defaultMimeType = "application/pdf";
+    String allowedMimetype(FileItem item) throws IOException, ServletException {
+//        Check if mimetype is one of the allowed types        
+          String allowedtype = null;
+           
+//          ArrayList<String> allowedList = new ArrayList<String>();
+//          allowedList.add("application/vnd.apple.keynote");
+//          allowedList.add("application/vnd.ms-powerpoint");
+//          allowedList.add("application/vnd.openxmlformats-officedocument.presentationml.presentation");
+//          allowedList.add("application/x-tex");
+//          allowedList.add("image/png");
+//          allowedList.add("image/jpeg");
+//          allowedList.add("image/gif");
+//          allowedList.add("application/vnd.ms-excel");
+//          allowedList.add("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//          allowedList.add("application/msword");
+//          allowedList.add("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+//          allowedList.add("application/pdf");
+//          allowedList.add("application/vnd.oasis.opendocument.text");
+//          allowedList.add("application/x-dvi");
+          
+          Tika tika = new Tika();        
+ 
+              if ("application/vnd.openxmlformats-officedocument.presentationml.presentation".equalsIgnoreCase(tika.detect(item.getName()))){
+                   allowedtype = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+              } else if ("image/tiff".equalsIgnoreCase(tika.detect(item.getName()))) {
+                   allowedtype = "image/tiff";
+              } else if ("application/vnd.apple.keynote".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype = "application/vnd.apple.keynote";
+              } else if ("application/vnd.ms-powerpoint".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype ="application/vnd.ms-powerpoint";
+              } else if ("application/x-tex".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype ="application/x-tex";
+              } else if ("image/png".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype ="image/png";
+              } else if ("image/jpeg".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype ="image/jpeg";
+              } else if ("image/gif".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype ="image/gif";
+              } else if ("application/vnd.ms-excel".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype = "application/vnd.ms-excel";
+              } else if ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype ="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+              } else if ("application/msword".equalsIgnoreCase(item.getName())) {
+                  allowedtype ="application/msword";
+              } else if ("application/vnd.openxmlformats-officedocument.wordprocessingml.document".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype ="application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+              } else if ("application/pdf".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype ="application/pdf";
+              } else if ("application/vnd.oasis.opendocument.text".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype ="application/vnd.oasis.opendocument.text";
+              } else if ("application/x-dvi".equalsIgnoreCase(tika.detect(item.getName()))) {
+                  allowedtype = "application/x-dvi";
+              } else {
+                  throw new ServletException(item.getName() + " is not a recognized mimetype");
+              }
+
+          return allowedtype;
+    }
+    
+    String getMimetype(int paperid, int version) throws SQLException {
+//      When uploading, get the mimetype for the browser. Every uploaded paper should have a mimetype associated with it
+//        String defaultMimeType = "application/pdf";
+//      No default mimetype. File must be one of the allowed mimetypes.        
         String sql;
         if (version == 0){
             sql = "select mimetype from DESCPUB_PUBLICATION_VERSIONS where version in (select max(version) from DESCPUB_PUBLICATION_VERSIONS where paperid = ?) and paperid=? ";
@@ -78,8 +153,8 @@ public class DBUtilities {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     String mtype = rs.getString(1);
-//                    System.out.println("MIMETYPE IS " + mtype);
-                    return (mtype != null ? mtype : defaultMimeType);
+                    return mtype;
+//                    return (mtype != null ? mtype : defaultMimeType);
                 } else {
                     throw new SQLException("Could not get mimetype for paperid=" + paperid + " version=" + version);
                 }
@@ -203,6 +278,6 @@ public class DBUtilities {
                 } 
             }
         }
-    }    
-
+    }
+    
 }

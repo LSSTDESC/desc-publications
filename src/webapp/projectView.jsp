@@ -29,7 +29,7 @@
      <c:redirect url="noPermission.jsp?errmsg=7"/>
 </c:if>
 
-<c:catch var="sqlErrors">
+<c:catch var="chkProjID">
     <sql:query var="validID">
         select id from descpub_project where id = ?
         <sql:param value="${param.projid}"/>
@@ -37,7 +37,7 @@
 </c:catch>
         
 <c:choose>
-   <c:when test="${!empty sqlErrors || validID.rowCount < 1}"> 
+   <c:when test="${!empty chkProjID || validID.rowCount < 1}"> 
       <c:redirect url="noPermission.jsp?errmsg=11"/>
    </c:when>
 </c:choose>    

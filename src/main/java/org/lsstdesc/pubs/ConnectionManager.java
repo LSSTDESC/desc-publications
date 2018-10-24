@@ -35,7 +35,7 @@ public class ConnectionManager {
             DataSource dataSource = getDataSource(dataSourceName, null);
             return dataSource.getConnection();
         } catch (SQLException | JspException ex) {
-            throw new ServletException("Invalid Datasource", ex);
+            throw new ServletException("Invalid Datasource ex1 ", ex);
         }
     }
 
@@ -52,7 +52,7 @@ public class ConnectionManager {
         try {
             return dataSource.getConnection();
         } catch (SQLException ex) {
-            throw new JspException("Invalid Datasource", ex);
+            throw new JspException("Invalid Datasource ex2 ", ex);
         }
     }
 
@@ -84,7 +84,7 @@ public class ConnectionManager {
         } else if (rawDataSource instanceof DataSource) {
             dataSource = (DataSource) rawDataSource;
         } else {
-            throw new JspException("Invalid data source");
+            throw new JspException("Invalid data source ex3");
         }
 
         return dataSource;

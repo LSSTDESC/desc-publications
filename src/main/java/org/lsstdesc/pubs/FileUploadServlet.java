@@ -1,7 +1,7 @@
 package org.lsstdesc.pubs;
 
-import com.j256.simplemagic.ContentInfoUtil;
-import com.j256.simplemagic.ContentInfo;
+import org.apache.tika.Tika;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -56,8 +57,10 @@ public class FileUploadServlet extends HttpServlet {
             String forwardTo = null;
             int paperid = 0;
             String remarks = null;
+            String mimetype = null;
+            String filetype = null;
             FileItem file = null;
-
+            
             try {
                 List<FileItem> items = uploadPub.parseRequest(request);
 
@@ -83,21 +86,27 @@ public class FileUploadServlet extends HttpServlet {
                 if (forwardTo == null) {
                     throw new ServletException("Missing forwardTo parameter");
                 }
-
+                
                 try (Connection conn = ConnectionManager.getConnection(request)) {
                     DBUtilities dbUtil = new DBUtilities(conn);
                     int nextVersion = dbUtil.getMaxExistingVersion(paperid) + 1;
                     int projId = dbUtil.getProjectForPaper(paperid);
-                    checkFileType(file);
+                    mimetype = dbUtil.allowedMimetype(file);
+                    filetype = dbUtil.getFiletype(file);
+                  
 //                    checkIfPDF(file);
-                    File saveFile = getPathForFile(paperid, projId, nextVersion);
-                    file.write(saveFile);
-                    dbUtil.insertPaperVersion(paperid, nextVersion, remarks, file.getName(), saveFile.getPath());
-                    dbUtil.commit();
-                    request.setAttribute("msg", "File saved as " + saveFile.getName());
+   
+                    if ( mimetype != null && filetype != null ){
+                       File saveFile = getPathForFile(paperid, projId, nextVersion, filetype);
+                       file.write(saveFile);
+                       dbUtil.insertPaperVersion(paperid, nextVersion, remarks, file.getName(), saveFile.getPath(), mimetype);
+                       dbUtil.commit();
+                       request.setAttribute("msg", "File saved as " + saveFile.getName());
+                    }  
                 } catch (Exception ex) {
-                    request.setAttribute("msg", "Error saving file: " + ex.getMessage());
-                }
+                    request.setAttribute("msg", "Error saving file. " + ex.getMessage());
+                }  
+               
                 getServletContext().getRequestDispatcher(forwardTo).forward(request, response);
 
             } catch (FileUploadException ex) {
@@ -108,32 +117,21 @@ public class FileUploadServlet extends HttpServlet {
         }
     }
 
-    private void checkIfPDF(FileItem item) throws IOException, ServletException {
-        byte[] b = new byte[4];
-        item.getInputStream().read(b);
-        if (b[0] != '%' || b[1] != 'P' || b[2] != 'D' || b[3] != 'F') {
-            throw new ServletException("Uploaded file is not in PDF format");
-        }
-    }
-    
-    private void checkFileType(FileItem item) throws IOException, ServletException {
+//    private void checkIfPDF(FileItem item) throws IOException, ServletException {
 //        byte[] b = new byte[4];
-        ContentInfoUtil util = new ContentInfoUtil();
-        ContentInfo info = util.findMatch(item.getInputStream());
-        if (info == null){
-            throw new ServletException ("Unknown content-type. item = " + item);
-        } else {
-            System.out.println("Content-type is: " + info.getName());
-        }
-    }
-    
+//        item.getInputStream().read(b);
+//        if (b[0] != '%' || b[1] != 'P' || b[2] != 'D' || b[3] != 'F') {
+//            throw new ServletException("Uploaded file is not in PDF format");
+//        }
+//    }   
 
-    private File getPathForFile(int paperid, int projId, int version) {
-        File result = new File(baseDir, String.format("Project-%d/Paper-%d/DESC-%d_v%d.pdf", projId, paperid, paperid, version));
+    private File getPathForFile(int paperid, int projId, int version, String filetype) {
+//        File result = new File(baseDir, String.format("Project-%d/Paper-%d/DESC-%d_v%d.pdf", projId, paperid, paperid, version));
+        File result = new File(baseDir, String.format("Project-%d/Paper-%d/DESC-%d_v%d.%s", projId, paperid, paperid, version, filetype));
         result.getParentFile().mkdirs();
         return result;
     }
-
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
