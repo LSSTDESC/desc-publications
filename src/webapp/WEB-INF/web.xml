@@ -106,7 +106,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>FileUploadServlet</servlet-name>
-        <url-pattern>/upload.jsp</url-pattern>
+        <url-pattern>/upload_doc.jsp</url-pattern>
     </servlet-mapping>
 
     <servlet>

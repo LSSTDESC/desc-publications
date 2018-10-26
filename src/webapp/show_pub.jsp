@@ -266,7 +266,7 @@
         </c:if>
       
         <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
-        <form action="upload.jsp" method="post" enctype="multipart/form-data">
+        <form action="upload_doc.jsp" method="post" enctype="multipart/form-data"> <%-- upload_doc.jsp is the ur-pattern for the servlet --%>
             <div>
               <fieldset class="fieldset-auto-width">
                   <legend><strong>Upload</strong></legend><p/>

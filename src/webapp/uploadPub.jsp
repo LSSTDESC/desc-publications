@@ -83,7 +83,7 @@
                     <hr align="left" width="40%"/>   	
                 <p id="pagelabel">Upload new version of DESC-${param.paperid}</p>
                 </c:if>
-                <form action="upload.jsp" method="post" enctype="multipart/form-data">
+                <form action="upload_doc.jsp" method="post" enctype="multipart/form-data"> <%-- upload_doc is the uri-pattern for the servlet --%>
                 <div>
                   <fieldset class="fieldset-auto-width">  
                       <legend><strong>Upload</strong></legend><p/>
