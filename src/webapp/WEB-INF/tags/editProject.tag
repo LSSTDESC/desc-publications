@@ -16,7 +16,7 @@
     </c:if>  
 
     <sql:query var="srmdata">
-        select srmact from descpub_srm_activities order by srmact
+        select activity from descpub_srm_activities order by activity
     </sql:query>
 
     <c:set var="wglist" value=""/>
@@ -54,7 +54,7 @@
         <sql:param value="${projid}"/>
     </sql:query>
     
-    <c:set var="srmact_selected" value="${projects.rows[0].srmact}"/>
+    <c:set var="srmact_selected" value="${projects.rows[0].activity}"/>
     <c:set var="project_grp" value="project_${projid}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].state}"/>
@@ -62,7 +62,7 @@
     <c:set var="comm" value="${projects.rows[0].comm}"/>
     <c:set var="wkspace" value="${projects.rows[0].wkspaceurl}"/>
     <c:set var="gitspace" value="${projects.rows[0].gitspaceurl}"/>
-    <c:set var="srmspace" value="${projects.rows[0].srmact}"/>
+    <c:set var="srmspace" value="${projects.rows[0].activity}"/>
     <c:set var="projectleads" value="project_leads_${projid}"/>
     
     <sql:query var="isLead">
@@ -127,7 +127,7 @@
     SRM activity:<br/>
      <select name="srmact" size="20" required>
         <c:forEach var="s" items="${srmdata.rows}">
-            <option value="${s.srmact}"  <c:if test="${s.srmact == srmact_selected}">selected</c:if>  >${s.srmact}</option>
+            <option value="${s.activity}"  <c:if test="${s.activity == srmact_selected}">selected</c:if>  >${s.activity}</option>
         </c:forEach>
      </select>
     <%--<input type="text" name="srmact" id="srmact" value="${srmspace}" size="55" required/> --%>

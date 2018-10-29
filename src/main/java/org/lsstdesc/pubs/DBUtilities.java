@@ -94,39 +94,39 @@ public class DBUtilities {
           
           Tika tika = new Tika();        
  
-              if ("application/vnd.openxmlformats-officedocument.presentationml.presentation".equalsIgnoreCase(tika.detect(item.getName()))){
-                   allowedtype = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-              } else if ("image/tiff".equalsIgnoreCase(tika.detect(item.getName()))) {
-                   allowedtype = "image/tiff";
-              } else if ("application/vnd.apple.keynote".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype = "application/vnd.apple.keynote";
-              } else if ("application/vnd.ms-powerpoint".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype ="application/vnd.ms-powerpoint";
-              } else if ("application/x-tex".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype ="application/x-tex";
-              } else if ("image/png".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype ="image/png";
-              } else if ("image/jpeg".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype ="image/jpeg";
-              } else if ("image/gif".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype ="image/gif";
-              } else if ("application/vnd.ms-excel".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype = "application/vnd.ms-excel";
-              } else if ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype ="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-              } else if ("application/msword".equalsIgnoreCase(item.getName())) {
-                  allowedtype ="application/msword";
-              } else if ("application/vnd.openxmlformats-officedocument.wordprocessingml.document".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype ="application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-              } else if ("application/pdf".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype ="application/pdf";
-              } else if ("application/vnd.oasis.opendocument.text".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype ="application/vnd.oasis.opendocument.text";
-              } else if ("application/x-dvi".equalsIgnoreCase(tika.detect(item.getName()))) {
-                  allowedtype = "application/x-dvi";
-              } else {
-                  throw new ServletException(item.getName() + " is not a recognized mimetype");
-              }
+          if ("application/vnd.openxmlformats-officedocument.presentationml.presentation".equalsIgnoreCase(tika.detect(item.getName()))){
+               allowedtype = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+          } else if ("image/tiff".equalsIgnoreCase(tika.detect(item.getName()))) {
+               allowedtype = "image/tiff";
+          } else if ("application/vnd.apple.keynote".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype = "application/vnd.apple.keynote";
+          } else if ("application/vnd.ms-powerpoint".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype ="application/vnd.ms-powerpoint";
+          } else if ("application/x-tex".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype ="application/x-tex";
+          } else if ("image/png".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype ="image/png";
+          } else if ("image/jpeg".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype ="image/jpeg";
+          } else if ("image/gif".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype ="image/gif";
+          } else if ("application/vnd.ms-excel".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype = "application/vnd.ms-excel";
+          } else if ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype ="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+          } else if ("application/msword".equalsIgnoreCase(item.getName())) {
+              allowedtype ="application/msword";
+          } else if ("application/vnd.openxmlformats-officedocument.wordprocessingml.document".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype ="application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+          } else if ("application/pdf".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype ="application/pdf";
+          } else if ("application/vnd.oasis.opendocument.text".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype ="application/vnd.oasis.opendocument.text";
+          } else if ("application/x-dvi".equalsIgnoreCase(tika.detect(item.getName()))) {
+              allowedtype = "application/x-dvi";
+          } else {
+              throw new ServletException(item.getName() + " is not a recognized mimetype");
+          }
 
           return allowedtype;
     }

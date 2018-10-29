@@ -20,7 +20,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/site-demos.css">
     <link rel="stylesheet" href="css/pubstyles.css">
-    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/jquery-1.11.1.min.js"></script>  
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="js/jquery.validate.min.js"></script>
     <title>LSST-DESC Create Project</title>
 </head>
@@ -69,9 +70,9 @@
     </sql:query>
         
     <sql:query var="srmdata">
-        select srmact from descpub_srm_activities order by srmact
+        select activity from descpub_srm_activities order by activity
     </sql:query>
-        
+       
     <c:choose>  
         <c:when test="${param.task == 'create_proj_form'}">
              <h3>Working Group: ${swgs.rows[0].name}</h3><p/>
@@ -81,9 +82,9 @@
                 <strong>Confluence URL</strong><p/><input type="text" size="77" name="wkspaceurl"/><p/>
                 <strong>Github URL</strong><p/><input type="text" size="77" name="gitspaceurl"/><p/>
                 <strong>* SRM activity</strong><p/>
-                <select name="srmact" size="20" required>
+                <select name="srmdata" size="20" required>
                     <c:forEach var="s" items="${srmdata.rows}">
-                        <option value="${s.srmact}">${s.srmact}</option>
+                        <option value="${s.activity}">${s.activity}</option>
                     </c:forEach>
                 </select>
                 <p></p>
