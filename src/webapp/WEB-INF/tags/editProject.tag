@@ -16,7 +16,7 @@
     </c:if>  
 
     <sql:query var="srmdata">
-        select activity from descpub_srm_activities order by activity
+        select activity_id from descpub_srm_activities order by activity_id
     </sql:query>
 
     <c:set var="wglist" value=""/>
