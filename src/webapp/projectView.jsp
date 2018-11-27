@@ -43,12 +43,6 @@
 </c:choose>    
 
 <%-- get all the papers under this project --%>
-<%-- old query
- <sql:query var="docs">
-    select paperid, title, can_request_authorship, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') createdate, pubtype from descpub_publication where project_id = ?
-    <sql:param value="${param.projid}"/>
-</sql:query> --%>
-   
 <sql:query var="docs">
    select paperid, title, can_request_authorship, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') createdate, pubtype 
    from descpub_publication where project_id = ? order by case when pubtype='Journal paper' then 1 else 2 end
@@ -78,10 +72,21 @@
 </c:forEach>    
 
 <%-- get the project information --%>
+<%--
 <sql:query var="projects">
-    select id, title, summary, srmact, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, wkspaceurl, gitspaceurl from descpub_project where id = ?
+    select id, title, summary, srmactivity_id, srmactivity_title, state, 
+    to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
+    confluenceurl, gitspaceurl from descpub_project where id = ?
     <sql:param value="${param.projid}"/>
-</sql:query>
+</sql:query> --%>
+    
+<sql:query var="projects">
+    select p.id, p.title, p.summary, s.srmactivity_id, s.srmactivity_title, s.srmdeliverable_id, s.srmdeliverable_title, p.state, 
+    to_char(p.created,'YYYY-Mon-DD HH:MI:SS') created, to_char(p.lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
+    p.confluenceurl, p.gitspaceurl from descpub_project p join descpub_project_srm_info s on p.id = s.project_id
+    where p.id = ?
+    <sql:param value="${param.projid}"/>
+</sql:query> 
 
 <%-- row holds the query results in an array --%>
 <c:set var="row" value="${projects.rows[0]}"/>
@@ -89,24 +94,27 @@
 <%-- Must set the first row "reset=true" in order for the rows to alternate colors. If all rows have "reset=true" then the table will not have any color --%>
 <p id="pagelabel">Project Details</p>
 <table class="datatable">
-    <utils:trEvenOdd reset="true"><th>Title</th><td style="text-align: left">${row.title}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Project ID</th><td style="text-align: left">${row.id}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>State</th><td style="text-align: left">${row.state}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Date Created</th><td style="text-align: left">${row.created}</td></utils:trEvenOdd>
+    <utils:trEvenOdd reset="true"><th>Title</th><td style="text-align: left">${row.title}</td><td></td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Project ID</th><td style="text-align: left">${row.id}</td><td></td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>State</th><td style="text-align: left">${row.state}</td><td></td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Date Created</th><td style="text-align: left">${row.created}</td><td></td></utils:trEvenOdd>
     <c:if test="${!empty row.lastmodified}">
-        <utils:trEvenOdd ><th>Last Modified</th><td style="text-align: left">${row.lastmodified}</td></utils:trEvenOdd>
+        <utils:trEvenOdd ><th>Last Modified</th><td style="text-align: left">${row.lastmodified}</td><td></td></utils:trEvenOdd>
     </c:if>
     <c:if test="${!empty row.lastmodby}">
-        <utils:trEvenOdd ><th>Modified By</th><td style="text-align: left">${row.lastmodby}</td></utils:trEvenOdd>
+        <utils:trEvenOdd ><th>Modified By</th><td style="text-align: left">${row.lastmodby}</td><td></td></utils:trEvenOdd>
     </c:if>
-    <utils:trEvenOdd ><th>Confluence Url</th><td style="text-align: left">${empty row.wkspaceurl ? 'none' : row.wkspaceurl}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Github Url</th><td style="text-align: left">${empty row.gitspaceurl ? 'none' : row.gitspaceurl}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>SRM activity</th><td style="text-align: left">${empty row.srmact ? 'none' : row.srmact}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Confluence Url</th><td style="text-align: left">${empty row.confluenceurl ? 'none' : row.confluenceurl}</td><td></td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Github Url</th><td style="text-align: left">${empty row.gitspaceurl ? 'none' : row.gitspaceurl}</td><td></td></utils:trEvenOdd>
+    
+    <utils:trEvenOdd ><th>SRM activity</th><td style="text-align: left">${empty row.srmactivity_id ? 'none' : row.srmactivity_id}</td><td>${empty row.srmactivity_title ? 'none' : row.srmactivity_title}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>SRM deliverable</th><td style="text-align: left">${empty row.srmdeliverable_id ? 'none' : row.srmdeliverable_id}</td><td>${empty row.srmdeliverable_title ? 'none' : row.srmdeliverable_title}</td></utils:trEvenOdd>
+    
+    <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td><td></td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td><td></td></utils:trEvenOdd>
 
     <c:if test="${gm:isUserInGroup(pageContext,projectLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
-      <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td></utils:trEvenOdd>
+      <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td><td></td></utils:trEvenOdd>
     </c:if>
       <%--
     <c:if test="${gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">

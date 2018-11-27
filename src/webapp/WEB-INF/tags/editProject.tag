@@ -15,10 +15,10 @@
         <c:redirect url="noPermission.jsp?errmsg=7"/>
     </c:if>  
 
-    <sql:query var="srmdata">
-        select activity_id from descpub_srm_activities order by activity_id
-    </sql:query>
-
+    <sql:query var="srmact">
+        select activity_id, title from descpub_srm_activities order by activity_id
+    </sql:query>  
+        
     <c:set var="wglist" value=""/>
     <sql:query var="validStates">
         select state from descpub_project_states order by state
@@ -50,19 +50,20 @@
     </sql:query>
    
     <sql:query var="projects">
-        select id, title, summary, state, wkspaceurl, gitspaceurl, srmact, to_char(created,'YYYY-Mon-DD HH:MI:SS') crdate, to_char(lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate from descpub_project where id = ?  
+        select p.id, p.title, p.summary, p.state, p.confluenceurl, p.gitspaceurl, s.srmactivity_id, s.srmactivity_title, s.srmdeliverable_id, 
+        s.srmdeliverable_title, to_char(p.created,'YYYY-Mon-DD HH:MI:SS') crdate, to_char(p.lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate 
+        from descpub_project_srm_info s join descpub_project p on p.id=s.project_id where p.id = ?  
         <sql:param value="${projid}"/>
     </sql:query>
     
-    <c:set var="srmact_selected" value="${projects.rows[0].activity}"/>
+    <c:set var="srmact_selected" value="${projects.rows[0].srmactivity_id}"/>
     <c:set var="project_grp" value="project_${projid}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].state}"/>
     <c:set var="summary" value="${projects.rows[0].summary}"/>
     <c:set var="comm" value="${projects.rows[0].comm}"/>
-    <c:set var="wkspace" value="${projects.rows[0].wkspaceurl}"/>
+    <c:set var="confluenceurl" value="${projects.rows[0].confluenceurl}"/>
     <c:set var="gitspace" value="${projects.rows[0].gitspaceurl}"/>
-    <c:set var="srmspace" value="${projects.rows[0].activity}"/>
     <c:set var="projectleads" value="project_leads_${projid}"/>
     
     <sql:query var="isLead">
@@ -118,19 +119,18 @@
     </select> 
     <p/>
     Confluence URL:<br/>
-    <input type="text" name="wkspaceurl" id="wkspaceurl" value="${wkspace}" size="55" required/>
+    <input type="text" name="confluenceurl" id="confluenceurl" value="${confluenceurl}" size="55" required/>
     <p/>
     <p/>
     Github URL:<br/>
     <input type="text" name="gitspaceurl" id="gitspaceurl" value="${gitspace}" size="55" required/>
     <p/>
     SRM activity:<br/>
-     <select name="srmact" size="20" required>
-        <c:forEach var="s" items="${srmdata.rows}">
-            <option value="${s.activity}"  <c:if test="${s.activity == srmact_selected}">selected</c:if>  >${s.activity}</option>
+     <select name="srmactivity_id" size="20" multiple required>
+        <c:forEach var="s" items="${srmact.rows}">
+            <option value="${s.activity_id}"  <c:if test="${s.activity_id == srmact_selected}">selected</c:if>  >${s.activity_id} ${s.title}</option>
         </c:forEach>
      </select>
-    <%--<input type="text" name="srmact" id="srmact" value="${srmspace}" size="55" required/> --%>
     <p/>
     Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
