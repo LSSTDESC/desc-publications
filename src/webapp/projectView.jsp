@@ -16,7 +16,6 @@
 
 <!DOCTYPE html>
  
-
  <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <link rel="stylesheet" type="text/css" href="css/pubstyles.css">
@@ -72,14 +71,6 @@
 </c:forEach>    
 
 <%-- get the project information --%>
-<%--
-<sql:query var="projects">
-    select id, title, summary, srmactivity_id, srmactivity_title, state, 
-    to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
-    confluenceurl, gitspaceurl from descpub_project where id = ?
-    <sql:param value="${param.projid}"/>
-</sql:query> --%>
-    
 <sql:query var="projects">
     select p.id, p.title, p.summary, s.srmactivity_id, s.srmactivity_title, s.srmdeliverable_id, s.srmdeliverable_title, p.state, 
     to_char(p.created,'YYYY-Mon-DD HH:MI:SS') created, to_char(p.lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
