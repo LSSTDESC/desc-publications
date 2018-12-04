@@ -14,10 +14,6 @@
     <c:if test="${!(gm:isUserInGroup(pageContext,'lsst-desc-members'))}">
         <c:redirect url="noPermission.jsp?errmsg=7"/>
     </c:if>  
-
-    <sql:query var="srmact">
-        select activity_id, title from descpub_srm_activities order by activity_id
-    </sql:query>  
         
     <c:set var="wglist" value=""/>
     <sql:query var="validStates">
@@ -50,13 +46,31 @@
     </sql:query>
    
     <sql:query var="projects">
-        select p.id, p.title, p.summary, p.state, p.confluenceurl, p.gitspaceurl, s.srmactivity_id, s.srmactivity_title, s.srmdeliverable_id, 
-        s.srmdeliverable_title, to_char(p.created,'YYYY-Mon-DD HH:MI:SS') crdate, to_char(p.lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate 
-        from descpub_project_srm_info s join descpub_project p on p.id=s.project_id where p.id = ?  
+        select id, title, summary, state, confluenceurl, gitspaceurl, to_char(created,'YYYY-Mon-DD HH:MI:SS') crdate, 
+        to_char(lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate from descpub_project where id = ?  
         <sql:param value="${projid}"/>
     </sql:query>
-    
-    <c:set var="srmact_selected" value="${projects.rows[0].srmactivity_id}"/>
+        
+    <sql:query var="activities"> <%-- make a list of the activities and deliverables --%>
+        select trim(activity_id) as activity_id, title from descpub_srm_activities order by activity_id
+    </sql:query>
+
+    <sql:query var="deliverables">
+        select trim(deliverable_id) as deliverable_id, title from descpub_srm_deliverables order by deliverable_id
+    </sql:query>     
+     
+    <c:if test="${!empty projid}"> <%-- see if the project has any srms attached to it --%>
+        <sql:query var="srmact">
+            select srm_id from descpub_project_srm_info where srmtype = 'activity' and project_id = ?
+            <sql:param value="${projid}"/>
+        </sql:query>
+        
+        <sql:query var="srmdel">
+           select srm_id from descpub_project_srm_info where srmtype = 'deliverable' and project_id = ?
+           <sql:param value="${projid}"/>
+        </sql:query>
+    </c:if>
+       
     <c:set var="project_grp" value="project_${projid}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].state}"/>
@@ -125,13 +139,24 @@
     Github URL:<br/>
     <input type="text" name="gitspaceurl" id="gitspaceurl" value="${gitspace}" size="55" required/>
     <p/>
-    SRM activity:<br/>
-     <select name="srmactivity_id" size="20" multiple required>
-        <c:forEach var="s" items="${srmact.rows}">
-            <option value="${s.activity_id}"  <c:if test="${s.activity_id == srmact_selected}">selected</c:if>  >${s.activity_id} ${s.title}</option>
+    
+    SRM Activities (optional)<br/>
+     <select name="srmactivity_id" size="20" multiple>
+         <c:forEach var="s" items="${activities.rows}" varStatus="status">
+             <option value="${s.activity_id}" <c:if test="${s['activity_id'] == srmact.rowsByIndex[status.index][0]}"><c:out value="selected"/></c:if> >${s.activity_id} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${s.title}</option>
         </c:forEach>
      </select>
     <p/>
+   
+    <p>
+    SRM Deliverables (optional)<br/>
+         <select name="srmdeliverable_id" size="20" multiple>
+             <c:forEach var="d" items="${deliverables.rows}" varStatus="status">
+                <option value="${d.deliverable_id}" <c:if test="${d['deliverable_id'] == srmdel.rowsByIndex[status.index][0]}"><c:out value="selected"/></c:if> >${d.deliverable_id} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${d.title}</option>    
+             </c:forEach>
+         </select>
+    
+    <p>
     Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
     
