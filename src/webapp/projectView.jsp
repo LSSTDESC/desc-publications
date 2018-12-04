@@ -47,14 +47,15 @@
    from descpub_publication where project_id = ? order by case when pubtype='Journal paper' then 1 else 2 end
    <sql:param value="${param.projid}"/>
 </sql:query>
-     
+    
+<%-- define project variables --%>
 <c:set var="projectLeadGrpName" value="project_leads_${param.projid}"/>
 <c:set var="projectGrpName" value="project_${param.projid}"/>
-
-<%-- find the project leads --%>
 <c:set var="projectLeaders" value=""/>
+<c:set var="leadAddrs" value=""/>
+
 <sql:query var="leads">
-    select u.first_name, u.last_name, u.memidnum, u.user_name from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
+    select u.first_name, u.last_name, u.email, u.memidnum, u.user_name from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
     where ug.group_id = ? and ug.experiment = ? order by u.last_name
     <sql:param value="${projectLeadGrpName}"/>
     <sql:param value="${appVariables.experiment}"/>
@@ -63,19 +64,19 @@
     <c:choose>
        <c:when test="${empty projectLeaders}">
            <c:set var="projectLeaders" value="${line.first_name} ${line.last_name}"/>
+           <c:set var="leadAddrs" value="${line.email}"/>
        </c:when>
        <c:when test="${!empty projectLeaders}">
            <c:set var="projectLeaders" value="${projectLeaders}<br/>${line.first_name} ${line.last_name}"/>
+           <c:set var="leadAddrs" value="${leadAddrs},${line.email}"/>
        </c:when>
     </c:choose>
 </c:forEach>    
 
 <%-- get the project information --%>
 <sql:query var="projects">
-    select p.id, p.title, p.summary, s.srmactivity_id, s.srmactivity_title, s.srmdeliverable_id, s.srmdeliverable_title, p.state, 
-    to_char(p.created,'YYYY-Mon-DD HH:MI:SS') created, to_char(p.lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
-    p.confluenceurl, p.gitspaceurl from descpub_project p join descpub_project_srm_info s on p.id = s.project_id
-    where p.id = ?
+    select id, title, summary, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
+    confluenceurl, gitspaceurl from descpub_project where id = ?
     <sql:param value="${param.projid}"/>
 </sql:query> 
 
@@ -103,6 +104,8 @@
     
     <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td><td></td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td><td></td></utils:trEvenOdd>
+    
+    <utils:trEvenOdd ><th>Email to</th><td style="text-align: left"><a href=mailto:${leadAddrs}>project leaders</a></td><td></td></utils:trEvenOdd>
 
     <c:if test="${gm:isUserInGroup(pageContext,projectLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
       <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td><td></td></utils:trEvenOdd>
