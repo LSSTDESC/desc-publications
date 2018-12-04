@@ -166,8 +166,8 @@
        
         <%-- get paper leads --%>
         <sql:query var="leadauth">
-            select u.first_name, u.last_name, u.memidnum, u.user_name from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
-            where ug.group_id = ? and ug.experiment = ? order by u.last_name
+            select u.first_name, u.last_name, u.email, u.memidnum, u.user_name from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
+            where u.active = 'Y' and ug.group_id = ? and ug.experiment = ? order by u.last_name
             <sql:param value="${paperLeadGrpName}"/>
             <sql:param value="${appVariables.experiment}"/>
         </sql:query>
@@ -176,9 +176,11 @@
             <c:choose>
                 <c:when test="${empty primaryauths}">
                     <c:set var="primaryauths" value="${la.first_name}:${la.last_name}:${la.memidnum}"/>
+                    <c:set var="authAddrs" value="${la.email}"/>
                 </c:when>
                 <c:when test="${!empty primaryauths}">
                     <c:set var="primaryauths" value="${primaryauths},${la.first_name}:${la.last_name}:${la.memidnum}"/>
+                    <c:set var="authAddrs" value="${authAddrs},${la.email}"/>
                 </c:when>
             </c:choose>
         </c:forEach>
@@ -233,14 +235,11 @@
                     </c:forEach>
                 </td>
             </utils:trEvenOdd>
-               <%--
-            <c:if test="${pubs.rows[0].can_request_authorship}">
-               <utils:trEvenOdd reset="false"><th style="text-align: left">Request authorship</th>
-                   <td style="text-align: left">
-                   <a href="requestAuthorship.jsp?paperid=${param.paperid}">DESC-${param.paperid} request</a>
-                   </td>
-               </utils:trEvenOdd>
-           </c:if>   --%>    
+            <c:if test="${!empty authAddrs}">
+                <utils:trEvenOdd reset="false"><th style="text-align: left">Email to</th>
+                    <td style="text-align:left"><a href="mailto:${authAddrs}">Paper Leads</a></td>
+                </utils:trEvenOdd> 
+            </c:if> 
 
            <c:if test="${userCanEdit || convenerCanEdit || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                <utils:trEvenOdd reset="false"><th style="text-align: left">Edit</th>
