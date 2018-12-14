@@ -14,13 +14,12 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Authorship Request</title>
+        <link rel="stylesheet" href="css/pubstyles.css">
         <script src="js/jquery-1.11.1.min.js"></script>
         <script src="js/jquery.validate.min.js"></script>
         <script src="js/checkAuthRequest.js"></script>
-        <link rel="stylesheet" href="css/pubstyles.css">
     </head>
     <body>
-        
         
     <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-members')}">  
         <c:redirect url="noPermission.jsp?errmsg=7"/>
@@ -193,7 +192,7 @@ Checklist contributions: ${contributions}
         </c:when>
         <c:when test="${!empty param.paperid}">
             <p id="pagelabel">Request Authorship for DESC-${param.paperid}. &nbsp;&nbsp;Please state your reason for this request.</p>
-            <form action="requestAuthorship.jsp?paperid=${param.paperid}" name="requestAuth" method="post">
+            <form action="requestAuthorship.jsp?paperid=${param.paperid}" name="requestAuth" id="requestAuth" method="post">
                 <input type="hidden" value="${param.paperid}" name="paperid"/>
                 <p><textarea name="reason" rows="15" cols="80" required></textarea></p>
                 
@@ -201,7 +200,7 @@ Checklist contributions: ${contributions}
                     Refer to authorship guide, section 3, for more detailed explanation
                 </p>
                 <c:forEach var="c" items="${contribs.rows}">
-                     <input type="checkbox" class="checkbox" name="cname" value="${c['label']}"/>${c['label']} <br/>
+                     <input type="checkbox" name="cname[]" id="cname[]" value="${c['label']}"/>${c['label']} <br/>
                 </c:forEach>
                 <p></p>
                  <p id="pagelabel">Please enter a brief statement of your contribution to the paper. If you are <br/> accepted as an author of the paper, this statement will be made publicly <br/> available in 
@@ -216,7 +215,7 @@ Checklist contributions: ${contributions}
             $("#requestAuth").validate({
                 errorPlacement: function(error,element){
                     element.val(error.text());
-                }
+                },
                 errorClass: "my-error-class"
             }); 
            </script>   

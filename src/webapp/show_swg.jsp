@@ -114,7 +114,7 @@
                        <a href="addPublication.jsp?task=create_publication_form&projid=${proj.id}&swgid=${param.swgid}">a</a>
                    </display:column>    
 
-               </c:if>       
+               </c:if>   
             </display:table>
         </c:if>  
         <p></p>

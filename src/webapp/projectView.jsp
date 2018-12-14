@@ -34,7 +34,15 @@
         <sql:param value="${param.projid}"/>
     </sql:query>
 </c:catch>
-        
+       
+<%-- get memidnum for project membership --%>
+<sql:query var="userInfo">
+    select memidnum from profile_user where user_name = ? and experiment = ?
+    <sql:param value="${userName}"/>
+    <sql:param value="${appVariables.experiment}"/>
+</sql:query>
+<c:set var="memidnum" value="${userInfo.rows[0]['memidnum']}"/>
+
 <c:choose>
    <c:when test="${!empty chkProjID || validID.rowCount < 1}"> 
       <c:redirect url="noPermission.jsp?errmsg=11"/>
@@ -105,16 +113,31 @@
     <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td><td></td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td><td></td></utils:trEvenOdd>
     
-    <utils:trEvenOdd ><th>Email to</th><td style="text-align: left"><a href=mailto:${leadAddrs}>project leaders</a></td><td></td></utils:trEvenOdd>
-
+    <utils:trEvenOdd ><th>Email to</th><td style="text-align: left"><a href=mailto:${leadAddrs}>project leaders</a></td><td></td></utils:trEvenOdd>  
+    
     <c:if test="${gm:isUserInGroup(pageContext,projectLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
       <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td><td></td></utils:trEvenOdd>
     </c:if>
-      <%--
-    <c:if test="${gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
-      <utils:trEvenOdd ><th>Document </th><td style="text-align: left"><a href="addPublication.jsp?task=create_publication_form&projid=${param.projid}&swgid=${param.swgid}">Add</a></td></utils:trEvenOdd>
-    </c:if> --%>
+      
 </table>
+
+<table class="datatable">
+    <utils:trEvenOdd  reset="true"><th>Subscription to Project</th><td></td><td>
+      <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
+         <c:set var="returnURL" value="projectView.jsp?projid=${param.projid}&swgid=${param.swgid}"/>
+        <tg:projectSubscription groupname="project_${param.projid}" memidnum="${memidnum}" userid = "${userName}" returnURL="${returnURL}"/> 
+        </c:if></td>
+        <tg:projectMembershipDisplay groupname="project_${param.projid}" returnURL="${returnURL}"/> 
+    </utils:trEvenOdd>  
+</table>
+  <%--  
+<table class="datatable">
+    <utils:trEvenOdd  reset="true"><th>&nbsp;</th><td style="text-align: left">&nbsp;</td><td>
+         <c:set var="returnURL" value="projectView.jsp?projid=${param.projid}&swgid=${param.swgid}"/>
+        <tg:projectMembershipDisplay groupname="project_${param.projid}" returnURL="${returnURL}"/> 
+        </td>
+    </utils:trEvenOdd>  
+</table>  --%> 
  
  <c:if test="${docs.rowCount > 0}">
      

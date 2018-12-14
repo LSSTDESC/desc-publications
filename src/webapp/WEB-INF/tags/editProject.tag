@@ -58,18 +58,12 @@
     <sql:query var="deliverables">
         select trim(deliverable_id) as deliverable_id, title from descpub_srm_deliverables order by deliverable_id
     </sql:query>     
-     
-    <c:if test="${!empty projid}"> <%-- see if the project has any srms attached to it --%>
-        <sql:query var="srmact">
-            select srm_id from descpub_project_srm_info where srmtype = 'activity' and project_id = ?
-            <sql:param value="${projid}"/>
-        </sql:query>
         
-        <sql:query var="srmdel">
-           select srm_id from descpub_project_srm_info where srmtype = 'deliverable' and project_id = ?
-           <sql:param value="${projid}"/>
-        </sql:query>
-    </c:if>
+     <%-- see if the project has any srms attached to it. id should be unique so just check for srm_id in both activity and deliverable --%>
+    <sql:query var="projsrm">
+       select srm_id from descpub_project_srm_info where project_id = ?
+       <sql:param value="${projid}"/>
+    </sql:query>
        
     <c:set var="project_grp" value="project_${projid}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
@@ -87,23 +81,23 @@
     </sql:query>
     <c:set var="canEdit" value="${isLead.rows[0].tot > 0 ? 'true' : 'false'}"/>
     
-<p id="pagelabel">Project Details [Working Group(s): ${wglist}]</p>
-<div id="formRequest">
-  <fieldset class="fieldset-auto-width">
-  <legend>Edit project details</legend>
-  <form action="modifySWGprojects.jsp" method="post">  
-    <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />
-    <input type="hidden" name="projid" id="projid" value="${projid}" /> 
-    <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp?projid=${projid}" />  
+    <p id="pagelabel">Project Details [Working Group(s): ${wglist}]</p>
+    <div id="formRequest">
+    <fieldset class="fieldset-auto-width">
+    <legend>Edit project details</legend>
+    <form action="modifySWGprojects.jsp" method="post">  
+      <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />
+      <input type="hidden" name="projid" id="projid" value="${projid}" /> 
+      <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp?projid=${projid}" />  
     
-    Project ID: ${projid} &nbsp;&nbsp;&nbsp;
-    Created: ${projects.rows[0].crdate}&nbsp;&nbsp;&nbsp;
-    <c:if test="${!empty projects.rows[0].moddate}">
+     Project ID: ${projid} &nbsp;&nbsp;&nbsp;
+     Created: ${projects.rows[0].crdate}&nbsp;&nbsp;&nbsp;
+     <c:if test="${!empty projects.rows[0].moddate}">
         Last changed: ${projects.rows[0].moddate}<p/>
         <c:if test="${!empty projects.rows[0].lastmodby}">
           Last changed by: ${projects.rows[0].lastmodby}<br/>
         </c:if>
-    </c:if>
+     </c:if>
     <p/>
     Title: <br/><input type="text" name="title" id="title" value="${title}" size="55" required/><p/>
     <table border="0">
@@ -142,21 +136,35 @@
     
     SRM Activities (optional)<br/>
      <select name="srmactivity_id" size="20" multiple>
-         <c:forEach var="s" items="${activities.rows}" varStatus="status">
-             <option value="${s.activity_id}" <c:if test="${s['activity_id'] == srmact.rowsByIndex[status.index][0]}"><c:out value="selected"/></c:if> >${s.activity_id} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${s.title}</option>
+         <c:forEach var="s" items="${activities.rows}">
+            <c:set var="selected" value=""/>
+            <c:forEach var="p" items="${projsrm.rows}">
+                <c:if test="${p.srm_id == s.activity_id}">
+                   <c:set var="selected" value="selected"/>
+                </c:if>
+           </c:forEach>
+           <option value="${s.activity_id}" ${selected}>${s.activity_id} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${s.title}</option>
         </c:forEach>
      </select>
     <p/>
    
     <p>
     SRM Deliverables (optional)<br/>
-         <select name="srmdeliverable_id" size="20" multiple>
-             <c:forEach var="d" items="${deliverables.rows}" varStatus="status">
-                <option value="${d.deliverable_id}" <c:if test="${d['deliverable_id'] == srmdel.rowsByIndex[status.index][0]}"><c:out value="selected"/></c:if> >${d.deliverable_id} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${d.title}</option>    
-             </c:forEach>
-         </select>
+     <select name="srmdeliverable_id" size="20" multiple>
+        <c:forEach var="d" items="${deliverables.rows}">
+            <c:set var="selected" value=""/>
+            <c:forEach var="px" items="${projsrm.rows}">
+                <c:if test="${px.srm_id == d.deliverable_id}">
+                    <c:set var="selected" value="selected"/>
+                </c:if>
+            </c:forEach>
+            <option value="${d.deliverable_id}" ${selected}>${d.deliverable_id} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${d.title}</option>    
+        </c:forEach>
+     </select>
     
-    <p>
+    <p/>
+ 
+    <p> 
     Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
     <p/>
     

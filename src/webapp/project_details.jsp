@@ -27,7 +27,7 @@
 </head>
 
 <body>
-   
+
     <tg:underConstruction/>
 
     <c:choose>
@@ -69,8 +69,12 @@
         <sql:param value="${param.id}"/>
     </sql:query>
         
-    <sql:query var="srmdata">
-        select activity_id from descpub_srm_activities order by activity_id
+    <sql:query var="srmact">
+        select activity_id, title from descpub_srm_activities order by activity_id
+    </sql:query>
+        
+    <sql:query var="srmdel">
+        select deliverable_id, title from descpub_srm_deliverables order by deliverable_id
     </sql:query>
        
     <c:choose>  
@@ -79,12 +83,19 @@
              <em id="pagerequire">* fields are required</em>
             <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}">
                 <strong>* Title</strong><p/><input type="text" name="title" size="77" required/><p/>
-                <strong>Confluence URL</strong><p/><input type="text" size="77" name="wkspaceurl"/><p/>
-                <strong>Github URL</strong><p/><input type="text" size="77" name="gitspaceurl"/><p/>
-                <strong>* SRM activity</strong><p/>
-                <select name="srmdata" size="20" required>
-                    <c:forEach var="s" items="${srmdata.rows}">
-                        <option value="${s.activity}">${s.activity}</option>
+                <strong>* Confluence URL</strong><p/><input type="text" size="77" name="confluenceurl" required/><p/>
+                <strong>* Github URL</strong><p/><input type="text" size="77" name="gitspaceurl" required/><p/>
+                <strong>SRM activities</strong><p/>
+                <select name="srmactivity" size="20" multiple>
+                    <c:forEach var="s" items="${srmact.rows}">
+                        <option value="${s.activity_id}">${s.activity_id} ${s.title}</option>
+                    </c:forEach>
+                </select>
+                <p></p>
+                 <strong>SRM deliverables</strong><p/>
+                <select name="srmdeliverable" size="20" multiple>
+                    <c:forEach var="d" items="${srmdel.rows}">
+                        <option value="${d.deliverable_id}">${d.deliverable_id} ${d.title}</option>
                     </c:forEach>
                 </select>
                 <p></p>
@@ -104,72 +115,119 @@
             </form>
         </c:when>
         <c:when test="${param.formsubmitted == 'true'}">
+                
             <c:set var="trapError" value=""/>
-            
+            <c:set var="newprojID" value=""/>
+           
             <c:catch var="trapError">
                 <sql:transaction>
                     <sql:update >
-                    insert into descpub_project (id,title,summary,state,wkspaceurl,gitspaceurl,srmact,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,?,?,sysdate,?)
+                    insert into descpub_project (id,title,summary,state,confluenceurl,gitspaceurl,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,?,sysdate,?)
                     <sql:param value="${param.title}"/>
-                    <sql:param value="${param.summary}"/>
+                    <sql:param value="<c:out value=${param.summary}/>"/>
                     <sql:param value="${param.state}"/>
-                    <sql:param value="${param.wkspaceurl}"/>
-                    <sql:param value="${param.gitspaceurl}"/>
-                    <sql:param value="${param.srmdata}"/>
+                    <sql:param value="<c:out value=${param.confluenceurl}/>"/>
+                    <sql:param value="<c:out value=${param.gitspaceurl}/>"/>
                     <sql:param value="${userName}"/>
                     </sql:update>
                     
-                    <%-- get the new project id --%>
+                      <%-- get the new project id  --%> 
                     <sql:query var="projNum">
                         select descpub_proj_seq.currval as newProjNum from dual
                     </sql:query>  
+                    <c:set var="newprojID" value="${projNum.rows[0]['newProjNum']}"/>
                     
-                    <%-- add the project id - working group id since projects can have multiple working groups --%>
+                     <%-- add the project id - working group id since projects can have multiple working groups --%> 
                     <sql:update var="swg_proj">
                         insert into descpub_project_swgs (id,project_id,swg_id) values(SWG_SEQ.nextval,?,?)
-                        <sql:param value="${projNum.rows[0]['newProjNum']}"/>
+                        <sql:param value="${newprojID}"/>
                         <sql:param value="${param.swgid}"/>
                     </sql:update>
             
-                    <%-- create the leadership group first since they will control the membership group for the project --%>
+                    <%-- create the leadership group first since they will control the membership group for the project   --%>
                     <sql:update var="projleads">
                         insert into profile_group (group_name, group_manager, experiment) values (?,?,?)
-                        <sql:param value="project_leads_${projNum.rows[0]['newProjNum']}"/>
+                        <sql:param value="project_leads_${newprojID}"/>
                         <sql:param value="lsst-desc-publications-admin"/>
                         <sql:param value="${appVariables.experiment}"/>
                     </sql:update>
                         
-                    <%-- project leaders manage the members, add the group and managing group to profile_ug --%>     
+                    <%-- project leaders manage the members, add the group and managing group to profile_ug  --%>  
                     <sql:update>
                         insert into profile_group (group_name, group_manager, experiment) values (?,?,?)
-                        <sql:param value="project_${projNum.rows[0]['newProjNum']}"/>
-                        <sql:param value="project_leads_${projNum.rows[0]['newProjNum']}"/>
+                        <sql:param value="project_${newprojID}"/>
+                        <sql:param value="project_leads_${newprojID}"/>
                         <sql:param value="${appVariables.experiment}"/>
                     </sql:update>  
-                        
-                    <c:forEach var="x" items="${param}">
+                      
+                    <c:forEach var="x" items="${param}">  
                         <c:if test="${x.key == 'addLeads'}">
                             <c:forEach var="y" items="${paramValues[x.key]}">
                                 <c:set var="array" value="${fn:split(y,':')}"/>
                                 <sql:update var="leaders">
                                     insert into profile_ug (user_id, group_id, experiment, memidnum) values (?,?,?,?)
                                     <sql:param value="${array[1]}"/>
-                                    <sql:param value="project_leads_${projNum.rows[0]['newProjNum']}"/>
+                                    <sql:param value="project_leads_${newprojID}"/>
                                     <sql:param value="${appVariables.experiment}"/>
                                     <sql:param value="${array[0]}"/>
                                 </sql:update>
                              </c:forEach>
                          </c:if>
-                    </c:forEach>
+                    </c:forEach>  
+                                    
+                    <c:forEach var="xx" items="${param}">
+                      <c:choose>
+                          <c:when test="${xx.key == 'srmactivity' && !empty paramValues[xx.key]}">
+                             <c:forEach var="yy" items="${paramValues[xx.key]}">
+                                <sql:query var="results">
+                                    select title from descpub_srm_activities where activity_id = ?
+                                    <sql:param value="${yy}"/>
+                                </sql:query>
+                                <sql:update var="act">
+                                     insert into descpub_proj_activities (project_id,activity_id,act_title,entry_date)
+                                     values(?,?,?,sysdate)
+                                     <sql:param value="${newprojID}"/>
+                                     <sql:param value="${yy}"/>
+                                     <sql:param value="${results.rows[0]['title']}"/>
+                                </sql:update>
+                             </c:forEach>
+                          </c:when>
+                          <c:when test="${xx.key == 'srmdeliverable' && !empty paramValues[xx.key]}">
+                               <c:forEach var="yy" items="${paramValues[xx.key]}">
+                                 <sql:query var="results">
+                                    select title from descpub_srm_deliverables where deliverable_id = ?
+                                    <sql:param value="${yy}"/>
+                                 </sql:query>
+            
+                                 <sql:update var="del">
+                                     insert into descpub_proj_deliverables (project_id,deliverable_id,del_title,entry_date)
+                                     values(?,?,?,sysdate)
+                                     <sql:param value="${newprojID}"/>
+                                     <sql:param value="${yy}"/>
+                                     <sql:param value="${results.rows[0]['title']}"/>
+                                 </sql:update>
+                               </c:forEach>
+                          </c:when>
+                       </c:choose>
+                    </c:forEach>                
+                    
               </sql:transaction>
             </c:catch> 
 
             <c:if test="${!empty trapError}">
-                Create project ${param.title} failed. insert into profile_group values(project_${projNum.rows[0]['newProjNum']}, project_leads_${projNum.rows[0]['newProjNum']}, ${appVariables.experiment})<br/>
-                ${trapError}
+                Create project ${param.title} failed. insert into profile_group values(project_${newprojID}, project_leads_${newprojID}, ${appVariables.experiment})<br/>
+                ${trapError}<p></p>
+                <c:forEach var="par" items="${param}">
+                    <c:out value="${par.key} = ${par.value}"/><br/>
+                    <c:if test="${fn:contains(par.key,'srmactivity') || fn:contains(par.key,'srmdeliverable')}">
+                        <c:forEach var="parval" items="${paramValues[par.key]}">
+                            <c:out value="* paramValue: ${parval}"/><br/>
+                        </c:forEach>
+                    </c:if>
+                </c:forEach>
             </c:if>
             <c:if test="${empty trapError}">
-                <c:redirect url="show_project.jsp?projid=${projNum.rows[0]['newProjNum']}&swgid=${param.swgid}"/>
+               <c:redirect url="show_project.jsp?projid=${projNum.rows[0]['newProjNum']}&swgid=${param.swgid}"/>
                 <%--
                Created ${param.title}<br/>
                <a href="show_swg.jsp?swgid=${param.swgid}">return to projects</a>

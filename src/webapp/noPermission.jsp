@@ -8,7 +8,7 @@
     </head>
     <body>
                
-        <h1>Permission Denied</h1>
+        <h1>Problem with the request:</h1>
         <c:choose>
             <c:when test="${param.errmsg == '1'}">
                 <h3>You do not have permission to edit a project. Please contact the Publications Board for help.</h3>
@@ -45,6 +45,12 @@
         </c:when>
         <c:when test="${param.errmsg == '12'}">
             <h3>Invalid project number. Please contact the Publications Board for help.</h3>
+        </c:when>
+        <c:when test="${param.errmsg == '13'}">
+            <h3>Invalid confluence url. Confluence urls must start with https://confluence...</h3>
+        </c:when>
+        <c:when test="${param.errmsg == '14'}">
+            <h3>Invalid github url. Github urls must start with https://github.com...</h3>
         </c:when>
         </c:choose>
     </body>
