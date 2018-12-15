@@ -17,7 +17,7 @@
         <link rel="stylesheet" href="css/pubstyles.css">
         <script src="js/jquery-1.11.1.min.js"></script>
         <script src="js/jquery.validate.min.js"></script>
-        <script src="js/checkAuthRequest.js"></script>
+        <script src="js/requestAuth.js"></script>
     </head>
     <body>
         
