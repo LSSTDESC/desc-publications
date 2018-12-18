@@ -60,6 +60,44 @@
    
    <c:choose>
        <c:when test="${gm:isUserInExperiment(pageContext)}">
+           
+        <c:if test="${IsAdmin}"><h3>Administrators may subscribe or unsubscribe members from mailing lists. </h3> 
+            <sql:query var="memberList"  >
+                select first_name, last_name, slac_username, memidnum
+                from profile_user where active = 'Y' and lower(experiment)=lower(?) and slac_username is not null
+                <sql:param value="${appVariables.experiment}"/>
+                order by lower(last_name)
+            </sql:query> 
+            <c:if test="${empty param.getproj}">
+              <form name="mailListForm" method="post"> 
+                 <table>
+                    <tr>       
+                        <td bgcolor="#FFCC66"><strong>Select a member from experiment ${appVariables.experiment})</strong></td>
+                        <td><select size="1" name="user_name">
+                              <c:forEach var="rows" items="${memberList.rows}">
+                                  <c:choose>
+                                      <c:when test="${ fn:startsWith(effectiveUser,rows.slac_username) && fn:endsWith(effectiveUser,rows.slac_username) }">
+                                          <c:set var="selected" value="true"/>
+                                          <option value="${rows.slac_username}" selected>${rows.first_name} ${rows.last_name}</option>
+                                      </c:when>
+                                      <c:when test="${param.modifyLists =='Y' && fn:startsWith(effectiveUser,rows.slac_username) && fn:endsWith(effectiveUser,rows.slac_username) }">
+                                          <c:set var="selected" value="true"/>
+                                          <option value="${rows.slac_username}" selected>${rows.first_name} ${rows.last_name}</option> 
+                                      </c:when>
+                                      <c:otherwise>
+                                          <option value="${rows.slac_username}">${rows.first_name} ${rows.last_name}</option> 
+                                      </c:otherwise>    
+                                  </c:choose>
+                                </c:forEach> </select>   
+                        </td>    
+                        <td><input type="submit" name="action" value="Select" /> 
+                        <input type="submit" name="action" value="Reset" /></td>
+                    </tr>
+                </table>
+            </form>
+            </c:if>
+        </c:if>
+                    
         <sql:query var="projectList">
            select id, title from descpub_project order by id desc
         </sql:query>
@@ -104,13 +142,44 @@
            <h3>Current subscriptions: ${empty count ? 0:count}</h3>         
         </c:if> 
         
-        <c:if test="${projectList.rowCount > 0}">
+        <c:choose>
+        <c:when test="${!empty param.getproj}">
+            <sql:query var="projListMembers"  >
+                select pu.last_name||', '||pu.first_name fullname, pu.memidnum, email from profile_ug ug
+                join profile_user pu on pu.user_name = ug.user_id and pu.experiment =?  
+                left join UM_MEMBER_communications PMC1 on pu.memidnum = PMC1.memidnum and PMC1.communicationtype='email_primary'
+                where lower(ug.group_id)=lower(?) and pu.active = 'Y' and ug.experiment=?
+                <sql:param value="${appVariables.experiment}"/>
+                <sql:param value="${param.getproj}"/>
+                <sql:param value="${appVariables.experiment}"/>
+            </sql:query>
+            <h3>Members of ${param.getproj}</h3>
+            <display:table class="datatable"  id="Row" name="${projListMembers.rows}" defaultsort="1" defaultorder="ascending"  >           
+                <display:column sortProperty="fullname" title="Subscribers" sortable="true" headerClass="sortable">
+                    <c:choose>
+                        <c:when test="${displayutils:isExporting(pageContext.request,'Row')}">
+                            ${Row.fullname}
+                        </c:when>
+                        <c:otherwise>
+                            <a href="srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Row.memidnum}&recType=INDB&verification=">${Row.fullname}</a>
+                        </c:otherwise>
+                    </c:choose>
+                </display:column>
+                <display:column property="email" title="Email Address" sortable="true" headerClass="sortable" autolink="true" media="html"/>
+            </display:table>
+
+            <c:if test="${projListMembers.rowCount > 0}">
+                <h4>Total membership: ${projListMembers.rowCount}</h4>
+            </c:if>
+        </c:when>
+           
+        <c:when test="${projectList.rowCount > 0}">
             <h3> Project subscription list for ${projectmem.rows[0]['first_name']} ${projectmem.rows[0]['last_name']}  </h3>
 
             <form name="projectlist"  action="projectSubscription.jsp" method="post"> 
                 <display:table class="datatable" id="Row" name="${projectList.rows}" defaultorder="ascending">
-                    <display:column property="id" title="Project ID">
-                        project_${Row.id}
+                    <display:column title="Project ID">
+                        <a href="projectSubscription.jsp?getproj=project_${Row.id}"> project_${Row.id}</a>
                     </display:column>
 
                     <display:column title="Project Title" style="text-align:left" sortable="true" sortProperty="group_name" headerClass="sortable" >                    
@@ -138,7 +207,11 @@
                 <input type="hidden" value="Y" name="modifyLists"/>
                 <input type="submit" value="Apply Changes" name="submit"/>
             </form>  
-        </c:if>
+        </c:when>
+        </c:choose>   
+       
+            
+            
        </c:when>
        <c:otherwise>
             This page can be accessed only by users in ${appVariables.experiment}
