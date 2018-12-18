@@ -35,7 +35,7 @@
              
         <%-- new select, order by journal paper --%>
         <sql:query var="papers">
-        select paperid, project_id, pubtype, title, createdate, case when (modifydate > createdate and modifydate is not null) then modifydate 
+        select paperid, project_id, pubtype, title, state, createdate, case when (modifydate > createdate and modifydate is not null) then modifydate 
         else createdate end as dt from descpub_publication where project_id != 0 order by dt desc
         </sql:query>
         
@@ -85,6 +85,7 @@
                 </display:column>
                 <display:column property="createdate" title="Created" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
+                <display:column property="state" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column title="Project Id" style="text-align:left;" sortable="true" headerClass="sortable">
