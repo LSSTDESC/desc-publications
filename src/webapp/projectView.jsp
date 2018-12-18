@@ -122,7 +122,7 @@
 </table>
 
 <table class="datatable">
-    <utils:trEvenOdd  reset="true"><th>Subscription to Project</th><td></td><td>
+    <utils:trEvenOdd  reset="true"><th>(Un)Subscribe from/to Project</th><td></td><td>
       <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
          <c:set var="returnURL" value="projectView.jsp?projid=${param.projid}&swgid=${param.swgid}"/>
         <tg:projectSubscription groupname="project_${param.projid}" memidnum="${memidnum}" userid = "${userName}" returnURL="${returnURL}"/> 
