@@ -23,8 +23,9 @@
     <%-- Notes:
     state = the current state of the paper as it goes from create to review to published.
     status = paper is either internal to the collaboration or public
-    DOI = digital object identifier
-    ADS = astrophysics data system
+    DOI = digital object identifier, stem is always https://doi.org/<user input>
+    ADS = astrophysics data system, stem is always adsabs.harvard.edu/abs/<user input>
+    arXiv = arxiv, stem is always https://arxiv.org/abs/<user input>
     projid = 0 means the document is not associated with any project
     --%>
     <c:set var="debugMode" value="false"/>

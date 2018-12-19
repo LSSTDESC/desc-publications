@@ -40,7 +40,7 @@
         </sql:query>
         
         <sql:query var="projectless"> 
-          select p.paperid, pubtype, title, wg.name, createdate, case
+          select p.paperid, pubtype, title, p.state, wg.name, createdate, case
           when (modifydate > createdate and modifydate is not null) then modifydate
           else createdate end as dt from descpub_publication p join descpub_publication_swgs s on p.paperid = s.paperid
           join descpub_swg wg on wg.id = s.swgid where project_id = 0 
@@ -70,6 +70,7 @@
                 </display:column>
                 <display:column property="createdate" title="Created" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
+                <display:column property="state" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="name" title="Working group" style="text-align:left;" sortable="true" headerClass="sortable"/>

@@ -53,6 +53,8 @@
             <display:column title="Last Modified" property="lastmodified" style="text-align:left;" sortable="true" headerClass="sortable"/>
         </display:table>
         
+       <a href="projectSubscription.jsp">Subscription to projects</a>
+        
     </body>
     
 </html>
