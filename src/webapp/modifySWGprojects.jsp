@@ -21,10 +21,10 @@
   
    <c:set var="oranames" value="title=?,summary=?,state=?,lastmodby=?,confluenceurl=?,gitspaceurl=?,lastmodified=sysdate"/>
    <c:set var="escSummary" value="${fn:escapeXml(param.summary)}"/>
-   <c:if test="${!fn:startsWith(param.confluenceurl,'https://confluence')}">
+   <c:if test="${!fn:startsWith( fn:toLowerCase(param.confluenceurl),'https://confluence' )}">
        <c:redirect url="noPermission.jsp?errmsg=13"/>
    </c:if>
-   <c:if test="${!fn:startsWith(param.gitspaceurl,'https://github.com/')}">
+   <c:if test="${!fn:startsWith( fn:toLowerCase(param.gitspaceurl),'https://github.com/' )}">
        <c:redirect url="noPermission.jsp?errmsg=14"/>
    </c:if>
  <%--  <c:set var="oravals" value="${param.title},${escSummary},${param.state},${userName},${param.confluenceurl},${param.gitspaceurl},sysdate"/> --%>
