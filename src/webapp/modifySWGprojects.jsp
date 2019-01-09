@@ -18,14 +18,18 @@
         select id,title,summary,state,created,lastmodified,lastmodby,confluenceurl,createdby,gitspaceurl from descpub_project where id = ?
         <sql:param value="${param.projid}"/>
    </sql:query> 
-  
+           
    <c:set var="oranames" value="title=?,summary=?,state=?,lastmodby=?,confluenceurl=?,gitspaceurl=?,lastmodified=sysdate"/>
    <c:set var="escSummary" value="${fn:escapeXml(param.summary)}"/>
-   <c:if test="${!fn:startsWith( fn:toLowerCase(param.confluenceurl),'https://confluence' )}">
-       <c:redirect url="noPermission.jsp?errmsg=13"/>
+   <c:set var="confUrl" value="${fn:startsWith(param.confluenceurl,'https://confluence')}"/>
+   <c:set var="gitUrl" value="${fn:startsWith(param.gitspaceurl,'https://github')}"/>
+   
+      
+   <c:if test="${! confUrl}">  
+       <c:redirect url="noPermission.jsp?errmsg=13"/>  
    </c:if>
-   <c:if test="${!fn:startsWith( fn:toLowerCase(param.gitspaceurl),'https://github.com/' )}">
-       <c:redirect url="noPermission.jsp?errmsg=14"/>
+   <c:if test="${! gitUrl}">
+       <c:redirect url="noPermission.jsp?errmsg=14"/>  
    </c:if>
  <%--  <c:set var="oravals" value="${param.title},${escSummary},${param.state},${userName},${param.confluenceurl},${param.gitspaceurl},sysdate"/> --%>
  
@@ -128,7 +132,7 @@
             <h3>Error: ${catchError}</h3>
         </c:when>
         <c:otherwise>
-          <c:redirect url="${param.redirectURL}"/>
+          <c:redirect url="${param.redirectURL}"/>  
         </c:otherwise>
     </c:choose>
     
