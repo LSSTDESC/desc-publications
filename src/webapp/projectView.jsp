@@ -34,6 +34,10 @@
         <sql:param value="${param.projid}"/>
     </sql:query>
 </c:catch>
+ 
+<c:if test="${!empty chkProjID || validID.rowCount < 1}"> 
+    <c:redirect url="noPermission.jsp?errmsg=11"/>
+</c:if>
        
 <%-- get memidnum for project membership --%>
 <sql:query var="userInfo">
@@ -43,12 +47,7 @@
 </sql:query>
 <c:set var="memidnum" value="${userInfo.rows[0]['memidnum']}"/>
 
-<c:choose>
-   <c:when test="${!empty chkProjID || validID.rowCount < 1}"> 
-      <c:redirect url="noPermission.jsp?errmsg=11"/>
-   </c:when>
-</c:choose>    
-
+  
 <%-- get all the papers under this project --%>
 <sql:query var="docs">
    select paperid, title, can_request_authorship, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') createdate, pubtype 
@@ -80,43 +79,69 @@
        </c:when>
     </c:choose>
 </c:forEach>    
-
+    
 <%-- get the project information --%>
+<sql:query var="projsrminfo">
+  select srmtitle, srmtype from descpub_project_srm_info where project_id = ?
+  <sql:param value="${param.projid}"/>
+</sql:query>  
+  
 <sql:query var="projects">
     select id, title, summary, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
     confluenceurl, gitspaceurl from descpub_project where id = ?
     <sql:param value="${param.projid}"/>
 </sql:query> 
-
+    
 <%-- row holds the query results in an array --%>
 <c:set var="row" value="${projects.rows[0]}"/>
    
 <%-- Must set the first row "reset=true" in order for the rows to alternate colors. If all rows have "reset=true" then the table will not have any color --%>
 <p id="pagelabel">Project Details</p>
 <table class="datatable">
-    <utils:trEvenOdd reset="true"><th>Title</th><td style="text-align: left">${row.title}</td><td></td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Project ID</th><td style="text-align: left">${row.id}</td><td></td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>State</th><td style="text-align: left">${row.state}</td><td></td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Date Created</th><td style="text-align: left">${row.created}</td><td></td></utils:trEvenOdd>
+    <utils:trEvenOdd reset="true"><th>Title</th><td style="text-align: left">${row.title}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Project ID</th><td style="text-align: left">${row.id}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>State</th><td style="text-align: left">${row.state}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Date Created</th><td style="text-align: left">${row.created}</td></utils:trEvenOdd>
     <c:if test="${!empty row.lastmodified}">
-        <utils:trEvenOdd ><th>Last Modified</th><td style="text-align: left">${row.lastmodified}</td><td></td></utils:trEvenOdd>
+        <utils:trEvenOdd ><th>Last Modified</th><td style="text-align: left">${row.lastmodified}</td></utils:trEvenOdd>
     </c:if>
     <c:if test="${!empty row.lastmodby}">
-        <utils:trEvenOdd ><th>Modified By</th><td style="text-align: left">${row.lastmodby}</td><td></td></utils:trEvenOdd>
+        <utils:trEvenOdd ><th>Modified By</th><td style="text-align: left">${row.lastmodby}</td></utils:trEvenOdd>
     </c:if>
-    <utils:trEvenOdd ><th>Confluence Url</th><td style="text-align: left">${empty row.confluenceurl ? 'none' : row.confluenceurl}</td><td></td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Github Url</th><td style="text-align: left">${empty row.gitspaceurl ? 'none' : row.gitspaceurl}</td><td></td></utils:trEvenOdd>
-    
-    <utils:trEvenOdd ><th>SRM activity</th><td style="text-align: left">${empty row.srmactivity_id ? 'none' : row.srmactivity_id}</td><td>${empty row.srmactivity_title ? 'none' : row.srmactivity_title}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>SRM deliverable</th><td style="text-align: left">${empty row.srmdeliverable_id ? 'none' : row.srmdeliverable_id}</td><td>${empty row.srmdeliverable_title ? 'none' : row.srmdeliverable_title}</td></utils:trEvenOdd>
-    
-    <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td><td></td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td><td></td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Confluence Url</th><td style="text-align: left">${empty row.confluenceurl ? 'none' : row.confluenceurl}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Github Url</th><td style="text-align: left">${empty row.gitspaceurl ? 'none' : row.gitspaceurl}</td></utils:trEvenOdd>
+   
+    <c:if test="${projsrminfo.rowCount > 0}">
+        <c:set var="srmactList" value=""/>
+        <c:set var="srmdelList" value=""/>
+
+        <c:forEach var="ad" items="${projsrminfo.rows}">
+            <c:choose>
+            <c:when test="${empty srmactList && ad.srmtype == 'activity'}">
+                <c:set var="srmactList" value="${ad.srmtitle}<br/>"/>
+            </c:when>
+            <c:when test="${! empty srmactList && ad.srmtype == 'activity'}">
+                <c:set var="srmactList" value="${srmactList} ${ad.srmtitle}<br/>"/>
+            </c:when>
+            <c:when test="${empty srmdelList && ad.srmtype == 'deliverable'}">
+                <c:set var="srmdelList" value="${ad.srmtitle}<br/>"/>
+            </c:when>
+            <c:when test="${! empty srmdelList && ad.srmtype == 'deliverable'}">
+                <c:set var="srmdelList" value="${srmdelList} ${ad.srmtitle}<br/>"/>
+            </c:when>
+            </c:choose>
+        </c:forEach>
+        <utils:trEvenOdd ><th>SRM activity</th><td style="text-align: left">${srmactList}</td></utils:trEvenOdd>
+        <utils:trEvenOdd ><th>SRM deliverable</th><td style="text-align: left">${srmdelList}</td></utils:trEvenOdd>
+    </c:if>
+     
+    <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td></utils:trEvenOdd>
     
     <utils:trEvenOdd ><th>Email to</th><td style="text-align: left"><a href=mailto:${leadAddrs}>project leaders</a></td><td></td></utils:trEvenOdd>  
     
     <c:if test="${gm:isUserInGroup(pageContext,projectLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
-      <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td><td></td></utils:trEvenOdd>
+      <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td></utils:trEvenOdd>
     </c:if>
       
 </table>
