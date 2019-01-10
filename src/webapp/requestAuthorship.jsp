@@ -76,7 +76,7 @@
         <c:when test="${debugMode == 'false'}">
             <sql:query var="recips">
             select p.first_name, p.last_name, p.email from profile_user p join profile_ug ug on p.memidnum = ug.memidnum and p.experiment=ug.experiment and p.active = 'Y'
-            where ug.group_id = ? and ug.experiment = ?
+            and p.email is not null where ug.group_id = ? and ug.experiment = ?
             <sql:param value="paper_leads_${param.paperid}"/>
             <sql:param value="${appVariables.experiment}"/>
             </sql:query>
@@ -91,8 +91,6 @@
                     </c:when>
                 </c:choose>
             </c:forEach>
-            
-         <%--   <p id="pagelabel">Your request will be sent to ${recipList}.</p>  --%>
         </c:when>
         <c:when test="${debugMode=='true'}">
             <c:set var="recips" value="chee@slac.stanford.edu"/>
@@ -136,6 +134,18 @@ Checklist contributions: ${contributions}
 
         </c:when>
         <c:when test="${!empty param.reason && debugMode != 'true'}">
+            <c:set var="contribList" value=""/>
+            <c:forEach var="p" items="${paramValues.cname}">
+                    <c:choose>
+                       <c:when test="${empty contribList}">
+                            <c:set var="contribList" value="${p}"/>
+                       </c:when>
+                       <c:when test="${!empty contribList}">
+                            <c:set var="contribList" value="${contribList}, ${p}"/>
+                       </c:when>
+                    </c:choose>
+            </c:forEach>  
+                
             <%-- create mail msgbody --%>
             <c:set var="msgbody" value="Dear Primary Authors,
 ${fname} ${lname} is asking to be considered as a co-author of your publication DESC-${param.paperid}. You can read their justification below.
@@ -164,7 +174,14 @@ Checklist contributions: ${contributions}
                  </sql:update>  
                 <sql:update>
                      insert into descpub_mail_recipient (msgid, groupname_or_emailaddr) values(DESCPUB_MAIL_SEQ.currval,?)
-                     <sql:param value="TESTLIST"/>
+                     <c:choose>
+                         <c:when test="${recips.rowCount > 0}">
+                             <sql:param value="paper_leads_${param.paperid}"/> 
+                        </c:when>
+                        <c:when test="${recips.rowCount < 1}">
+                            <sql:param value="chee@slac.stanford.edu"/>
+                        </c:when>
+                     </c:choose>
                 </sql:update>
                 <sql:update>
                     insert into descpub_authorship (paperid, memidnum, contribution_text, contribution_list, reason, auth_request_date) 
@@ -172,7 +189,7 @@ Checklist contributions: ${contributions}
                     <sql:param value="${param.paperid}"/>
                     <sql:param value="${memidnum}"/> 
                     <sql:param value="${param.contribution_stmt}"/> 
-                    <sql:param value="${contributions}"/> 
+                    <sql:param value="${contribList}"/> 
                     <sql:param value="${param.reason}"/>
                 </sql:update>
             </sql:transaction> 
@@ -200,7 +217,7 @@ Checklist contributions: ${contributions}
                     Refer to authorship guide, section 3, for more detailed explanation
                 </p>
                 <c:forEach var="c" items="${contribs.rows}">
-                     <input type="checkbox" name="cname[]" id="cname[]" value="${c['label']}"/>${c['label']} <br/>
+                     <input type="checkbox" name="cname" id="cname[]" value="${c['label']}"/>${c['label']} <br/>
                 </c:forEach>
                 <p></p>
                  <p id="pagelabel">Please enter a brief statement of your contribution to the paper. If you are <br/> accepted as an author of the paper, this statement will be made publicly <br/> available in 
