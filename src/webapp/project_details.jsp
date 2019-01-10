@@ -124,10 +124,10 @@
                     <sql:update >
                     insert into descpub_project (id,title,summary,state,confluenceurl,gitspaceurl,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,?,sysdate,?)
                     <sql:param value="${param.title}"/>
-                    <sql:param value="<c:out value=${param.summary}/>"/>
+                    <sql:param value="${fn:escapeXml(param.summary)}"/>
                     <sql:param value="${param.state}"/>
-                    <sql:param value="<c:out value=${param.confluenceurl}/>"/>
-                    <sql:param value="<c:out value=${param.gitspaceurl}/>"/>
+                    <sql:param value="${fn:escapeXml(param.confluenceurl)}"/>
+                    <sql:param value="${fn:escapeXml(param.gitspaceurl)}"/>
                     <sql:param value="${userName}"/>
                     </sql:update>
                     
@@ -174,7 +174,7 @@
                              </c:forEach>
                          </c:if>
                     </c:forEach>  
-                                    
+                                    <%--
                     <c:forEach var="xx" items="${param}">
                       <c:choose>
                           <c:when test="${xx.key == 'srmactivity' && !empty paramValues[xx.key]}">
@@ -209,7 +209,7 @@
                                </c:forEach>
                           </c:when>
                        </c:choose>
-                    </c:forEach>                
+                    </c:forEach>     --%>           
                     
               </sql:transaction>
             </c:catch> 
