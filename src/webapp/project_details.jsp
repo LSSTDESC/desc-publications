@@ -83,8 +83,8 @@
              <em id="pagerequire">* fields are required</em>
             <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}">
                 <strong>* Title</strong><p/><input type="text" name="title" size="77" required/><p/>
-                <strong>* Confluence URL</strong><p/><input type="text" size="77" name="confluenceurl" required/><p/>
-                <strong>* Github URL</strong><p/><input type="text" size="77" name="gitspaceurl" required/><p/>
+                <strong>Confluence URL</strong><p/><input type="text" size="77" name="confluenceurl" /><p/>
+                <strong>Github URL</strong><p/><input type="text" size="77" name="gitspaceurl" /><p/>
                 <strong>SRM activities</strong><p/>
                 <select name="srmactivity" size="20" multiple>
                     <c:forEach var="s" items="${srmact.rows}">
