@@ -174,7 +174,7 @@
                              </c:forEach>
                          </c:if>
                     </c:forEach>  
-                                    <%--
+                                    
                     <c:forEach var="xx" items="${param}">
                       <c:choose>
                           <c:when test="${xx.key == 'srmactivity' && !empty paramValues[xx.key]}">
@@ -184,12 +184,19 @@
                                     <sql:param value="${yy}"/>
                                 </sql:query>
                                 <sql:update var="act">
+                                    insert into descpub_project_srm_info (project_id, srm_id, srmtype, srmtitle, entry_date) values (?, ?, 'activity', ?, sysdate)
+                                    <sql:param value="${newprojID}"/>
+                                    <sql:param value="${yy}"/>
+                                    <sql:param value="${results.rows[0]['title']}"/>
+                                </sql:update>
+                                    <%--
+                                <sql:update var="act">
                                      insert into descpub_proj_activities (project_id,activity_id,act_title,entry_date)
                                      values(?,?,?,sysdate)
                                      <sql:param value="${newprojID}"/>
                                      <sql:param value="${yy}"/>
                                      <sql:param value="${results.rows[0]['title']}"/>
-                                </sql:update>
+                                </sql:update> --%>
                              </c:forEach>
                           </c:when>
                           <c:when test="${xx.key == 'srmdeliverable' && !empty paramValues[xx.key]}">
@@ -198,18 +205,24 @@
                                     select title from descpub_srm_deliverables where deliverable_id = ?
                                     <sql:param value="${yy}"/>
                                  </sql:query>
-            
+                                 <sql:update var="del">
+                                    insert into descpub_project_srm_info (project_id, srm_id, srmtype, srmtitle, entry_date) values (?, ?, 'deliverable', ?, sysdate)
+                                    <sql:param value="${newprojID}"/>
+                                    <sql:param value="${yy}"/>
+                                    <sql:param value="${results.rows[0]['title']}"/>
+                                </sql:update>
+                                    <%--
                                  <sql:update var="del">
                                      insert into descpub_proj_deliverables (project_id,deliverable_id,del_title,entry_date)
                                      values(?,?,?,sysdate)
                                      <sql:param value="${newprojID}"/>
                                      <sql:param value="${yy}"/>
                                      <sql:param value="${results.rows[0]['title']}"/>
-                                 </sql:update>
+                                 </sql:update> --%>
                                </c:forEach>
                           </c:when>
                        </c:choose>
-                    </c:forEach>     --%>           
+                    </c:forEach>             
                     
               </sql:transaction>
             </c:catch> 
