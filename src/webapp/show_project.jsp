@@ -27,6 +27,10 @@
         <c:redirect url="noPermission.jsp?errmsg=7"/>
     </c:if>
     
+    <c:if test="${empty param.projid}">  
+        <c:redirect url="noPermission.jsp?errmsg=12"/>
+    </c:if>
+    
     <tg:underConstruction/>
 
     <c:set var="projid" value="${param.projid}"/>

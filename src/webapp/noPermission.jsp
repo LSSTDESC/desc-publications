@@ -44,7 +44,7 @@
             <h3>Non-existent project number. Please contact the Publications Board for help.</h3>
         </c:when>
         <c:when test="${param.errmsg == '12'}">
-            <h3>Invalid project number. Please contact the Publications Board for help.</h3>
+            <h3>Invalid project number or missing project number. Please contact the Publications Board for help.</h3>
         </c:when>
         <c:when test="${param.errmsg == '13'}">
             <h3>Invalid confluence url. Confluence urls must start with https://confluence...</h3>
