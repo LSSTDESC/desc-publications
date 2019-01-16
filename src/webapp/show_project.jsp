@@ -34,6 +34,15 @@
     <tg:underConstruction/>
 
     <c:set var="projid" value="${param.projid}"/>
+    <c:if test="${empty param.swgid}">
+        <sql:query var="swg">
+            select swg_id from descpub_project_swgs where project_id = ?
+            <sql:param value="${param.swgid}"/>
+        </sql:query>
+        <c:if test="${swg.rowCount < 1}">
+           <c:redirect url="noPermission.jsp?errmsg=12"/>
+        </c:if>
+    </c:if>
     <c:set var="swgid" value="${param.swgid}"/>
     <c:set var="memberPool" value="lsst-desc-full-members"/>
     <c:set var="groupname" value="project_leads_${projid}"/>
