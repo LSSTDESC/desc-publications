@@ -215,93 +215,82 @@
                      <input type="submit" value="Create Document Entry" name="submit" />  
                 </form>
         </c:when>
-        <c:when test="${param.formsubmitted == 'true' && debugMode}">
-           <%-- <sql:query var="res">
-                select me.metaid, me.data, me.label, pb.multiplevalues from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid
-                where pb.pubtype = ?
-                <sql:param value="${param.pubtype}"/>
-            </sql:query> --%>
-              
+        <c:when test="${param.formsubmitted == 'true' && debugMode == 'true'}">
+             <%-- get fields for this pubtype --%>
             <sql:query var="res">
-                select * from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid where pb.pubtype = ?
-                <sql:param value="${param.pubtype}"/>
-            </sql:query>
-                
-            <c:set var="current" value="99999"/>
-             <br>
-             <c:forEach var="par" items="${param}">
-                 <c:forEach var="fi" items="${res.rows}" varStatus="loop">
-                     <c:choose>
-                         <c:when test="${fi.data == par.key && empty fieldstr && !empty par.value}">
-                             <c:set var="fieldstr" value="${fi.data}"/>
-                             <c:set var="valuestr" value="${par.value}"/>
-                             <c:set var="qmarks" value="?"/>
-                         </c:when>
-                         <c:when test="${fi.data == par.key && !empty fieldstr && !empty par.value}">
-                             <c:set var="fieldstr" value="${fieldstr},${fi.data}"/>
-                             <c:set var="valuestr" value="${valuestr},${par.value}"/>
-                             <c:set var="qmarks" value="${qmarks},?"/>
-                         </c:when>
-                     </c:choose>
-                     
-                 </c:forEach>
-             </c:forEach>
-             
-             <c:set var="fieldstr" value="${fieldstr},paperid,project_id,createdate,pubtype"/>
-             <c:set var="valuestr" value="${valuestr},${param.projid},${param.pubtype}"/>
-             <c:set var="qmarks" value="${qmarks},DESCPUB_PUB_SEQ.nextval,?,sysdate,?"/>
-             
-             <sql:update>
-                 insert into descpub_publication (${fieldstr}) values (${qmarks}) 
-                 <c:forEach var="x" items="${valuestr}">
-                     <sql:param value="${x}"/>
-                 </c:forEach>
-             </sql:update>  
-                 
-             <p></p>
-        </c:when>
-        <c:when test="${param.formsubmitted && !debugMode}">
-            <%-- get fields for this pubtype --%>
-            <sql:query var="res">
-                select * from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid where pb.pubtype = ? order by formposition
+                select label, data, datatype from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid where pb.pubtype = ? order by formposition
                 <sql:param value="${param.pubtype}"/>
             </sql:query>   
+            
+            <sql:query var="stamp"> <%-- generate fake id for testing --%>
+               select  extract(second  from (sysdate - timestamp '1970-01-01 00:00:00')) * 3600 unix_time from dual
+            </sql:query>
+            <c:set var="current" value="${stamp.rows[0]['unix_time']}"/>
+
+             <c:forEach var="cn" items="${res.rows}">
+                 <c:choose>
+                     <c:when test="${empty colnames}">
+                         <c:set var="colnames" value="${cn.data}"/>
+                         <c:set var="qmarks" value="?"/>
+                     </c:when>
+                     <c:when test="${! empty colnames}">
+                         <c:set var="colnames" value="${colnames}, ${cn.data}"/>
+                         <c:set var="qmarks" value="${qmarks},?"/>
+                     </c:when>
+                 </c:choose>
+             </c:forEach>
+            
+            <c:set var="colnames" value="${colnames},paperid,project_id,createdate,createdby,pubtype"/>
+            <c:set var="qmarks" value="${qmarks},?,?,sysdate,?,?"/>
+           
+            <sql:update>
+              insert into descpub_publication_test (${colnames})  values (${qmarks})
+                  <c:forEach var="cn" items="${res.rows}">
+                      <sql:param value = "${empty param[cn.data] ? 'NULL' : param[cn.data]}"/>
+                  </c:forEach> 
+                  <sql:param value="${current}"/>
+                  <sql:param value="${param.projid}"/>
+                  <sql:param value="${userName}"/>
+                  <sql:param value="${param.pubtype}"/>
+            </sql:update> 
+              
+        </c:when>
+        <c:when test="${param.formsubmitted && debugMode == 'false' }">
+            <%-- get fields for this pubtype --%>
+            <sql:query var="res">
+                select label, data, datatype from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid where pb.pubtype = ? order by formposition
+                <sql:param value="${param.pubtype}"/>
+            </sql:query>  
                 
-            <c:set var="fieldstr" value=""/>
-            <c:set var="valuestr" value=""/>
-            <c:set var="qmarks" value=""/>
-        
-            <c:forEach var="par" items="${param}">
-                 <c:forEach var="fi" items="${res.rows}" varStatus="loop">
-
-                     <c:choose>
-                         <c:when test="${fi.data == par.key && empty fieldstr && !empty par.value}">
-                             <c:set var="fieldstr" value="${fi.data}"/>
-                             <c:set var="valuestr" value="${par.value}"/>
-                             <c:set var="qmarks" value="?"/>
-                         </c:when>
-                         <c:when test="${fi.data == par.key && !empty fieldstr && !empty par.value}">
-                             <c:set var="fieldstr" value="${fieldstr},${fi.data}"/>
-                             <c:set var="valuestr" value="${valuestr},${par.value}"/>
-                             <c:set var="qmarks" value="${qmarks},?"/>
-                         </c:when>
-                     </c:choose>
-
-                 </c:forEach>
-            </c:forEach>
-
+            <c:forEach var="cn" items="${res.rows}">
+                 <c:choose>
+                     <c:when test="${empty colnames}">
+                         <c:set var="colnames" value="${cn.data}"/>
+                         <c:set var="qmarks" value="?"/>
+                     </c:when>
+                     <c:when test="${! empty colnames}">
+                         <c:set var="colnames" value="${colnames}, ${cn.data}"/>
+                         <c:set var="qmarks" value="${qmarks},?"/>
+                     </c:when>
+                 </c:choose>
+             </c:forEach>
+             
             <%-- tack on a few document details that are not in the metadata table --%>
-            <c:set var="fieldstr" value="${fieldstr},paperid,project_id,createdate,createdby,pubtype"/>
-            <c:set var="valuestr" value="${valuestr},${param.projid},${userName},${param.pubtype}"/>
-            <c:set var="qmarks" value="${qmarks},DESCPUB_PUB_SEQ.nextval,?,sysdate,?,?"/>
+            <c:set var="colnames" value="${colnames},paperid,project_id,createdate,createdby,pubtype"/>
+             <c:set var="qmarks" value="${qmarks},DESCPUB_PUB_SEQ.nextval,?,sysdate,?,?"/>
+            
+            <c:set var="trapError" value=""/>
             
             <c:catch var="trapError"> 
                 <sql:transaction>   
                    <sql:update>
-                     insert into descpub_publication (${fieldstr}) values (${qmarks}) 
-                     <c:forEach var="x" items="${valuestr}">
-                         <sql:param value="${x}"/>
-                     </c:forEach>
+                     insert into descpub_publication (${colnames}) values (${qmarks}) 
+                     <c:forEach var="cn" items="${res.rows}">
+                       <sql:param value = "${empty param[cn.data] ? NULL : param[cn.data]}"/>
+                     </c:forEach> 
+                     <sql:param value="${param.projid}"/>
+                     <sql:param value="${userName}"/>
+                     <sql:param value="${param.pubtype}"/>
                    </sql:update>
                      
                    <%-- get the paperid, add it to the insert fields and create the associated groups for the paper --%>
@@ -381,11 +370,13 @@
                 <h1>Error. Failed to create document: ${param.title}<br/>
                     Parent key is ${param.projid}<br/>
                     CurrSequence: ${current}<br/>
-                    Fieldstr: ${fieldstr}<br/>
-                    Valuestr: ${valuestr}<br/>
+                    Colnames: ${colnames}<br/>
+                    Qmarks: ${qmarks}<br/>
+                    <p>TrapError</p>
                     ${trapError}<br/>
+                    <p></p>
                     <c:forEach var="par" items="${param}">
-                    <c:out value="PARAM=${par.key}=${par.value}"/><br/>
+                      <c:out value="PARAM=${par.key}=${par.value}"/><br/>
                     </c:forEach>
                 </h1>
             </c:if>
