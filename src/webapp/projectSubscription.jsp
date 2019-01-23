@@ -99,7 +99,7 @@
         </c:if>
                     
         <sql:query var="projectList">
-           select id, title from descpub_project order by id desc
+           select id, title from descpub_project where lower(state) != 'inactive' order by id desc
         </sql:query>
            
         <c:set var="selected" value="false"/>
