@@ -243,6 +243,7 @@
             <c:set var="colnames" value="${colnames},paperid,project_id,createdate,createdby,pubtype"/>
             <c:set var="qmarks" value="${qmarks},?,?,sysdate,?,?"/>
            
+            <%-- descpub_publication_test is a debugging table --%>
             <sql:update>
               insert into descpub_publication_test (${colnames})  values (${qmarks})
                   <c:forEach var="cn" items="${res.rows}">

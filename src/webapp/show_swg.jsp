@@ -54,7 +54,7 @@
     <c:set var="convenerList" value=""/>
     
     <sql:query var="projects">
-        select p.id, p.title, p.state, p.created, p.confluenceurl, p.lastmodby, p.lastmodified, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.summary 
+        select p.id, p.title, p.projectstatus, p.created, p.confluenceurl, p.lastmodby, p.lastmodified, wg.name swgname, wg.id swgid, wg.convener_group_name cgn, p.summary 
         from descpub_project p left join descpub_project_swgs ps on p.id=ps.project_id
         left join descpub_swg wg on ps.swg_id=wg.id where wg.id = ? order by p.id
         <sql:param value="${param.swgid}"/>

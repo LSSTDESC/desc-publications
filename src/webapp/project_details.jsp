@@ -52,18 +52,18 @@
     </sql:query>
         
     <sql:query var="swgproj">
-        select p.id, p.title, p.state, wg.name from descpub_project p join descpub_project_swgs ps on p.id=ps.project_id
+        select p.id, p.title, p.projectstatus, wg.name from descpub_project p join descpub_project_swgs ps on p.id=ps.project_id
         join descpub_swg wg on ps.swg_id=wg.id where p.id=? order by p.id
         <sql:param value="${param.id}"/>
     </sql:query>
         
     <sql:query var="detail">
-        select id,title,summary,state,created from descpub_project where id=? 
+        select id,title,summary,projectstatus,created from descpub_project where id=? 
         <sql:param value="${param.id}"/>
     </sql:query>
     
     <sql:query var="details">    
-        select dp.title, dp.summary, dp.state, wg.name, wg.profile_group_name as pgn from 
+        select dp.title, dp.summary, dp.projectstatus, wg.name, wg.profile_group_name as pgn from 
         descpub_project dp join descpub_project_swgs sg on dp.id = sg.project_id join descpub_swg wg on wg.id = sg.swg_id
         where dp.id = ?
         <sql:param value="${param.id}"/>

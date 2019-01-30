@@ -16,6 +16,7 @@
     </c:if>  
         
     <c:set var="wglist" value=""/>
+    <%-- 'state' becomes the value for 'projectstatus' in the descpub_project table --%>
     <sql:query var="validStates">
         select state from descpub_project_states order by state
     </sql:query>
@@ -46,7 +47,7 @@
     </sql:query>
    
     <sql:query var="projects">
-        select id, title, summary, state, confluenceurl, gitspaceurl, to_char(created,'YYYY-Mon-DD HH:MI:SS') crdate, 
+        select id, title, summary, projectstatus, confluenceurl, gitspaceurl, to_char(created,'YYYY-Mon-DD HH:MI:SS') crdate, 
         to_char(lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate from descpub_project where id = ?  
         <sql:param value="${projid}"/>
     </sql:query>
@@ -120,7 +121,7 @@
     <p/>
     
     State:<br/>  
-    <select name="state" id="state" size="6" required>
+    <select name="projectstatus" id="projectstatus" size="${validStates.rowCount}" required>
         <c:forEach var="sta" items="${validStates.rows}" >
            <option value="${sta.state}" <c:if test="${fn:startsWith(sta.state,projstate)}">selected</c:if> >${sta.state}</option>
         </c:forEach>

@@ -15,11 +15,11 @@
     <body>
         
     <sql:query var="projects">
-        select id,title,summary,state,created,lastmodified,lastmodby,confluenceurl,createdby,gitspaceurl from descpub_project where id = ?
+        select id,title,summary,projectstatus,created,lastmodified,lastmodby,confluenceurl,createdby,gitspaceurl from descpub_project where id = ?
         <sql:param value="${param.projid}"/>
    </sql:query> 
            
-   <c:set var="oranames" value="title=?,summary=?,state=?,lastmodby=?,confluenceurl=?,gitspaceurl=?,lastmodified=sysdate"/>
+   <c:set var="oranames" value="title=?,summary=?,projectstatus=?,lastmodby=?,confluenceurl=?,gitspaceurl=?,lastmodified=sysdate"/>
    <c:set var="escSummary" value="${fn:escapeXml(param.summary)}"/>
    <c:set var="confUrl" value="${fn:startsWith(param.confluenceurl,'https://confluence')}"/>
    <c:set var="gitUrl" value="${fn:startsWith(param.gitspaceurl,'https://github')}"/>
@@ -52,7 +52,7 @@
                 update descpub_project set ${oranames} where id = ?
                 <sql:param value="${param.title}"/>
                 <sql:param value="${escSummary}"/>
-                <sql:param value="${param.state}"/>
+                <sql:param value="${param.projectstatus}"/>
                 <sql:param value="${userName}"/>
                 <sql:param value="${param.confluenceurl}"/>
                 <sql:param value="${param.gitspaceurl}"/>

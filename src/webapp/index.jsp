@@ -35,12 +35,12 @@
              
         <%-- new select, order by journal paper --%>
         <sql:query var="papers">
-        select paperid, project_id, pubtype, title, state, createdate, case when (modifydate > createdate and modifydate is not null) then modifydate 
+        select paperid, project_id, pubtype, title, pubstatus, createdate, case when (modifydate > createdate and modifydate is not null) then modifydate 
         else createdate end as dt from descpub_publication where project_id != 0 order by dt desc
         </sql:query>
         
         <sql:query var="projectless"> 
-          select p.paperid, pubtype, title, p.state, wg.name, createdate, case
+          select p.paperid, pubtype, title, p.pubstatus, wg.name, createdate, case
           when (modifydate > createdate and modifydate is not null) then modifydate
           else createdate end as dt from descpub_publication p join descpub_publication_swgs s on p.paperid = s.paperid
           join descpub_swg wg on wg.id = s.swgid where project_id = 0 
@@ -61,24 +61,7 @@
             </display:table>
         </c:if>  
         <p></p>
-        
-        <c:if test="${projectless.rowCount > 0}">
-           <p id="pagelabel">Most recently Updated Project-less Documents</p> 
-           <display:table class="datatable" id="Line" name="${projectless.rows}" cellpadding="5" cellspacing="8">
-               <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
-                   <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
-                </display:column>
-                <display:column property="createdate" title="Created" style="text-align:left;" sortable="true" headerClass="sortable"/>
-                <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
-                <display:column property="state" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/>
-                <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
-                <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
-                <display:column property="name" title="Working group" style="text-align:left;" sortable="true" headerClass="sortable"/>
-           </display:table>
-        </c:if>
-        
-        <p></p>
-        <c:if test="${papers.rowCount > 0}">
+         <c:if test="${papers.rowCount > 0}">
              <p id="pagelabel">Most recently Updated Project Documents</p> 
              <display:table class="datatable" id="Line" name="${papers.rows}" cellpadding="5" cellspacing="8">
                 <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
@@ -95,8 +78,25 @@
                     </c:if>
                 </display:column>
             </display:table>
-        </c:if>        
-    
+        </c:if>   
+                    
+                     <p></p>
+                     
+        <c:if test="${projectless.rowCount > 0}">
+           <p id="pagelabel">Most recently Updated Project-less Documents</p> 
+           <display:table class="datatable" id="Line" name="${projectless.rows}" cellpadding="5" cellspacing="8">
+               <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
+                   <a href="show_pub.jsp?paperid=${Line.paperid}">DESC-${Line.paperid} </a>
+                </display:column>
+                <display:column property="createdate" title="Created" style="text-align:left;" sortable="true" headerClass="sortable"/>
+                <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
+                <display:column property="state" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/>
+                <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
+                <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
+                <display:column property="name" title="Working group" style="text-align:left;" sortable="true" headerClass="sortable"/>
+           </display:table>
+        </c:if>
+        
         <c:if test="${pubs.rowCount > 0}">
            <display:table class="datatable" id="irow" name="${pubs.rows}"/>
         </c:if>

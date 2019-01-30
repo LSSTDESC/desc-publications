@@ -87,7 +87,7 @@
 </sql:query>  
   
 <sql:query var="projects">
-    select id, title, summary, state, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
+    select id, title, summary, projectstatus, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
     confluenceurl, gitspaceurl from descpub_project where id = ?
     <sql:param value="${param.projid}"/>
 </sql:query> 
@@ -100,7 +100,7 @@
 <table class="datatable">
     <utils:trEvenOdd reset="true"><th>Title</th><td style="text-align: left">${row.title}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project ID</th><td style="text-align: left">${row.id}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>State</th><td style="text-align: left">${row.state}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>State</th><td style="text-align: left">${row.projectstatus}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Date Created</th><td style="text-align: left">${row.created}</td></utils:trEvenOdd>
     <c:if test="${!empty row.lastmodified}">
         <utils:trEvenOdd ><th>Last Modified</th><td style="text-align: left">${row.lastmodified}</td></utils:trEvenOdd>
@@ -173,7 +173,7 @@
         <c:set var="paperLeadGrpName" value="paper_leads_${rows.paperid}"/>
         <c:set var="authreq" value="${rows.can_request_authorship}"/>
         <display:column title="Document ID" style="text-align:left;" sortable="true" headerClass="sortable">
-            DESC-${rows.paperid}
+            <a href="show_pub.jsp?paperid=${rows.paperid}">DESC-${rows.paperid}</a>
         </display:column>
         <display:column title="Date Created" property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"/>
         <display:column title="Title" paramProperty="title" style="text-align:left;" sortable="true" headerClass="sortable">

@@ -36,7 +36,7 @@
 
 
 <sql:query var="projects">
-    select title, summary, state, created crdate, active, lastmodified moddate from descpub_project where id = ?  
+    select title, summary, projectstatus, created crdate, active, lastmodified moddate from descpub_project where id = ?  
     <sql:param value="${projid}"/>
 </sql:query>
 
