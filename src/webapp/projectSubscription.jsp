@@ -48,7 +48,7 @@
    </sql:query>
    <c:set var="memidnum" value="${memid.rows[0].memidnum}"/> 
    
-   <c:set var="debugMode" value="true"/>
+   <c:set var="debugMode" value="false"/>
    <c:choose>
         <c:when test="${debugMode == 'false'}">
            <c:set var="IsAdmin" value="${ gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') ||  gm:isUserInGroup(pageContext,'GroupManagerAdmin')  }"/> 
