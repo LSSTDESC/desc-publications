@@ -25,7 +25,7 @@
          
         
         <sql:query var="pjs" >
-             select id, title, created, lastmodified from descpub_project where state != 'Inactive' order by id
+             select id, title, created, lastmodified from descpub_project where projectstatus != 'Inactive' order by id
         </sql:query>   
          
         <h2>LSST DESC Projects</h2>
