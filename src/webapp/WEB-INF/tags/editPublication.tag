@@ -20,14 +20,14 @@
 <c:set var="paperleads" value="paper_leads_${paperid}"/> 
   
  <sql:query var="pubs">
-  select paperid, pubstatus, title, short_title, pubtype, summary, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') added, to_char(modifydate,'YYYY-Mon-DD HH:MI:SS') moddate, builder_eligible, key_paper,
+  select paperid, pubstatus, pubstate, title, short_title, pubtype, summary, to_char(createdate,'YYYY-Mon-DD HH:MI:SS') added, to_char(modifydate,'YYYY-Mon-DD HH:MI:SS') moddate, builder_eligible, key_paper,
   passed_internal_review, arxiv, published_reference, project_id, short_title from descpub_publication where paperid = ?
     <sql:param value="${paperid}"/>
  </sql:query>  
 
 <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/>
     
-<sql:query var="states">
+<sql:query var="states"> <%-- state here is really the doc status --%>
     select state from descpub_publication_states order by state
 </sql:query>
      
@@ -44,11 +44,11 @@
     
     
 <h3>DESC-${param.paperid} Title: ${pubs.rows[0].title} </h3>
-    Project Id: <a href="show_project.jsp?projid=${pubs.rows[0].project_id}">${pubs.rows[0].project_id}</a> &nbsp; &nbsp; Added: ${pubs.rows[0].added}
+    Project Id: <a href="show_project.jsp?projid=${pubs.rows[0].project_id}">${pubs.rows[0].project_id}</a> &nbsp; &nbsp; ${pubs.rows[0].pubtype} &nbsp; &nbsp; Added: ${pubs.rows[0].added}
     <c:if test="${!empty pubs.rows[0].moddate}">
         &nbsp; &nbsp;Last Modified: ${pubs.rows[0].moddate} &nbsp; &nbsp; &nbsp; &nbsp;
     </c:if>
-        [ Placeholder for link to internal review ]
+        [ link to internal review ]
     <p/> 
     
     <form action="editPublication.jsp?paperid=${param.paperid}" method="post">

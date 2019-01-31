@@ -27,7 +27,7 @@
         <tg:underConstruction/>
                         
         <sql:query var="vers" >
-            select distinct p.paperid, p.title, p.state, p.status, p.pubtype, p.state, p.createdate, p.modifydate from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
+            select distinct p.paperid, p.title, p.pubstatus, p.pubstate, p.pubtype, p.createdate, p.modifydate from descpub_publication p left join descpub_publication_versions v on v.paperid=p.paperid
             order by p.paperid desc
         </sql:query>
 
@@ -38,8 +38,8 @@
                     <a href="show_pub.jsp?paperid=${record.paperid}">DESC-${record.paperid}</a>
                 </display:column>
                 <display:column title="Title" property="title" style="text-align:left;" group="2" sortable="true" headerClass="sortable"/>
-                <display:column title="State" property="state" style="text-align:left;" group="3" sortable="true" headerClass="sortable"></display:column> 
-                <display:column title="Collab. Status" property="status" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
+                <display:column title="Document status" property="pubstatus" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
+                <display:column title="Document state" property="pubstate" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
                 <display:column title="Doc type" property="pubtype" style="text-align:left;" sortable="true" headerClass="sortable"></display:column>
                 <display:column title="Created" property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
                 <display:column title="Modified" property="modifydate" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 

@@ -76,7 +76,7 @@
                 </c:if>
                 
                 <sql:query var="poolOfCandidates">
-                    select m.firstname, m.lastname, m.memidnum, u.username from um_member m join um_project_members p on m.memidnum=p.memidnum
+                    select m.lastname, m.firstname, m.memidnum, u.username from um_member m join um_project_members p on m.memidnum=p.memidnum
                     join um_member_username u on u.memidnum=m.memidnum where p.activestatus = 'Y' and p.project = ? and m.lastname != 'lsstdesc-user' 
                     order by lower(m.lastname)
                     <sql:param value="${appVariables.experiment}"/>
