@@ -47,9 +47,9 @@
     <c:set var="memberPool" value="lsst-desc-full-members"/>
     <c:set var="groupname" value="project_leads_${projid}"/>
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
-   
-    <sql:query var="projDetails">
-        select * from descpub_project where projectstatus id = ?
+       
+     <sql:query var="projDetails">
+        select * from descpub_project where id = ?
         <sql:param value="${projid}"/>
     </sql:query>
     
