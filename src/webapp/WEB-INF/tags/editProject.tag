@@ -120,7 +120,7 @@
     </table>
     <p/>
     
-    State:<br/>  
+    Status:<br/>  
     <select name="projectstatus" id="projectstatus" size="${validStates.rowCount}" required>
         <c:forEach var="sta" items="${validStates.rows}" >
            <option value="${sta.state}" <c:if test="${fn:startsWith(sta.state,projstate)}">selected</c:if> >${sta.state}</option>

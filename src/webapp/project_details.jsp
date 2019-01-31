@@ -122,7 +122,7 @@
             <c:catch var="trapError">
                 <sql:transaction>
                     <sql:update >
-                    insert into descpub_project (id,title,summary,state,confluenceurl,gitspaceurl,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,?,sysdate,?)
+                    insert into descpub_project (id,title,summary,projectstatus,confluenceurl,gitspaceurl,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,?,sysdate,?)
                     <sql:param value="${param.title}"/>
                     <sql:param value="${fn:escapeXml(param.summary)}"/>
                     <sql:param value="${param.state}"/>
@@ -171,6 +171,15 @@
                                     <sql:param value="${appVariables.experiment}"/>
                                     <sql:param value="${array[0]}"/>
                                 </sql:update>
+                                    
+                                <sql:update var="leadersAsmembers">
+                                    insert into profile_ug (user_id, group_id, experiment, memidnum) values (?,?,?,?)
+                                    <sql:param value="${array[1]}"/>
+                                    <sql:param value="project_${newprojID}"/>
+                                    <sql:param value="${appVariables.experiment}"/>
+                                    <sql:param value="${array[0]}"/>
+                                </sql:update> 
+                                    
                              </c:forEach>
                          </c:if>
                     </c:forEach>  
@@ -189,14 +198,6 @@
                                     <sql:param value="${yy}"/>
                                     <sql:param value="${results.rows[0]['title']}"/>
                                 </sql:update>
-                                    <%--
-                                <sql:update var="act">
-                                     insert into descpub_proj_activities (project_id,activity_id,act_title,entry_date)
-                                     values(?,?,?,sysdate)
-                                     <sql:param value="${newprojID}"/>
-                                     <sql:param value="${yy}"/>
-                                     <sql:param value="${results.rows[0]['title']}"/>
-                                </sql:update> --%>
                              </c:forEach>
                           </c:when>
                           <c:when test="${xx.key == 'srmdeliverable' && !empty paramValues[xx.key]}">
