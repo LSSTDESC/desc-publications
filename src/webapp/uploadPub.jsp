@@ -33,7 +33,7 @@
                 </sql:query>
                 <c:choose>
                     <c:when test="${list.rowCount > 0}">
-                    <p id="pagelabel"> Choose your paper: </p>
+                    <p id="pagelabel"> Choose your document: </p>
                     <form action="uploadPub.jsp">
                         <select name="paperid" size="8" required>
                             <c:forEach var="p" items="${list.rows}">

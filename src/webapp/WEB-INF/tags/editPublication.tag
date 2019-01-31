@@ -44,7 +44,7 @@
     
     
 <h3>DESC-${param.paperid} Title: ${pubs.rows[0].title} </h3>
-    Project Id: <a href="show_project.jsp?projid=${pubs.rows[0].project_id}">${pubs.rows[0].project_id}</a> &nbsp; &nbsp; ${pubs.rows[0].pubtype} &nbsp; &nbsp; Added: ${pubs.rows[0].added}
+    Project Id: <a href="show_project.jsp?projid=${pubs.rows[0].project_id}">${pubs.rows[0].project_id}</a> &nbsp; &nbsp; Doctype: ${pubs.rows[0].pubtype} &nbsp; &nbsp; Added: ${pubs.rows[0].added}
     <c:if test="${!empty pubs.rows[0].moddate}">
         &nbsp; &nbsp;Last Modified: ${pubs.rows[0].moddate} &nbsp; &nbsp; &nbsp; &nbsp;
     </c:if>
