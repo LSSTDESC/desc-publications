@@ -49,7 +49,7 @@
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
    
     <sql:query var="projDetails">
-        select * from descpub_project where projectstatus != 'Inactive' and id = ?
+        select * from descpub_project where projectstatus id = ?
         <sql:param value="${projid}"/>
     </sql:query>
     
