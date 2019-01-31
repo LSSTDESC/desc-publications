@@ -13,7 +13,7 @@
 
 <html>
     <head>
-        <title>Project Subscription Lists</title>
+        <title>DESC Project Subscription Lists</title>
     </head>
     <body>
 
@@ -99,7 +99,7 @@
         </c:if>
                     
         <sql:query var="projectList">
-           select id, title from descpub_project where lower(projectstatus) != 'inactive' order by id desc
+           select p.id, p.title, sw.swg_id  from descpub_project p join descpub_project_swgs sw  on p.id = sw.project_id order by id desc
         </sql:query>
            
         <c:set var="selected" value="false"/>
@@ -178,8 +178,11 @@
 
             <form name="projectlist"  action="projectSubscription.jsp" method="post"> 
                 <display:table class="datatable" id="Row" name="${projectList.rows}" defaultorder="ascending">
-                    <display:column title="Project ID">
-                        <a href="projectSubscription.jsp?getproj=project_${Row.id}"> project_${Row.id}</a>
+                    <display:column title="Project Id">
+                        <a href="projectView.jsp?projid=${Row.id}&swgid=${Row.swg_id}">project_${Row.id}</a>
+                    </display:column>
+                    <display:column title="Project members">
+                        <a href="projectSubscription.jsp?getproj=project_${Row.id}">${Row.id}</a>
                     </display:column>
 
                     <display:column title="Project Title" style="text-align:left" sortable="true" sortProperty="group_name" headerClass="sortable" >                    

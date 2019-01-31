@@ -151,12 +151,6 @@
                 <c:set var="convenerCanEdit" value="true"/>
             </c:if>
         </c:forEach> 
-        
-        <%-- NOT USED
-        <sql:query var="countpapers">
-            select count(*) from descpub_publication where project_id = ?
-            <sql:param value="${projid}"/>
-        </sql:query>    --%>
       
         <%-- check for versions --%>
         <sql:query var="vers">
