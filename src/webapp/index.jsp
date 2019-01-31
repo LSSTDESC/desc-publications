@@ -16,7 +16,7 @@
         <script src="js/jquery-1.11.1.min.js"></script>
         <script src="js/jquery.validate.min.js"></script>
         <link rel="stylesheet" href="css/pubstyles.css">
-        <title>LSST DESC Publications Board</title>
+        <title>LSST DESC Pubs</title>
     </head>
 <body>
     
