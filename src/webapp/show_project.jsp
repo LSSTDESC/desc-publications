@@ -28,7 +28,7 @@
     </c:if>
     
     <c:if test="${empty param.projid}">  
-        <c:redirect url="noPermission.jsp?errmsg=12"/>
+      <c:redirect url="noPermission.jsp?errmsg=12"/>  
     </c:if>
     
     <tg:underConstruction/>
@@ -37,7 +37,7 @@
     <c:if test="${empty param.swgid}">
         <sql:query var="swg">
             select swg_id from descpub_project_swgs where project_id = ?
-            <sql:param value="${param.swgid}"/>
+            <sql:param value="${param.projid}"/>
         </sql:query>
         <c:if test="${swg.rowCount < 1}">
            <c:redirect url="noPermission.jsp?errmsg=12"/>
