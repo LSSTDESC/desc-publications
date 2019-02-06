@@ -102,9 +102,9 @@
                 <strong>* Summary<br/></strong><textarea rows="22" cols="80" name="summary" required></textarea>
                 <p/>
                 <strong>* Select project leads</strong><p/>
-                <select name="addLeads" size="8" multiple required>
+                <select name="addLeads" size="30" multiple required>
                     <c:forEach var="addrow" items="${candidates.rows}">
-                        <option value="${addrow.memidnum}:${addrow.username}">${addrow.firstname} ${addrow.lastname}</option>
+                        <option value="${addrow.memidnum}:${addrow.username}">${addrow.lastname} ${addrow.firstname}</option>
                     </c:forEach>
                 </select>
                 
@@ -148,7 +148,7 @@
                     
                      <%-- add the project id - working group id since projects can have multiple working groups --%> 
                     <sql:update var="swg_proj">
-                        insert into descpub_project_swgs (id,project_id,swg_id) values(descpub_proj_swg.nextval,?,?)
+                        insert into descpub_project_swgs (id,project_id,swg_id) values(descpub_proj_swg_seq.nextval,?,?)
                         <sql:param value="${newprojID}"/>
                         <sql:param value="${param.swgid}"/>
                     </sql:update>
