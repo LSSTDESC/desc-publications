@@ -60,6 +60,12 @@
         <sql:param value="${param.swgid}"/>
     </sql:query>
         
+    <sql:query var="projectless">
+        select s.paperid, s.swgid, sw.name, p.title, p.createdate, p.modifydate, p.pubstatus, p.pubtype
+        from descpub_publication_swgs s join descpub_publication p on s.paperid = p.paperid join descpub_swg sw on s.swgid = sw.id where s.swgid=?
+        <sql:param value="${param.swgid}"/>
+    </sql:query>
+        
     <%-- working groups must have conveners assigned otherwise noPermission called --%>
     <sql:query var="conveners">
         select u.first_name, u.last_name, u.email, ug.group_id, u.memidnum from profile_user u join profile_ug ug on u.memidnum=ug.memidnum 
@@ -116,6 +122,19 @@
 
                </c:if>   
             </display:table>
+                       
+            <c:if test="${projectless.rowCount > 0}">
+                <p id="pagelabel">${projectless.rowCount} project-less documents</p>
+                <display:table class="datatable" id="projless" name="${projectless.rows}">
+                    <display:column title="DESC ID" style="text-align:left;" group="1" sortable="true" headerClass="sortable">
+                        <a href="show_pub.jsp?paperid=${projless.paperid}">DESC-${projless.paperid}</a>
+                    </display:column>
+                    <display:column title="Created" property="createdate" style="text-align:left;" group="2" sortable="true" headerClass="sortable"/>
+                    <display:column title="Last changed" property="modifydate" style="text-align:left;" group="2" sortable="true" headerClass="sortable"/>
+                    <display:column title="Title" property="title" style="text-align:left;" group="2" sortable="true" headerClass="sortable"/>
+                    <display:column title="Type" property="title" style="text-align:left;" group="2" sortable="true" headerClass="sortable"/>
+                </display:table>
+            </c:if>           
         </c:if>  
         <p></p>
         <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,cgn) || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
