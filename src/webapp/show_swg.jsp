@@ -86,7 +86,7 @@
     </c:forEach>
              
     <h2>Working Group(s): ${swgname}</h2>
-    <p id="pagelabel"><a href="mailto:${allconveners}">Conveners</a>: ${convenerList}</p>
+    <p id="pagelabel"><a href="mailto:${allconveners}">Email: All conveners</a>, ${convenerList}</p>
     
        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
           

@@ -8,6 +8,9 @@
 <%@attribute name="projid" required="true"%>
 <%@attribute name="swgid" required="true"%>  
 <%@attribute name="returnURL" required="true" %>
+
+<script src="../js/jquery-1.11.1.min.js"></script>
+<script src="../js/jquery.validate.min.js"></script>
 <link rel="stylesheet" href="css/pubstyles.css">
 
  
@@ -47,8 +50,9 @@
     </sql:query>
    
     <sql:query var="projects">
-        select id, title, summary, projectstatus, confluenceurl, gitspaceurl, to_char(created,'YYYY-Mon-DD HH:MI:SS') crdate, 
-        to_char(lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate from descpub_project where id = ?  
+        select p.id, p.title, p.summary, p.projectstatus, p.confluenceurl, p.gitspaceurl, s.swg_id, to_char(p.created,'YYYY-Mon-DD HH:MI:SS') crdate, 
+        to_char(p.lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate from descpub_project p join descpub_project_swgs s on s.project_id = p.id
+        where p.id=?
         <sql:param value="${projid}"/>
     </sql:query>
         
@@ -66,21 +70,22 @@
        <sql:param value="${projid}"/>
     </sql:query>
        
-    <c:set var="project_grp" value="project_${projid}"/>
     <c:set var="title" value="${projects.rows[0].title}"/>
-    <c:set var="projstate" value="${projects.rows[0].state}"/>
+    <c:set var="projstate" value="${projects.rows[0].projectstatus}"/>
     <c:set var="summary" value="${projects.rows[0].summary}"/>
-    <c:set var="comm" value="${projects.rows[0].comm}"/>
+    <%-- <c:set var="comm" value="${projects.rows[0].comm}"/> not used --%>
     <c:set var="confluenceurl" value="${projects.rows[0].confluenceurl}"/>
     <c:set var="gitspace" value="${projects.rows[0].gitspaceurl}"/>
-    <c:set var="projectleads" value="project_leads_${projid}"/>
+    <c:set var="projectGrpName" value="project_${projid}"/>
+    <c:set var="projectleadsGrpName" value="project_leads_${projid}"/>
     
+    <%--
     <sql:query var="isLead">
         select count(*) tot from profile_ug where group_id = ? and user_id = ?
-        <sql:param value="${projectleads}"/>
+        <sql:param value="${projectleadsGrpName}"/>
         <sql:param value="${userName}"/>
     </sql:query>
-    <c:set var="canEdit" value="${isLead.rows[0].tot > 0 ? 'true' : 'false'}"/>
+    <c:set var="canEdit" value="${isLead.rows[0].tot > 0 ? 'true' : 'false'}"/> --%>
     
     <p id="pagelabel">Project Details [Working Group(s): ${wglist}]</p>
     <div id="formRequest">
@@ -89,7 +94,7 @@
     <form action="modifySWGprojects.jsp" method="post">  
       <input type="hidden" name="swgid" id="swgid" value="${swgcurr.rows[0].id}" />
       <input type="hidden" name="projid" id="projid" value="${projid}" /> 
-      <input type="hidden" name="redirectURL" id="redirectURL" value="show_project.jsp?projid=${projid}" />  
+      <input type="hidden" name="redirectURL" id="redirectURL" value="projectView.jsp?projid=${projid}&swgid=${projects.rows[0].swg_id} />  
     
      Project ID: ${projid} &nbsp;&nbsp;&nbsp;
      Created: ${projects.rows[0].crdate}&nbsp;&nbsp;&nbsp;
@@ -166,12 +171,18 @@
     <p/>
  
     <p> 
-    Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary">${summary}</textarea>
+    Brief Summary:<br/> <textarea id="summary" rows="8" cols="50" name="summary" required >${summary}</textarea>
     <p/>
-    
+    <%--
     <c:if test="${canEdit || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin')}">
       <input type="submit" value="Update_Project_Details" id="action" name="action" />
+    </c:if>  --%>
+      
+    <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,projectleadsGrpName) || gm:isUserInGroup(pageContext,projectGrpName)}">
+      <input type="submit" value="Update_Project_Details" id="action" name="action" />
+      <input type="reset" value="Reset" id="reset" name="reset" />
     </c:if>  
+      
   </form>
     </fieldset>
 </div>

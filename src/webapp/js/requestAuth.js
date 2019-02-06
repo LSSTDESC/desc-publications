@@ -7,7 +7,7 @@ $(document).ready( function() {
         
     function validateForm(){
        var checkboxes = $("input[type='checkbox']");
-       
+            
        if (!checkboxes.is(":checked")){
            $("#requestAuth").before('<span class="error" style="color:red"> At least one contribution must be checked</span>')
            return false;

@@ -82,22 +82,27 @@
         
         <%-- when testing against dev the tag gm:isUserInGroup won't work because it always checks against the prod db so test separately if user can edit paper.
         canEdit checks if conveners (primary auth) can edit, userCanEdit checks if member of the paper can edit
-        --%>
-        <c:set var="userCanEdit" value="false"/> <%-- can user edit --%>
-        <c:set var="selectFields" value=""/> <%-- var to build list of fields per pubtype --%>
-        <c:set var="primaryauths" value=""/>  
         
-        <sql:query var="canUser"> <%-- check if user is in one of the allowed groups --%>
-          select memidnum from profile_ug where group_id in (?,?) and user_id=? and experiment = ?
+        <c:set var="userCanEdit" value="false"/>   can user edit --%>
+        
+        <c:set var="selectFields" value=""/> <%-- var to build list of fields per pubtype --%>
+        <c:set var="primaryauths" value=""/> 
+        
+        <%-- Remove this once confirm that isUserInGroup works from Prod only
+        <sql:query var="canUser"> --%>
+        <%-- check if user is in one of the allowed groups --%>
+        <%--
+          select memidnum from profile_ug where group_id in (?,?,?) and user_id=? and experiment = ?
           <sql:param value="${paperGrpName}"/>
           <sql:param value="${paperLeadGrpName}"/>
+          <sql:param value="${projectGrpName}"/>
           <sql:param value="${userName}"/>
           <sql:param value="${appVariables.experiment}"/>
         </sql:query>
             
         <c:if test="${!empty canUser.rows[0].memidnum}">
              <c:set var="userCanEdit" value="true"/>
-        </c:if> 
+        </c:if> --%>
         
         <%-- get the list of fields appropriate for this pubtype  --%>
         <sql:query var="fi">
@@ -140,17 +145,18 @@
         
         <%-- get the convener groupname --%>
         <sql:query var="leads">
-           select  wg.id, wg.convener_group_name from descpub_project_swgs ps join descpub_swg wg on ps.swg_id = wg.id
+           select wg.id, wg.convener_group_name from descpub_project_swgs ps join descpub_swg wg on ps.swg_id = wg.id
            join descpub_publication dd on dd.project_id = ps.project_id where dd.paperid = ?
            <sql:param value="${param.paperid}"/>
         </sql:query>
+        <c:set var="convenerGrp" value="${leads.rows[0].convener_group_name}"/>
            
-        <%-- check if user is convener, do they have r/w access --%> 
+        <%-- check if user is convener, do they have r/w access   OLD
         <c:forEach var="x" items="${leads.rows}">
             <c:if test="${gm:isUserInGroup(pageContext,x.convener_group_name)}">
                 <c:set var="convenerCanEdit" value="true"/>
             </c:if>
-        </c:forEach> 
+        </c:forEach>  --%> 
       
         <%-- check for versions --%>
         <sql:query var="vers">
@@ -233,13 +239,22 @@
                 </utils:trEvenOdd> 
             </c:if> 
 
-           <c:if test="${userCanEdit || convenerCanEdit || gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+                    <%--
+           <c:if test="${gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                <utils:trEvenOdd reset="false"><th style="text-align: left">Edit</th>
                    <td style="text-align: left">
                    <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                    </td>
                </utils:trEvenOdd>
-           </c:if>    
+           </c:if>  --%>
+           
+          <c:if test="${gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,paperReviewGrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+                <utils:trEvenOdd reset="false"><th style="text-align: left">Edit</th>
+                    <td style="text-align: left">
+                    <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
+                    </td>
+                </utils:trEvenOdd>
+          </c:if>
                
         </table>
             

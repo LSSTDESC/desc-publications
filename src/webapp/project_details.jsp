@@ -81,10 +81,10 @@
         <c:when test="${param.task == 'create_proj_form'}">
              <h3>Working Group: ${swgs.rows[0].name}</h3><p/>
              <em id="pagerequire">* fields are required</em>
-            <form name="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}">
+            <form name="addproject" id="addproject" action="project_details.jsp?task=addproject&swgid=${param.swgid}">
                 <strong>* Title</strong><p/><input type="text" name="title" size="77" required/><p/>
-                <strong>Confluence URL</strong><p/><input type="text" size="77" name="confluenceurl" /><p/>
-                <strong>Github URL</strong><p/><input type="text" size="77" name="gitspaceurl" /><p/>
+                <strong>Confluence URL</strong><p/><input type="text" size="77" name="confluenceurl" id="confluenceurl" /><p/>
+                <strong>Github URL</strong><p/><input type="text" size="77" name="gitspaceurl" id="gitspaceurl" /><p/>
                 <strong>SRM activities</strong><p/>
                 <select name="srmactivity" size="20" multiple>
                     <c:forEach var="s" items="${srmact.rows}">
@@ -92,7 +92,7 @@
                     </c:forEach>
                 </select>
                 <p></p>
-                 <strong>SRM deliverables</strong><p/>
+             <strong>SRM deliverables</strong><p/>
                 <select name="srmdeliverable" size="20" multiple>
                     <c:forEach var="d" items="${srmdel.rows}">
                         <option value="${d.deliverable_id}">${d.deliverable_id} ${d.title}</option>
@@ -109,10 +109,20 @@
                 </select>
                 
                 <input type="hidden" value="${param.swgid}" name="swgid"/><p/>
-                <input type="hidden" value="Created" name="state"/><p/>
+                <input type="hidden" value="Created" name="projectstatus"/><p/>
                 <input type="hidden" value="true" name="formsubmitted"/><p/>
-                <input type="submit" value="Create" name="submit">
+                <input type="submit" value="Create project" name="submit">
             </form>
+                
+            <script>
+                $("#addproject").validate({
+                    errorPlacement: function(error,element){
+                        element.val(error.text());
+                    }
+                    errorClass: "my-error-class"
+                }); 
+            </script>
+                
         </c:when>
         <c:when test="${param.formsubmitted == 'true'}">
                 
@@ -122,10 +132,9 @@
             <c:catch var="trapError">
                 <sql:transaction>
                     <sql:update >
-                    insert into descpub_project (id,title,summary,projectstatus,confluenceurl,gitspaceurl,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,?,?,?,sysdate,?)
+                    insert into descpub_project (id,title,summary,projectstatus,confluenceurl,gitspaceurl,created,createdby) values(DESCPUB_PROJ_SEQ.nextval,?,?,'Created',?,?,sysdate,?)
                     <sql:param value="${param.title}"/>
                     <sql:param value="${fn:escapeXml(param.summary)}"/>
-                    <sql:param value="${param.state}"/>
                     <sql:param value="${fn:escapeXml(param.confluenceurl)}"/>
                     <sql:param value="${fn:escapeXml(param.gitspaceurl)}"/>
                     <sql:param value="${userName}"/>
@@ -139,7 +148,7 @@
                     
                      <%-- add the project id - working group id since projects can have multiple working groups --%> 
                     <sql:update var="swg_proj">
-                        insert into descpub_project_swgs (id,project_id,swg_id) values(SWG_SEQ.nextval,?,?)
+                        insert into descpub_project_swgs (id,project_id,swg_id) values(descpub_proj_swg.nextval,?,?)
                         <sql:param value="${newprojID}"/>
                         <sql:param value="${param.swgid}"/>
                     </sql:update>
@@ -241,7 +250,7 @@
                 </c:forEach>
             </c:if>
             <c:if test="${empty trapError}">
-               <c:redirect url="show_project.jsp?projid=${projNum.rows[0]['newProjNum']}&swgid=${param.swgid}"/>
+             <c:redirect url="show_project.jsp?projid=${projNum.rows[0]['newProjNum']}&swgid=${param.swgid}"/>  
                 <%--
                Created ${param.title}<br/>
                <a href="show_swg.jsp?swgid=${param.swgid}">return to projects</a>

@@ -66,6 +66,17 @@ input[type=submit] {
     cursor: pointer;
 }
 
+input[type=reset] {
+    width: auto;
+    background-color: #DADADA; 
+    color: black;
+    padding: 3px 7px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 /* __ OTHER __  */
 
 label {

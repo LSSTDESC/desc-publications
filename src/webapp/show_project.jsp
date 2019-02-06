@@ -22,7 +22,7 @@
 </head>
 
 <body>
-    <%-- show_project allows edits by project leads only --%>
+    <%-- show_project allows edits to project details by project leads only --%>
     <c:if test="${!gm:isUserInGroup(pageContext,'lsst-desc-members')}">  
         <c:redirect url="noPermission.jsp?errmsg=7"/>
     </c:if>
@@ -44,9 +44,22 @@
         </c:if>
     </c:if>
     <c:set var="swgid" value="${param.swgid}"/>
-    <c:set var="memberPool" value="lsst-desc-full-members"/>
+   <%--  <c:set var="memberPool" value="lsst-desc-full-members"/> NOT USED? --%>
     <c:set var="groupname" value="project_leads_${projid}"/>
+    <c:set var="grpmember" value="project_${projid}"/>
     <c:set var="returnURL" value="show_project.jsp?projid=${projid}&swgid=${swgid}"/>
+    
+    
+    <%-- is user allowed to add documents to this project --%>
+    <sql:query var="canUser"> <%-- check if user is in one of the allowed groups --%>
+        select memidnum from profile_ug where group_id=? and user_id=? and experiment=?
+        <sql:param value="${grpmember}"/>
+        <sql:param value="${userName}"/>
+        <sql:param value="${appVariables.experiment}"/>
+    </sql:query>
+    <c:if test="${!empty canUser.rows[0].memidnum}">
+        <c:set var="addDocs" value="true"/>
+    </c:if> 
        
      <sql:query var="projDetails">
         select * from descpub_project where id = ?
@@ -65,6 +78,7 @@
         
     <c:set var="pubtype" value="${pubs.rows[0].pubtype}"/> 
     <c:set var="leadersgrp" value="${leads.rows[0].cgn}"/>
+    <c:set var="memgrp" value="project_${projid}"/>
     
     <!-- Prominently display project number and title, and provide URL -->
     <h1><strong>Project ${param.projid}: ${projDetails.rows[0].title}</strong></h1> 
@@ -116,13 +130,14 @@
     </c:if>
     <p/>
  
+    
     <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,leadersgrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
       <c:if test="${gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
           <table class="datatable">
             <utils:trEvenOdd reset="true"><th>Authorized tasks</th><td style="text-align:left;"><a href="addPublication.jsp?task=create_publication_form&projid=${param.projid}&swgid=${param.swgid}">Add document to project ${param.projid}</a></td></utils:trEvenOdd>
           </table>
       </c:if>
-    </c:if>  
+    </c:if>   
         
 </body>
 </html>

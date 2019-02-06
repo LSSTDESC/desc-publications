@@ -15,10 +15,12 @@
     <body>
         
     <sql:query var="projects">
-        select id,title,summary,projectstatus,created,lastmodified,lastmodby,confluenceurl,createdby,gitspaceurl from descpub_project where id = ?
+        select p.id, p.title, p.summary, p.projectstatus, p.created, p.lastmodified, p.lastmodby, p.confluenceurl, p.createdby, p.gitspaceurl, s.swg_id 
+        from descpub_project p join descpub_project_swgs s on  s.project_id = p.id where p.id=?
         <sql:param value="${param.projid}"/>
    </sql:query> 
            
+   <c:set var="swgid" value="${projects.rows[0]['swg_id']}"/>
    <c:set var="oranames" value="title=?,summary=?,projectstatus=?,lastmodby=?,confluenceurl=?,gitspaceurl=?,lastmodified=sysdate"/>
    <c:set var="escSummary" value="${fn:escapeXml(param.summary)}"/>
    <c:set var="confUrl" value="${fn:startsWith(param.confluenceurl,'https://confluence')}"/>
@@ -31,7 +33,6 @@
    <c:if test="${! gitUrl}">
        <c:redirect url="noPermission.jsp?errmsg=14"/>  
    </c:if>
- <%--  <c:set var="oravals" value="${param.title},${escSummary},${param.state},${userName},${param.confluenceurl},${param.gitspaceurl},sysdate"/> --%>
  
    <c:set var="debugMode" value="false"/>
   
@@ -50,7 +51,7 @@
         <sql:transaction>
             <sql:update>
                 update descpub_project set ${oranames} where id = ?
-                <sql:param value="${param.title}"/>
+                <sql:param value="${empty param.title ? projects.rows[0].title : param.title}"/>
                 <sql:param value="${escSummary}"/>
                 <sql:param value="${param.projectstatus}"/>
                 <sql:param value="${userName}"/>
@@ -132,7 +133,8 @@
             <h3>Error: ${catchError}</h3>
         </c:when>
         <c:otherwise>
-          <c:redirect url="${param.redirectURL}"/>  
+            <c:redirect url="projectView.jsp?projid=${param.projid}&swgid=${swgid}"/>
+        <%--  <c:redirect url="${param.redirectURL}"/>   --%>
         </c:otherwise>
     </c:choose>
     

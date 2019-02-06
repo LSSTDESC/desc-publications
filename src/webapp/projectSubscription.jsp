@@ -211,6 +211,10 @@
                 <input type="submit" value="Apply Changes" name="submit"/>
             </form>  
         </c:when>
+            
+        <c:when test="${projectList.rowCount == 0}">
+            <p id="pagelabel">There are no projects at this time</p>
+        </c:when>
         </c:choose>   
        
             
