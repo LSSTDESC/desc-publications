@@ -17,10 +17,10 @@
     with tmp_names as (
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me left join um_member_username mu on me.memidnum=mu.memidnum
     left join um_project_members pm on me.memidnum=pm.memidnum left join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? 
-    where pm.activestatus='Y' and pm.project = ? and me.lastname != 'lsstdesc-user' order by lower(lastname)
+    where pm.activestatus='Y' and pm.project = ? and me.lastname != 'lsstdesc-user'
     minus       
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-    left join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? and me.lastname != 'lsstdesc-user' ) select * from tmp_names order by lower(lastname)
+    left join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? and me.lastname != 'lsstdesc-user' ) select * from tmp_names order by lower(lastname) 
     <sql:param value="${candidategroup}"/>
     <sql:param value="${appVariables.experiment}"/>
     <sql:param value="${groupname}"/>
