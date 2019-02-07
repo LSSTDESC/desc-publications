@@ -186,7 +186,7 @@
     <utils:trEvenOdd ><th>Summary</th><td style="text-align: left">${row.summary}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project leaders</th><td style="text-align: left">${projectLeaders}</td></utils:trEvenOdd>
     
-    <utils:trEvenOdd ><th>Email to</th><td style="text-align: left"><a href=mailto:${leadAddrs}>project leaders</a></td><td></td></utils:trEvenOdd>  
+    <utils:trEvenOdd ><th>Email to</th><td style="text-align: left"><a href="mailto:${leadAddrs}">project leaders</a></td><td></td></utils:trEvenOdd>  
    
     <c:if test="${gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,projectLeadGrpName) || gm:isUserInGroup(pageContext,projectGrpName)}">
       <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td></utils:trEvenOdd>
