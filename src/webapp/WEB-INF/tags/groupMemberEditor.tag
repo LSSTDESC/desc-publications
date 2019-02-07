@@ -16,8 +16,8 @@
 <sql:query var="candidates">
     with tmp_names as (
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me left join um_member_username mu on me.memidnum=mu.memidnum
-    left join um_project_members pm on me.memidnum=pm.memidnum 
-    left join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? where pm.activestatus='Y' and pm.project = ? and me.lastname != 'lsstdesc-user'
+    left join um_project_members pm on me.memidnum=pm.memidnum left join profile_ug ug on ug.memidnum=pm.memidnum and ug.group_id = ? 
+    where pm.activestatus='Y' and pm.project = ? and me.lastname != 'lsstdesc-user' order by lower(lastname)
     minus       
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
     left join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? and me.lastname != 'lsstdesc-user' ) select * from tmp_names order by lower(lastname)
@@ -28,7 +28,7 @@
 
 <sql:query var="members">
     select me.memidnum, me.firstname, me.lastname, mu.username from um_member me join um_member_username mu on me.memidnum=mu.memidnum
-    join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? order by me.lastname
+    join profile_ug ug on me.memidnum=ug.memidnum where group_id = ? order by lower(me.lastname)
     <sql:param value="${groupname}"/>
 </sql:query>
      
@@ -45,12 +45,12 @@
             <tr>
                 <td><select name="addMember" size="8" multiple>
                         <c:forEach var="addrow" items="${candidates.rows}">
-                            <option value="${addrow.memidnum}:${addrow.username}">${addrow.firstname} ${addrow.lastname}</option>
+                            <option value="${addrow.memidnum}:${addrow.username}">${addrow.lastname} ${addrow.firstname}</option>
                         </c:forEach>
                     </select></td>
                 <td><select name="removeMember" size="8" multiple>
                         <c:forEach var="remrow" items="${members.rows}"> 
-                            <option value="${remrow.memidnum}:${remrow.username}">${remrow.firstname} ${remrow.lastname}</option>
+                            <option value="${remrow.memidnum}:${remrow.username}">${remrow.lastname} ${remrow.firstname}</option>
                         </c:forEach>
                     </select></td>
             </tr>

@@ -52,6 +52,9 @@
         <c:when test="${param.errmsg == '14'}">
             <h3>Invalid github url. Github urls must start with https://github.com...</h3>
         </c:when>
+        <c:when test="${param.errmsg == '15'}">
+            <h3>No working group found for this project. All projects must belong to a working group.</h3>
+        </c:when>
         </c:choose>
     </body>
 </html>

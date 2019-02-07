@@ -40,7 +40,7 @@
             <sql:param value="${param.projid}"/>
         </sql:query>
         <c:if test="${swg.rowCount < 1}">
-           <c:redirect url="noPermission.jsp?errmsg=12"/>
+           <c:redirect url="noPermission.jsp?errmsg=15"/>
         </c:if>
     </c:if>
     <c:set var="swgid" value="${param.swgid}"/>
