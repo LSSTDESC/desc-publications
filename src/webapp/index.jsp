@@ -61,7 +61,7 @@
             </display:table>
         </c:if>  
         <p></p>
-         <c:if test="${papers.rowCount > 0}">
+        <c:if test="${papers.rowCount > 0}">
              <p id="pagelabel">Most recently Updated Project Documents</p> 
              <display:table class="datatable" id="Line" name="${papers.rows}" cellpadding="5" cellspacing="8">
                 <display:column title="Doc Id" style="text-align:left;" sortable="true" headerClass="sortable" >
@@ -69,7 +69,7 @@
                 </display:column>
                 <display:column property="createdate" title="Created" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
-                <display:column property="state" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/>
+               <%-- <display:column property="pubstatus" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/> --%>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column title="Project Id" style="text-align:left;" sortable="true" headerClass="sortable">
@@ -90,7 +90,7 @@
                 </display:column>
                 <display:column property="createdate" title="Created" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="dt" title="Last changed" style="" sortable="true" headerClass="sortable"/>
-                <display:column property="state" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/>
+              <%--  <display:column property="state" title="Status" style="text-align:left;" sortable="true" headerClass="sortable"/> --%>
                 <display:column property="title" title="Title" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="pubtype" title="Doc Type" style="text-align:left;" sortable="true" headerClass="sortable"/>
                 <display:column property="name" title="Working group" style="text-align:left;" sortable="true" headerClass="sortable"/>
