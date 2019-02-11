@@ -47,7 +47,7 @@
     <c:choose>
         <c:when test="${param.task == 'create_publication_form'}">
             <form action="addPublication.jsp" method="post">  
-                 <p id="pagelabel">Select publication type:</p>
+                 <p id="pagelabel">Select document type:</p>
                     <select name="pubtype" required>
                        <option value=""></option>
                        <c:forEach var="ptype" items="${ptypes.rows}">
