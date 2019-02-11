@@ -228,7 +228,7 @@
             </c:forEach>
            
             <utils:trEvenOdd reset="false"><th style="text-align: left">Reviewers</th>
-                <td>${reviewList}<td/>
+                <td style="text-align:left">${reviewList}<td/>
             </utils:trEvenOdd>
                 
             <utils:trEvenOdd reset="false"><th style="text-align: left">Lead authors</th>
