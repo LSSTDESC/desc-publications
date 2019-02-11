@@ -198,7 +198,14 @@
             
         <table class="datatable">
             <utils:trEvenOdd reset="true"><th style="text-align: left;">Document type</th><td style="text-align: left">${pubs.rows[0]['pubtype']}</td></utils:trEvenOdd>
-            <utils:trEvenOdd reset="false"><th style="text-align: left">Project id</th><td style="text-align: left"><a href="projectView.jsp?projid=${pubs.rows[0]['project_id']}">${pubs.rows[0]['project_id']}</a></td></utils:trEvenOdd>
+            <c:choose>
+            <c:when test="${projid > 0}">
+                <utils:trEvenOdd reset="false"><th style="text-align: left">Project id</th><td style="text-align: left"><a href="projectView.jsp?projid=${pubs.rows[0]['project_id']}">${pubs.rows[0]['project_id']}</a></td></utils:trEvenOdd>
+            </c:when>
+            <c:when test="${projid == 0}">
+                <utils:trEvenOdd reset="false"><th style="text-align: left">Project id</th><td style="text-align: left">${pubs.rows[0]['project_id']}</td></utils:trEvenOdd>
+            </c:when>
+            </c:choose>
             <c:if test="${projid == 0}">
                 <utils:trEvenOdd reset="false"><th style="text-align: left">Working Group</th><td style="text-align: left">${projLessWG}</td></utils:trEvenOdd>
             </c:if>
