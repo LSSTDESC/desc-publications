@@ -18,7 +18,9 @@
     <body>
 
     <%--
-    Display all the projects and allow users to subscribe and unsubscribe
+    Display all the projects and allow users to subscribe and unsubscribe.
+    projectSubscription.jsp is used like 'Mailing Lists' in the GM. 
+    projectSubscription.tag uses subscribeProject.jsp to add/remove users when called from a specific project page
     --%>
     
     <%-- Decide who's record is to be displayed. param.USERNAME indicates a just updated mailrecord for a
@@ -153,24 +155,27 @@
                 <sql:param value="${param.getproj}"/>
                 <sql:param value="${appVariables.experiment}"/>
             </sql:query>
-            <h3>Members of ${param.getproj}</h3>
-            <display:table class="datatable"  id="Row" name="${projListMembers.rows}" defaultsort="1" defaultorder="ascending"  >           
-                <display:column sortProperty="fullname" title="Subscribers" sortable="true" headerClass="sortable">
-                    <c:choose>
-                        <c:when test="${displayutils:isExporting(pageContext.request,'Row')}">
-                            ${Row.fullname}
-                        </c:when>
-                        <c:otherwise>
-                            <a href="srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Row.memidnum}&recType=INDB&verification=">${Row.fullname}</a>
-                        </c:otherwise>
-                    </c:choose>
-                </display:column>
-                <display:column property="email" title="Email Address" sortable="true" headerClass="sortable" autolink="true" media="html"/>
-            </display:table>
-
+                
             <c:if test="${projListMembers.rowCount > 0}">
+                <h3>Members of ${param.getproj}</h3>
+                <display:table class="datatable"  id="Row" name="${projListMembers.rows}" defaultsort="1" defaultorder="ascending"  >           
+                    <display:column sortProperty="fullname" title="Subscribers" sortable="true" headerClass="sortable">
+                        <c:choose>
+                            <c:when test="${displayutils:isExporting(pageContext.request,'Row')}">
+                                ${Row.fullname}
+                            </c:when>
+                            <c:otherwise>
+                                <a href="srs.slac.stanford.edu/GroupManager/exp/${appVariables.experiment}/protected/user.jsp?memidnum=${Row.memidnum}&recType=INDB&verification=">${Row.fullname}</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </display:column>
+                    <display:column property="email" title="Email Address" sortable="true" headerClass="sortable" autolink="true" media="html"/>
+                </display:table>
                 <h4>Total membership: ${projListMembers.rowCount}</h4>
             </c:if>
+            <c:if test="${projListMembers.rowCount < 1}">
+                <h4>There are no members in this group</h4>
+            </c:if>  
         </c:when>
            
         <c:when test="${projectList.rowCount > 0}">

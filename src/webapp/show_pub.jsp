@@ -34,13 +34,14 @@
             select project_id from descpub_publication where paperid = ?
             <sql:param value="${param.paperid}"/>
         </sql:query>
+        <c:set var="dtype" value="${pnum.rows[0].pubtype}"/>
         <c:set var="projid" value="${pnum.rows[0].project_id}"/> 
         <c:set var="projectGrpName" value="project_${param.paperid}"/>
         <c:set var="paperGrpName" value="paper_${param.paperid}"/>
         <c:set var="paperLeadGrpName" value="paper_leads_${param.paperid}"/>
         <c:set var="paperReviewGrp" value="paper_reviewers_${param.paperid}"/>
 
-        <%-- if project-less document find it's the working group --%>
+        <%-- if project-less document find it's the working group 
         <c:set var="projLessWG" value="no working group"/>
         <sql:query var="projectLessWG">
             select wg.name from descpub_publication_swgs s join descpub_swg wg on s.swgid = wg.id
@@ -50,8 +51,19 @@
          
         <c:if test="${projectLessWG.rowCount > 0}">
             <c:set var="projLessWG" value="${projectLessWG.rows[0]['name']}"/>
+        </c:if> --%>
+        
+        <c:if test="${projid == 0}">
+            <sql:query var="projectLessWG">
+                select wg.name from descpub_publication_swgs s join descpub_swg wg on s.swgid = wg.id
+                where s.paperid = ?
+                <sql:param value="${param.paperid}"/>
+            </sql:query>
         </c:if>
-             
+        <c:if test="${projectLessWG.rowCount > 0}">
+           <c:set var="projLessWG" value="${projectLessWG.rows[0]['name']}"/>
+        </c:if>    
+                
        <%-- make mailto list of reviewers, if they exist --%>
         <sql:query var="revGrp">
             select v.first_name, v.last_name, v.email from profile_user v join profile_ug g on v.memidnum=g.memidnum and v.experiment=g.experiment

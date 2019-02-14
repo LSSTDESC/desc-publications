@@ -63,7 +63,8 @@
            <h3>Error: ${catchError}</h3>
         </c:when>
         <c:otherwise>
-           <c:redirect url="${param.returnURL}"/>
+            ${param.returnURL}
+         <%--  <c:redirect url="${param.returnURL}"/> --%>
         </c:otherwise>
         </c:choose>  
 

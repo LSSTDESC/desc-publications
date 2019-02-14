@@ -147,11 +147,16 @@
                                  </select>
                             </c:if>
                             
+                            <%-- not using state
                             <c:if test="${x.data == 'state'}">
                                 <c:set var="selected" value=""/>
                                  <select name="${x.data}" ${required}>
                                      <option value="created">created</option>
                                  </select>  
+                            </c:if> --%>
+                            
+                            <c:if test="${x.data == 'pubstatus'}">
+                                <input type="hidden" name="${x.data}" value="created">created</option>
                             </c:if>
                             
                             <p></p>
@@ -216,6 +221,11 @@
                 </form>
         </c:when>
         <c:when test="${param.formsubmitted == 'true' && debugMode == 'true'}">
+            <c:out value="User Form Input"/><br/>
+            <c:forEach var="p" items="${param}">
+                <c:out value="${p.key} = ${p.value}"/><br/>
+            </c:forEach>
+            
              <%-- get fields for this pubtype --%>
             <sql:query var="res">
                 select label, data, datatype from descpub_pubtype_fields pb join descpub_metadata me on pb.metaid = me.metaid where pb.pubtype = ? order by formposition
@@ -242,6 +252,15 @@
             
             <c:set var="colnames" value="${colnames},paperid,project_id,createdate,createdby,pubtype"/>
             <c:set var="qmarks" value="${qmarks},?,?,sysdate,?,?"/>
+            <h3>insert into descpub_publication_test (${colnames}) values (${qmarks})<br/>
+                <c:forEach var="v" items="${res.rows}">
+                    <c:out value="sql:param value=${empty param[v.data] ? NULL : param[v.data]}"/><br/>
+                </c:forEach>
+                <c:out value="sql:param value=${current}"/><br/>
+                <c:out value="sql:param value=${param.projid}"/><br/>
+                <c:out value="sql:param value=${userName}"/><br/>
+                <c:out value="sql:param value=${param.pubtype}"/><br/>   
+            </h3>
            
             <%-- descpub_publication_test is a debugging table --%>
             <sql:update>
@@ -298,8 +317,6 @@
                     <sql:query var="curr">
                         select DESCPUB_PUB_SEQ.currval as currval from dual
                     </sql:query>
-                        
-                    <%-- get the current pub sequence number --%>
                     <c:set var="current" value="${curr.rows[0].currval}"/>
                      
                     <%-- if project-less document update working group for document --%>
@@ -385,6 +402,7 @@
               <c:redirect url="show_pub.jsp?paperid=${current}"/>   
             </c:if>
        </c:when>
+                            
     </c:choose>
     </body>
 </html>

@@ -35,7 +35,7 @@
     </sql:query>
 </c:catch>
  
-<c:if test="${!empty chkProjID || validID.rowCount < 1}"> 
+<c:if test="${!empty chkProjID}"> 
     <c:redirect url="noPermission.jsp?errmsg=11"/>
 </c:if>
 <c:set var="paperGrpName" value="paper_${param.projid}"/>
@@ -50,18 +50,6 @@
     <sql:param value="${appVariables.experiment}"/>
 </sql:query>
 <c:set var="memidnum" value="${userInfo.rows[0]['memidnum']}"/>
-
-<%-- is user allowed to edit. if member of project then user can also edit papers assoc. with project 
-<sql:query var="canUser">  
-    select memidnum from profile_ug where group_id in (?,?) and user_id=? and experiment = ?
-    <sql:param value="${projectGrpName}"/>
-    <sql:param value="${projectLeadGrpName}"/>
-    <sql:param value="${userName}"/>
-    <sql:param value="${appVariables.experiment}"/>
-</sql:query>
-<c:if test="${!empty canUser.rows[0].memidnum}">
-    <c:set var="canEditProject" value="true"/>
-</c:if> --%>
     
 <%-- get all the papers under this project --%>
 <sql:query var="docs">
@@ -133,7 +121,7 @@
 <table class="datatable">
     <utils:trEvenOdd reset="true"><th>Title</th><td style="text-align: left">${row.title}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project ID</th><td style="text-align: left">${row.id}</td></utils:trEvenOdd>
-    <utils:trEvenOdd ><th>WGs</th><td style="text-align: left">${projswgs}</td></utils:trEvenOdd>
+    <utils:trEvenOdd ><th>Working Group</th><td style="text-align: left">${projswgs}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>State</th><td style="text-align: left">${row.projectstatus}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Date Created</th><td style="text-align: left">${row.created}</td></utils:trEvenOdd>
     <c:if test="${!empty row.lastmodified}">
