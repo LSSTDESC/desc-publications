@@ -132,18 +132,18 @@
     </c:if>
     <c:choose>
     <c:when test="${fn:startsWith(row.confluenceurl,'https://confluence')}">
-        <utils:trEvenOdd ><th>Confluence Url</th><td style="text-align: left"><a href=${row.confluenceurl}>${row.confluenceurl}</a></td></utils:trEvenOdd>
+        <utils:trEvenOdd ><th>Primary Confluence Url</th><td style="text-align: left"><a href=${row.confluenceurl}>${row.confluenceurl}</a></td></utils:trEvenOdd>
     </c:when>
     <c:when test="${! fn:startsWith(row.confluenceurl,'https')}">
-        <utils:trEvenOdd ><th>Confluence Url</th><td style="text-align: left">none</td></utils:trEvenOdd>
+        <utils:trEvenOdd ><th>Primary Confluence Url</th><td style="text-align: left">none</td></utils:trEvenOdd>
     </c:when>
     </c:choose>
     <c:choose>
     <c:when test="${fn:startsWith(row.gitspaceurl,'https://github')}">
-        <utils:trEvenOdd ><th>Github Url</th><td style="text-align: left"><a href=${row.gitspaceurl}>${row.gitspaceurl}</a></td></utils:trEvenOdd>
+        <utils:trEvenOdd ><th>Primary Github Url</th><td style="text-align: left"><a href=${row.gitspaceurl}>${row.gitspaceurl}</a></td></utils:trEvenOdd>
     </c:when>
     <c:when test="${! fn:startsWith(row.gitspaceurl,'https://github')}">
-        <utils:trEvenOdd ><th>Github Url</th><td style="text-align: left">none</td></utils:trEvenOdd>
+        <utils:trEvenOdd ><th>Primary Github Url</th><td style="text-align: left">none</td></utils:trEvenOdd>
     </c:when>
     </c:choose>
    

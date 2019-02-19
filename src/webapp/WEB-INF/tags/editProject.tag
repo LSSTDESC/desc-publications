@@ -132,11 +132,11 @@
         </c:forEach>
     </select> 
     <p/>
-    Confluence URL:<br/>
+    Primary Confluence URL:<br/>
     <input type="text" name="confluenceurl" id="confluenceurl" value="${confluenceurl}" size="55" required/>
     <p/>
     <p/>
-    Github URL:<br/>
+    Primary Github URL:<br/>
     <input type="text" name="gitspaceurl" id="gitspaceurl" value="${gitspace}" size="55" required/>
     <p/>
     

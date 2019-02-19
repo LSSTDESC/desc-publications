@@ -47,7 +47,7 @@
             <h3>Invalid project number or missing project number. Please contact the Publications Board for help.</h3>
         </c:when>
         <c:when test="${param.errmsg == '13'}">
-            <h3>Invalid confluence url. Confluence urls must start with https://confluence...</h3>
+            <h3>Invalid Confluence url. Confluence urls must start with https://confluence...</h3>
         </c:when>
         <c:when test="${param.errmsg == '14'}">
             <h3>Invalid github url. Github urls must start with https://github.com...</h3>
