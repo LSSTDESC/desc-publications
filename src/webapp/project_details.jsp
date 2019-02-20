@@ -221,15 +221,7 @@
                                     <sql:param value="${yy}"/>
                                     <sql:param value="${results.rows[0]['title']}"/>
                                 </sql:update>
-                                    <%--
-                                 <sql:update var="del">
-                                     insert into descpub_proj_deliverables (project_id,deliverable_id,del_title,entry_date)
-                                     values(?,?,?,sysdate)
-                                     <sql:param value="${newprojID}"/>
-                                     <sql:param value="${yy}"/>
-                                     <sql:param value="${results.rows[0]['title']}"/>
-                                 </sql:update> --%>
-                               </c:forEach>
+                              </c:forEach>
                           </c:when>
                        </c:choose>
                     </c:forEach>             
