@@ -9,6 +9,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql" %>
 <%@taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@taglib prefix="gm" uri="http://srs.slac.stanford.edu/GroupManager"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
@@ -36,6 +37,12 @@
         </c:forEach>
     </c:if>
     
+    <sql:query var="cgn_name">
+        select convener_group_name cgn from descpub_swg where id = ?
+        <sql:param value="${param.swgid}"/>
+    </sql:query> 
+    <c:set var="cgngrp" value="${cgn_name.rows[0].cgn}"/>
+            
     <sql:query var="ptypes">
         select pubtype from descpub_publication_types 
         <c:if test="${param.projid == 0}">
@@ -204,14 +211,19 @@
                     </c:forEach>
                     </select>
                     <p></p>
-                    <p id="pagelabel">
-                    Select Reviewer(s):</p>  
-                    <select name="reviewers" multiple size="20">
-                    <c:forEach var="revs" items="${poolOfCandidates.rows}">
-                        <option value="${revs.memidnum}:${revs.firstname} ${revs.lastname}:${revs.username}">${revs.lastname},  ${revs.firstname} </option>
-                    </c:forEach>
-                    </select>
-                   <br/>
+                    
+                    <%-- Only WG leads can add paper reviewers --%>
+                    <c:if test="${gm:isUserInGroup(pageContext,cgngrp)}">
+                        <p id="pagelabel">
+                        Select Reviewer(s):</p>  
+                        <select name="reviewers" multiple size="20">
+                            <c:forEach var="revs" items="${poolOfCandidates.rows}">
+                                <option value="${revs.memidnum}:${revs.firstname} ${revs.lastname}:${revs.username}">${revs.lastname},  ${revs.firstname} </option>
+                            </c:forEach>
+                        </select>
+                        <br/>
+                   </c:if>
+                   
                      <input type="hidden" name="projid" id="projid" value="${param.projid}"/> 
                      <input type="hidden" name="swgid" id="swgid" value="${param.swgid}"/>
                      <input type="hidden" name="pubtype" value="${param.pubtype}"/>
