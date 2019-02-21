@@ -36,23 +36,12 @@
         </sql:query>
         <c:set var="dtype" value="${pnum.rows[0].pubtype}"/>
         <c:set var="projid" value="${pnum.rows[0].project_id}"/> 
-        <c:set var="projectGrpName" value="project_${param.paperid}"/>
+        <c:set var="projectGrpName" value="project_${projid}"/>
         <c:set var="paperGrpName" value="paper_${param.paperid}"/>
         <c:set var="paperLeadGrpName" value="paper_leads_${param.paperid}"/>
         <c:set var="paperReviewGrp" value="paper_reviewers_${param.paperid}"/>
 
-        <%-- if project-less document find it's the working group 
-        <c:set var="projLessWG" value="no working group"/>
-        <sql:query var="projectLessWG">
-            select wg.name from descpub_publication_swgs s join descpub_swg wg on s.swgid = wg.id
-            where s.paperid = ?
-            <sql:param value="${param.paperid}"/>
-        </sql:query>
-         
-        <c:if test="${projectLessWG.rowCount > 0}">
-            <c:set var="projLessWG" value="${projectLessWG.rows[0]['name']}"/>
-        </c:if> --%>
-        
+        <%-- if project-less document then find its the working group --%>
         <c:if test="${projid == 0}">
             <sql:query var="projectLessWG">
                 select wg.name from descpub_publication_swgs s join descpub_swg wg on s.swgid = wg.id
@@ -162,13 +151,6 @@
            <sql:param value="${param.paperid}"/>
         </sql:query>
         <c:set var="convenerGrp" value="${leads.rows[0].convener_group_name}"/>
-           
-        <%-- check if user is convener, do they have r/w access   OLD
-        <c:forEach var="x" items="${leads.rows}">
-            <c:if test="${gm:isUserInGroup(pageContext,x.convener_group_name)}">
-                <c:set var="convenerCanEdit" value="true"/>
-            </c:if>
-        </c:forEach>  --%> 
       
         <%-- check for versions --%>
         <sql:query var="vers">
@@ -258,13 +240,13 @@
                 </utils:trEvenOdd> 
             </c:if> 
            
-          <c:if test="${gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,paperReviewGrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
+            <c:if test="${gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,paperReviewGrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                 <utils:trEvenOdd reset="false"><th style="text-align: left">Edit</th>
                     <td style="text-align: left">
                     <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
                     </td>
                 </utils:trEvenOdd>
-          </c:if>
+            </c:if>
                
         </table>
             
