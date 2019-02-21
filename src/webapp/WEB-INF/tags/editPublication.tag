@@ -18,6 +18,7 @@
 <%@attribute name="paperid" required="true"%>
  
 <c:set var="paperleads" value="paper_leads_${paperid}"/> 
+<c:set var="papermems" value="paper_${paperid}"/> 
 
 <sql:query var="states"> <%-- state here is really the doc status --%>
     select state from descpub_publication_states order by state
@@ -137,7 +138,10 @@
                 <p></p>
                 </c:if>   
             </c:forEach>
-            <input type="submit" name="submit" value="update"/>
+                
+            <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,convenergrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,paperleads) || gm:isUserInGroup(pageContext,papermems)}">
+                <input type="submit" name="submit" value="update"/>
+            </c:if>
         </fieldset>
     </div>
  </form>

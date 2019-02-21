@@ -67,7 +67,7 @@
        <%-- make mailto list of reviewers, if they exist --%>
         <sql:query var="revGrp">
             select v.first_name, v.last_name, v.email from profile_user v join profile_ug g on v.memidnum=g.memidnum and v.experiment=g.experiment
-            where g.group_id = ? and g.experiment = ? and v.email is not null
+            where g.group_id = ? and g.experiment = ? and v.email is not null order by v.last_name
             <sql:param value="${paperReviewGrp}"/>
             <sql:param value="${appVariables.experiment}"/>
         </sql:query>
@@ -257,15 +257,6 @@
                     <td style="text-align:left"><a href="mailto:${authAddrs}">Paper Leads</a></td>
                 </utils:trEvenOdd> 
             </c:if> 
-
-                    <%--
-           <c:if test="${gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
-               <utils:trEvenOdd reset="false"><th style="text-align: left">Edit</th>
-                   <td style="text-align: left">
-                   <a href="editLink.jsp?paperid=${param.paperid}">DESC-${param.paperid}</a>
-                   </td>
-               </utils:trEvenOdd>
-           </c:if>  --%>
            
           <c:if test="${gm:isUserInGroup(pageContext,paperGrpName) || gm:isUserInGroup(pageContext,paperLeadGrpName) || gm:isUserInGroup(pageContext,projectGrpName) || gm:isUserInGroup(pageContext,paperReviewGrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin') || gm:isUserInGroup(pageContext,'lsst-desc-publications-admin')}">
                 <utils:trEvenOdd reset="false"><th style="text-align: left">Edit</th>

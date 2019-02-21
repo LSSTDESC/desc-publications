@@ -15,17 +15,17 @@
     <body>
         
     <sql:query var="projects">
-        select p.id, p.title, p.summary, p.projectstatus, p.created, p.lastmodified, p.lastmodby, p.confluenceurl, p.createdby, p.gitspaceurl, s.swg_id 
+        select p.id, p.title, p.summary, p.projectstatus, p.created, p.lastmodified, p.lastmodby, p.confluenceurl, p.createdby, p.gitspaceurl, p.taskforce, s.swg_id 
         from descpub_project p join descpub_project_swgs s on  s.project_id = p.id where p.id=?
         <sql:param value="${param.projid}"/>
    </sql:query> 
            
    <c:set var="swgid" value="${projects.rows[0]['swg_id']}"/>
-   <c:set var="oranames" value="title=?,summary=?,projectstatus=?,lastmodby=?,confluenceurl=?,gitspaceurl=?,lastmodified=sysdate"/>
+   <c:set var="oranames" value="title=?,summary=?,projectstatus=?,taskforce=?,lastmodby=?,confluenceurl=?,gitspaceurl=?,lastmodified=sysdate"/>
    <c:set var="escSummary" value="${fn:escapeXml(param.summary)}"/>
    <c:set var="confUrl" value="${fn:startsWith(param.confluenceurl,'https://confluence')}"/>
    <c:set var="gitUrl" value="${fn:startsWith(param.gitspaceurl,'https://github')}"/>
-   
+   <c:set var="taskforce" value="${projects.rows[0].taskforce}"/>
       
    <c:if test="${! confUrl}">  
        <c:redirect url="noPermission.jsp?errmsg=13"/>  
@@ -54,6 +54,7 @@
                 <sql:param value="${empty param.title ? projects.rows[0].title : param.title}"/>
                 <sql:param value="${escSummary}"/>
                 <sql:param value="${param.projectstatus}"/>
+                <sql:param value="${param.selectedtf}"/>
                 <sql:param value="${userName}"/>
                 <sql:param value="${param.confluenceurl}"/>
                 <sql:param value="${param.gitspaceurl}"/>

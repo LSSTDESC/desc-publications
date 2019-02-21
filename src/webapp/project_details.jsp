@@ -76,6 +76,10 @@
     <sql:query var="srmdel">
         select deliverable_id, title from descpub_srm_deliverables order by deliverable_id
     </sql:query>
+        
+    <sql:query var="tf">
+        select tfname from descpub_taskforce
+    </sql:query>
        
     <c:choose>  
         <c:when test="${param.task == 'create_proj_form'}">
@@ -85,15 +89,24 @@
                 <strong>* Title</strong><p/><input type="text" name="title" size="77" required/><p/>
                 <strong>Primary Confluence URL</strong><p/><input type="text" size="77" name="confluenceurl" id="confluenceurl" /><p/>
                 <strong>Primary Github URL</strong><p/><input type="text" size="77" name="gitspaceurl" id="gitspaceurl" /><p/>
+                
+                <strong>Task Force</strong><p/>
+                <select name="tforce" size="7">
+                    <option value="none" selected></option>
+                    <c:forEach var="t" items="${tf.rows}">
+                        <option value="${t.tfname}">${t.tfname}</option>
+                    </c:forEach>
+                </select>
+                 <p></p>
                 <strong>SRM activities</strong><p/>
-                <select name="srmactivity" size="20" multiple>
+                <select name="srmactivity" size="15" multiple>
                     <c:forEach var="s" items="${srmact.rows}">
                         <option value="${s.activity_id}">${s.activity_id} ${s.title}</option>
                     </c:forEach>
                 </select>
                 <p></p>
-             <strong>SRM deliverables</strong><p/>
-                <select name="srmdeliverable" size="20" multiple>
+                <strong>SRM deliverables</strong><p/>
+                <select name="srmdeliverable" size="15" multiple>
                     <c:forEach var="d" items="${srmdel.rows}">
                         <option value="${d.deliverable_id}">${d.deliverable_id} ${d.title}</option>
                     </c:forEach>

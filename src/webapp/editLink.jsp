@@ -35,22 +35,32 @@
         <sql:query var="countpapers">
             select count(*) from descpub_publication where project_id = ?
             <sql:param value="${getproj.rows[0].project_id}"/>
-        </sql:query>    
+        </sql:query>  
+            
+        <sql:query var="conven">
+            select s.convener_group_name from descpub_swg s join descpub_project_swgs ps on s.id = ps.swg_id
+            join descpub_project p on p.id = ps.project_id where ps.project_id = ?
+            <sql:param value="${getproj.rows[0].project_id}"/>
+        </sql:query>
 
         <tg:editPublication paperid="${param.paperid}"/> 
         <p></p>
         <c:set var="paperleads" value="paper_leads_${param.paperid}"/>
         <c:set var="paperreviewers" value="paper_reviewers_${param.paperid}"/>
         <c:set var="papermembers" value="paper_${param.paperid}"/>
+        <c:set var="convenergrp" value="${conven.rows[0].convener_group_name}"/>
+      
+        <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,convenergrp) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
+             Add or Remove Reviewers
+            <p></p>
+            <tg:groupMemberEditor groupname="${paperreviewers}" returnURL="editLink.jsp?paperid=${param.paperid}"/>  
+            <p>   
+        </c:if>
         
         <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-publications-admin') || gm:isUserInGroup(pageContext,paperleads) || gm:isUserInGroup(pageContext,'GroupManagerAdmin' )}">
             Add or Remove Lead Authors
             <p></p>
            <tg:groupMemberEditor groupname="${paperleads}" returnURL="editLink.jsp?paperid=${param.paperid}"/>  
-            <p>
-            Add or Remove Reviewers
-            <p></p>
-            <tg:groupMemberEditor groupname="${paperreviewers}" returnURL="editLink.jsp?paperid=${param.paperid}"/>  
             <p>   
             Add or Remove Eligible Authors
             <p></p>

@@ -50,7 +50,7 @@
     </sql:query>
    
     <sql:query var="projects">
-        select p.id, p.title, p.summary, p.projectstatus, p.confluenceurl, p.gitspaceurl, s.swg_id, to_char(p.created,'YYYY-Mon-DD HH:MI:SS') crdate, 
+        select p.id, p.title, p.summary, p.projectstatus, p.confluenceurl, p.gitspaceurl, s.swg_id, p.taskforce, to_char(p.created,'YYYY-Mon-DD HH:MI:SS') crdate, 
         to_char(p.lastmodified,'YYYY-Mon-DD HH:MI:SS') moddate from descpub_project p join descpub_project_swgs s on s.project_id = p.id
         where p.id=?
         <sql:param value="${projid}"/>
@@ -70,6 +70,10 @@
        <sql:param value="${projid}"/>
     </sql:query>
        
+    <sql:query var="tforce">
+        select tfname from descpub_taskforce
+    </sql:query>
+       
     <c:set var="title" value="${projects.rows[0].title}"/>
     <c:set var="projstate" value="${projects.rows[0].projectstatus}"/>
     <c:set var="summary" value="${projects.rows[0].summary}"/>
@@ -78,6 +82,7 @@
     <c:set var="gitspace" value="${projects.rows[0].gitspaceurl}"/>
     <c:set var="projectGrpName" value="project_${projid}"/>
     <c:set var="projectleadsGrpName" value="project_leads_${projid}"/>
+    <c:set var="taskforce" value="${projects.rows[0].taskforce}"/>
     
     <%--
     <sql:query var="isLead">
@@ -140,8 +145,24 @@
     <input type="text" name="gitspaceurl" id="gitspaceurl" value="${gitspace}" size="55" required/>
     <p/>
     
+    Taskforce: <br/>
+    <select name="selectedtf">
+        <option value="none"></option>
+         <c:forEach var="t" items="${tforce.rows}">
+            <c:set var="selected" value=""/>
+            <c:if test="${t.tfname == taskforce}">
+               <c:set var="selected" value="selected"/>
+            </c:if>
+           <option value="${t.tfname}" ${selected}>${t.tfname} </option>
+        </c:forEach>
+     </select>
+   
+    <p/>
+    
+    </p>
     SRM Activities (optional)<br/>
      <select name="srmactivity_id" size="20" multiple>
+         <option value="none"></option>
          <c:forEach var="s" items="${activities.rows}">
             <c:set var="selected" value=""/>
             <c:forEach var="p" items="${projsrm.rows}">
@@ -157,6 +178,7 @@
     <p>
     SRM Deliverables (optional)<br/>
      <select name="srmdeliverable_id" size="20" multiple>
+        <option value="none"></option>
         <c:forEach var="d" items="${deliverables.rows}">
             <c:set var="selected" value=""/>
             <c:forEach var="px" items="${projsrm.rows}">

@@ -90,7 +90,7 @@
 </sql:query>  
   
 <sql:query var="projects">
-    select id, title, summary, projectstatus, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
+    select id, title, summary, projectstatus, taskforce, to_char(created,'YYYY-Mon-DD HH:MI:SS') created, to_char(lastmodified,'YYYY-Mon-DD-HH:MI:SS') lastmodified, lastmodby, 
     confluenceurl, gitspaceurl from descpub_project where id = ?
     <sql:param value="${param.projid}"/>
 </sql:query> 
@@ -122,6 +122,9 @@
     <utils:trEvenOdd reset="true"><th>Title</th><td style="text-align: left">${row.title}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Project ID</th><td style="text-align: left">${row.id}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Working Group</th><td style="text-align: left">${projswgs}</td></utils:trEvenOdd>
+    <c:if test="${!empty row.taskforce}">
+       <utils:trEvenOdd ><th>Task Force</th><td style="text-align: left">${row.taskforce}</td></utils:trEvenOdd>
+    </c:if>
     <utils:trEvenOdd ><th>State</th><td style="text-align: left">${row.projectstatus}</td></utils:trEvenOdd>
     <utils:trEvenOdd ><th>Date Created</th><td style="text-align: left">${row.created}</td></utils:trEvenOdd>
     <c:if test="${!empty row.lastmodified}">
