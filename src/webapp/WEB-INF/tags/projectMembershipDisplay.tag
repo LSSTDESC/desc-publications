@@ -12,7 +12,7 @@
 
 <sql:query var="members">
     select u.first_name, u.last_name, u.memidnum from profile_user u join profile_ug ug on u.memidnum=ug.memidnum and ug.experiment=u.experiment where ug.experiment=? and ug.group_id=?
-    order by u.last_name
+    order by lower(u.last_name)
     <sql:param value="${appVariables.experiment}"/>
     <sql:param value="${groupname}"/>
 </sql:query>
