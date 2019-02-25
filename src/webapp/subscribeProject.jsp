@@ -13,16 +13,30 @@
         <title>Manage Project Membership for ${param.group_id}</title>
     </head>
     <body>
-        <c:forEach var="p" items="${param}">
-            <c:out value="PARAM=${p.key} = ${p.value}"/><br/>
-        </c:forEach>
+        
+        <c:set var="debugMode" value="false"/>
+        
+        <c:if test="${debugMode == 'true'}">
+            <c:forEach var="p" items="${param}">
+                <c:out value="PARAM=${p.key} = ${p.value}"/><br/>
+            </c:forEach>
+                
+            <p></p>
+            <c:if test="${param.action == 'leave'}">
+               delete from profile_ug where user_id=${param.userid} and group_id=${param.groupname} and experiment=${appVariables.experiment} and memidnum=${param.memidnum})<br/>
+            </c:if>          
+            <c:if test="${param.action == 'join'}"> 
+               insert into profile_ug (user_id, group_id, experiment, memidnum) values(${param.userid}, ${param.groupname}, ${appVariables.experiment},${param.memidnum})<br/>
+            </c:if>
+
+        </c:if> 
             
         <sql:query var="membership">
             select memidnum from profile_ug where group_id = ? and memidnum = ?
             <sql:param value="${param.group_id}"/>
             <sql:param value="${param.memidnum}"/>
         </sql:query>
-                 
+            
         <c:catch var="catchError">    
         <sql:transaction>
         <c:choose>
