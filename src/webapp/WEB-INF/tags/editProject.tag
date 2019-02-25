@@ -71,7 +71,7 @@
     </sql:query>
        
     <sql:query var="tforce">
-        select tfname from descpub_taskforce
+        select tfname from descpub_taskforce order by lower(tfname)
     </sql:query>
        
     <c:set var="title" value="${projects.rows[0].title}"/>
