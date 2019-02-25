@@ -71,7 +71,7 @@
                 order by lower(last_name)
             </sql:query> 
             <c:if test="${empty param.getproj}">
-              <form name="mailListForm" method="post"> 
+              <form name="projectListForm" method="post"> 
                  <table>
                     <tr>       
                         <td bgcolor="#FFCC66"><strong>Select a member from experiment ${appVariables.experiment})</strong></td>
@@ -221,8 +221,6 @@
             <p id="pagelabel">There are no projects at this time</p>
         </c:when>
         </c:choose>   
-       
-            
             
        </c:when>
        <c:otherwise>
