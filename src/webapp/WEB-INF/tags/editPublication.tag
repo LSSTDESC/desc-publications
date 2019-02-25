@@ -72,6 +72,9 @@
                     </sql:query>  
                     ${x.label}:  
                     <select name="${x.data}" ${x.required}>
+                        <c:if test="${x.required != 'required'}">
+                            <option value="none"></option>
+                        </c:if>
                         <c:forEach var="erow" items="${res.rows}">
                         <option value="${erow.metavalue}" <c:if test="${results.rows[0][x.data] == erow.metavalue}">selected</c:if> > ${erow.metavalue}</option>
                         </c:forEach>
