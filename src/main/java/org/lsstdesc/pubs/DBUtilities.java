@@ -245,13 +245,14 @@ public class DBUtilities {
         return msgId;
     }
    
-    void purgeMessage(int messageId) throws SQLException {
-        String sql = "delete from descpub_mailbody where msgid=?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, messageId);
-            stmt.execute();
-        }
-    }
+// 25feb2019 - DESC wants to keep all the messages.
+//    void purgeMessage(int messageId) throws SQLException {
+//        String sql = "delete from descpub_mailbody where msgid=?";
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setInt(1, messageId);
+//            stmt.execute();
+//        }
+//    }
 
     private void addMailRecipients(int messageId, Message message) throws SQLException, MessagingException {
         String sql = "select groupname_or_emailaddr from descpub_mail_recipient where msgid=?";

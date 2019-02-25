@@ -54,7 +54,7 @@ public class MailSender implements Runnable {
                         break;
                     }
                     Transport.send(message);
-                    db.purgeMessage(messageId);
+//                    db.purgeMessage(messageId);   DESC wants to keep all the messages.
                     LOG.log(Level.INFO, "Sent message {0}", messageId);
                 }
             }
