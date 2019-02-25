@@ -38,10 +38,15 @@
 <c:if test="${!empty chkProjID}"> 
     <c:redirect url="noPermission.jsp?errmsg=11"/>
 </c:if>
+        
+<%-- define project groups and variables --%>
 <c:set var="paperGrpName" value="paper_${param.projid}"/>
 <c:set var="paperLeadGrpName" value="paper_leads_${param.projid}"/>
 <c:set var="projectGrpName" value="project_${param.projid}"/>
 <c:set var="projectLeadGrpName" value="project_leads_${param.projid}"/>
+<c:set var="leadAddrs" value=""/>
+<c:set var="projectLeaders" value=""/>
+<c:set var="descMemberGrp" value="lsst-desc-members"/>
        
 <%-- get memidnum for project membership --%>
 <sql:query var="userInfo">
@@ -57,13 +62,7 @@
    from descpub_publication where project_id = ? order by case when pubtype='Journal paper' then 1 else 2 end
    <sql:param value="${param.projid}"/>
 </sql:query>
-    
-<%-- define project variables --%>
-<c:set var="projectLeadGrpName" value="project_leads_${param.projid}"/>
-<c:set var="projectGrpName" value="project_${param.projid}"/>
-<c:set var="projectLeaders" value=""/>
-<c:set var="leadAddrs" value=""/>
-
+ 
 <sql:query var="leads">
     select u.first_name, u.last_name, u.email, u.memidnum, u.user_name from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
     where ug.group_id = ? and ug.experiment = ? order by u.last_name
@@ -183,17 +182,32 @@
       <utils:trEvenOdd ><th>Edit project</th><td style="text-align: left"><a href="show_project.jsp?projid=${param.projid}&swgid=${param.swgid}">${row.id}</a></td></utils:trEvenOdd>
     </c:if>
 
+    <%--
+    <c:if test="${gm:isUserInGroup(pageContext,descMemberGrp) && gm:isUserInGroup(pageContext,projectGrpName)}">
+        <c:set var="returnURL" value="projectView.jsp?projid=${param.projid}&swgid=${param.swgid}"/>
+        <utils:trEvenOdd><th>Leave ${projectGrpName}</th>
+            <td style="text-align: left"><a href="subscribeProject.jsp?groupname=${projectGrpName}&memidnum=${memidnum}&userid=${userName}&returnURL=${returnURL}&action=leave">Leave project</a></td>
+        </utils:trEvenOdd>
+    </c:if>
+        
+    <c:if test="${gm:isUserInGroup(pageContext,descMemberGrp) && !gm:isUserInGroup(pageContext,projectGrpName)}">
+        <c:set var="returnURL" value="projectView.jsp?projid=${param.projid}&swgid=${param.swgid}"/>
+         <utils:trEvenOdd><th>Join ${projectGrpName}</th>
+             <td style="text-align: left"><a href="subscribeProject.jsp?groupname=${projectGrpName}&memidnum=${memidnum}&userid=${userName}&returnURL=${returnURL}&action=join">Join project</a></td>
+        </utils:trEvenOdd>
+    </c:if>  --%>
 </table>
-
+     
+    <%--
 <table class="datatable">
-    <utils:trEvenOdd  reset="true"><th>(Un)Subscribe from/to Project</th><td></td><td>
-      <c:if test="${gm:isUserInGroup(pageContext,'lsst-desc-members')}">
+    <utils:trEvenOdd  reset="true"><th>(Un)Subscribe from/to Project</th> <td></td>   
+      <c:if test="${gm:isUserInGroup(pageContext,projectGrpName)}">
          <c:set var="returnURL" value="projectView.jsp?projid=${param.projid}&swgid=${param.swgid}"/>
         <tg:projectSubscription groupname="project_${param.projid}" memidnum="${memidnum}" userid = "${userName}" returnURL="${returnURL}"/> 
         </c:if></td>
         <tg:projectMembershipDisplay groupname="project_${param.projid}" returnURL="${returnURL}"/> 
     </utils:trEvenOdd>  
-</table>
+</table>  --%>
    
  
  <c:if test="${docs.rowCount > 0}">
