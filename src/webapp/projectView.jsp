@@ -65,7 +65,7 @@
  
 <sql:query var="leads">
     select u.first_name, u.last_name, u.email, u.memidnum, u.user_name from profile_user u join profile_ug ug on u.memidnum = ug.memidnum and u.experiment = ug.experiment
-    where ug.group_id = ? and ug.experiment = ? order by u.last_name
+    where ug.group_id = ? and ug.experiment = ? order by lower(u.last_name)
     <sql:param value="${projectLeadGrpName}"/>
     <sql:param value="${appVariables.experiment}"/>
 </sql:query>
