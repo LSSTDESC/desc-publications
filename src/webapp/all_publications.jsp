@@ -37,11 +37,10 @@
                 <display:column title="DESC ID" style="text-align:left;" group="1" sortable="true" headerClass="sortable">
                     <a href="show_pub.jsp?paperid=${record.paperid}">DESC-${record.paperid}</a>
                 </display:column>
+                <display:column title="Created" property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
                 <display:column title="Title" property="title" style="text-align:left;" group="2" sortable="true" headerClass="sortable"/>
                 <display:column title="Document status" property="pubstatus" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
-                <display:column title="Document state" property="pubstate" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
                 <display:column title="Doc type" property="pubtype" style="text-align:left;" sortable="true" headerClass="sortable"></display:column>
-                <display:column title="Created" property="createdate" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
                 <display:column title="Modified" property="modifydate" style="text-align:left;" sortable="true" headerClass="sortable"></display:column> 
                 <display:column title="# Versions" style="text-align:left;">
                     <sql:query var="v">
