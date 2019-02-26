@@ -110,10 +110,10 @@ public class FileUploadServlet extends HttpServlet {
                 getServletContext().getRequestDispatcher(forwardTo).forward(request, response);
 
             } catch (FileUploadException ex) {
-                throw new ServletException("Error uploading file", ex);
+                throw new ServletException(" *** Error uploading file", ex);
             } 
         } else {
-            throw new ServletException("No file to upload");
+            throw new ServletException(" *** No file to upload");
         }
     }
 
