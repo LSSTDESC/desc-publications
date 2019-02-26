@@ -124,6 +124,8 @@ public class DBUtilities {
               allowedtype ="application/vnd.oasis.opendocument.text";
           } else if ("application/x-dvi".equalsIgnoreCase(tika.detect(item.getName()))) {
               allowedtype = "application/x-dvi";
+          } else if ( item.getName().isEmpty() ) {
+              throw new ServletException("No file specified"); 
           } else {
               throw new ServletException(item.getName() + " is not a recognized mimetype");
           }
