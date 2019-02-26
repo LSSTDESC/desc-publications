@@ -89,7 +89,7 @@
                       <legend><strong>Upload</strong></legend><p/>
                       Upload new version of DESC-${param.paperid}<p/>
                       <input type="file" name="fileToUpload" id="fileToUpload"><p/>
-                      Remarks: <input type="text" name="remarks" required><p/>
+                      Remarks: <input type="text" name="remarks"><p/>
                       <input type="submit" value="Upload Document" name="submit">
                       <input type="hidden" name="forwardTo" value="/uploadPub.jsp?paperid=${param.paperid}" />
                       <input type="hidden" name="paperid" value="${param.paperid}"/>
