@@ -104,7 +104,7 @@ public class FileUploadServlet extends HttpServlet {
                        request.setAttribute("msg", "File saved as " + saveFile.getName());
                     }  
                 } catch (Exception ex) {
-                    request.setAttribute("msg", "Error saving file. " + ex.getMessage());
+                    request.setAttribute("msg", "** Error saving file. " + ex.getMessage());
                 }  
                
                 getServletContext().getRequestDispatcher(forwardTo).forward(request, response);
